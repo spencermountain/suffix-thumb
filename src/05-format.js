@@ -39,13 +39,12 @@ const format = function (rules, pairs) {
     return true
   })
   let coverage = pairs.length - untouched.length
-  let percent = (coverage / pairs.length) * 100
+  let percent = coverage / pairs.length
   return {
     rules: fmtRules(rules),
     exceptions: exceptions,
-    percent: percent,
-    // coverage: coverage,
-    // remaining: untouched,
+    coverage: percent,
+    remaining: untouched,
   }
 }
 module.exports = format

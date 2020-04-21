@@ -27,17 +27,31 @@ It was built to learn rules about verb conjugations, but in a way, it is just a 
 
 The assumption is that a word's _suffix_ is the most changeable part of a word.
 
-```js
-const thumb = require('./src')
+![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
-const words = [
+```js
+const thumb = require('suffix-thumb')
+
+const pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['go', 'went'],
+]
+let res = thumb(pairs)
+/* { rules: [ ['alk', 'alked'] ],
+    exceptions: {},
+    coverage: 0.66,
+    remaining: [ ['go', 'went'] ] 
+}*/
+
+const pairs = [
   ['aail', 'aael'],
   ['bbil', 'bbel'],
   ['cil', 'cel'],
   ['snafoo', 'snabar'],
   ['poofoo', 'poobar'],
 ]
-let res = thumb(words)
+let res = thumb(pairs)
 /*
   { 
     rules: [ 

@@ -1,11 +1,17 @@
 const thumb = require('./src')
-const words = [
+const pairs = [
   ['walk', 'walking'],
   ['smoke', 'smoking'],
+  ['create', 'creating'],
+  ['bake', 'baking'],
   ['talk', 'talking'],
-  ['wait', 'waiting'],
-  ['study', 'studying'],
-  ['poofoo', 'poobar'],
+  ['allow', 'allowing'],
 ]
-let res = thumb(words)
-console.log(res)
+thumb(pairs)
+/* {
+    rules: [ ['lk', 'lking'], ['e', 'ing'] ],
+    exceptions: {},
+    coverage: 0.83,
+    remaining: [ ['allow', 'allowing'] ] 
+  }
+*/

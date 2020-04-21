@@ -1,6 +1,6 @@
 const getSuffixes = function (str) {
   let list = []
-  for (let i = 4; i > 0; i -= 1) {
+  for (let i = 4; i >= 0; i -= 1) {
     if (str.length - 1 <= i) {
       continue
     }
@@ -15,6 +15,7 @@ const getAll = function (arr) {
   arr.forEach((a) => {
     let [from, to] = a
     let fromList = getSuffixes(from)
+    fromList.push('') //add a prepend-only option
     fromList.forEach((left) => {
       suffixes[left] = suffixes[left] || {}
       let toList = getSuffixes(to)
