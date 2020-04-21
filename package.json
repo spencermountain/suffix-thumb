@@ -1,0 +1,49 @@
+{
+  "name": "suffix-thumb",
+  "description": "learn transformations between two sets of words",
+  "version": "0.0.1",
+  "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
+  "main": "./builds/suffix-thumb.js",
+  "unpkg": "./builds/suffix-thumb.min.js",
+  "module": "./builds/suffix-thumb.mjs",
+  "types": "types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/spencermountain/suffix-thumb.git"
+  },
+  "scripts": {
+    "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "watch": "amble ./scratch.js",
+    "build": "node scripts/build.js && rollup -c --silent"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 100
+  },
+  "files": [
+    "builds/",
+    "types/index.d.ts"
+  ],
+  "eslintIgnore": [
+    "builds/*.js"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "11.1.0",
+    "@rollup/plugin-json": "4.0.2",
+    "@rollup/plugin-node-resolve": "7.1.3",
+    "amble": "1.0.0",
+    "efrt": "2.2.2",
+    "rollup": "2.6.1",
+    "rollup-plugin-babel": "4.4.0",
+    "rollup-plugin-filesize-check": "0.0.1",
+    "rollup-plugin-terser": "5.3.0",
+    "tap-dancer": "0.2.0",
+    "tape": "4.13.2"
+  },
+  "license": "MIT"
+}
