@@ -15,7 +15,7 @@
     "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "watch": "amble ./scratch.js",
-    "build": "node scripts/build.js && rollup -c --silent"
+    "build": "rollup -c --silent"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -33,8 +33,10 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "@babel/core": "7.9.0",
+    "@babel/preset-env": "7.9.5",
     "@rollup/plugin-commonjs": "11.1.0",
-    "@rollup/plugin-json": "4.0.2",
+    "@rollup/plugin-json": "4.0.3",
     "@rollup/plugin-node-resolve": "7.1.3",
     "amble": "1.0.0",
     "efrt": "2.2.2",
