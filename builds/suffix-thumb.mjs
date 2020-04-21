@@ -1,4 +1,4 @@
-/* suffix-thumb 0.0.1 MIT */
+/* suffix-thumb 0.1.0 MIT */
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 }
@@ -58,7 +58,7 @@ function _nonIterableRest() {
 var getSuffixes = function getSuffixes(str) {
   var list = [];
 
-  for (var i = 4; i > 0; i -= 1) {
+  for (var i = 4; i >= 0; i -= 1) {
     if (str.length - 1 <= i) {
       continue;
     }
@@ -78,6 +78,8 @@ var getAll = function getAll(arr) {
         to = _a[1];
 
     var fromList = getSuffixes(from);
+    fromList.push(''); //add a prepend-only option
+
     fromList.forEach(function (left) {
       suffixes[left] = suffixes[left] || {};
       var toList = getSuffixes(to);
@@ -255,13 +257,12 @@ var format = function format(rules, pairs) {
     return true;
   });
   var coverage = pairs.length - untouched.length;
-  var percent = coverage / pairs.length * 100;
+  var percent = coverage / pairs.length;
   return {
     rules: fmtRules(rules),
     exceptions: exceptions,
-    percent: percent // coverage: coverage,
-    // remaining: untouched,
-
+    coverage: percent,
+    remaining: untouched
   };
 };
 

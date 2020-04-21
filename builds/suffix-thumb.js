@@ -1,4 +1,4 @@
-/* suffix-thumb 0.0.1 MIT */
+/* suffix-thumb 0.1.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -64,7 +64,7 @@
   var getSuffixes = function getSuffixes(str) {
     var list = [];
 
-    for (var i = 4; i > 0; i -= 1) {
+    for (var i = 4; i >= 0; i -= 1) {
       if (str.length - 1 <= i) {
         continue;
       }
@@ -84,6 +84,8 @@
           to = _a[1];
 
       var fromList = getSuffixes(from);
+      fromList.push(''); //add a prepend-only option
+
       fromList.forEach(function (left) {
         suffixes[left] = suffixes[left] || {};
         var toList = getSuffixes(to);
@@ -261,13 +263,12 @@
       return true;
     });
     var coverage = pairs.length - untouched.length;
-    var percent = coverage / pairs.length * 100;
+    var percent = coverage / pairs.length;
     return {
       rules: fmtRules(rules),
       exceptions: exceptions,
-      percent: percent // coverage: coverage,
-      // remaining: untouched,
-
+      coverage: percent,
+      remaining: untouched
     };
   };
 
