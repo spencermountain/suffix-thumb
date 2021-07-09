@@ -24,8 +24,8 @@ test('two rules:', function (t) {
   ]
   let res = thumb(words)
   t.equal(res.rules.length, 2, 'two rules')
-  t.equal(res.rules[0][0], 'lk', 'lk')
-  t.equal(res.rules[1][0], 'e', 'e')
+  t.equal(res.rules[1][0], 'lk', 'lk')
+  t.equal(res.rules[0][0], 'e', 'e')
   t.ok(res.coverage > 0.6, 'coverage is good')
   t.end()
 })

@@ -10,7 +10,7 @@
   
   <!-- file size -->
   <a href="https://unpkg.com/suffix-thumb/builds/suffix-thumb.min.js">
-    <img src="https://badge-size.herokuapp.com/spencermountain/compromise/master/plugins/ngrams/builds/suffix-thumb.min.js" />
+    <img src="https://badge-size.herokuapp.com/spencermountain/suffix-thumb/master/builds/suffix-thumb.min.js" />
   </a>
 
    <div align="center">
@@ -30,18 +30,17 @@ The assumption is that a word's _suffix_ is the most changeable part of a word.
 ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
 ```js
-const thumb = require('suffix-thumb')
+const { find, convert } = require('suffix-thumb')
 
 const pairs = [
   ['walk', 'walked'],
   ['talk', 'talked'],
   ['go', 'went'],
 ]
-let res = thumb(pairs)
+let model = find(pairs)
 /* { rules: [ ['alk', 'alked'] ],
-    exceptions: {},
+    exceptions: {go:'went'},
     coverage: 0.66,
-    remaining: [ ['go', 'went'] ] 
 }*/
 
 const pairs = [
@@ -51,7 +50,7 @@ const pairs = [
   ['snafoo', 'snabar'],
   ['poofoo', 'poobar'],
 ]
-let res = thumb(pairs)
+let model = find(pairs)
 /*
   { 
     rules: [ 
@@ -62,6 +61,9 @@ let res = thumb(pairs)
     percent: 100 
   }
 */
+
+let out = convert('snafoo', model)
+// 'snabar'
 ```
 
 ## How it works
@@ -76,8 +78,6 @@ it then runs the patters on the dataset, to get a score, and any exceptions.
 
 There may be wordlists with no helpful patterns.
 
-## See also
-
-- [nlp-thumb](https://github.com/nlp-compromise/thumb) - a classifier by word-suffix
+Ideally, you should be able to take a list of word-pairs, create a model for them, and then delete the 2nd half of the word pairs.
 
 MIT

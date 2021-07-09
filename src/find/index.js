@@ -38,9 +38,9 @@ const postProcess = function (res, inputSize) {
   // sort rules results
   res.rules = res.rules.sort((a, b) => {
     if (a[0].length > b[0].length) {
-      return -1
-    } else if (a[0].length < b[0].length) {
       return 1
+    } else if (a[0].length < b[0].length) {
+      return -1
     }
     return 0
   })
@@ -55,14 +55,19 @@ const wrapper = function (pairs) {
     exceptions: [],
   }
   let found
-  for (let i = 0; i < 10; i += 1) {
-    found = thumb(pairs)
-    res.rules = res.rules.concat(found.rules)
-    pairs = found.remaining.concat(Object.entries(found.exceptions))
-    if (found.rules.length === 0) {
-      break
-    }
-  }
+  // for (let i = 0; i < 2; i += 1) {
+  found = thumb(pairs)
+  res.rules = res.rules.concat(found.rules)
+  pairs = found.remaining.concat(Object.entries(found.exceptions))
+  // pairs.forEach((pair) => {
+  //   if (pair[0] === 'abolir') {
+  //     console.log(i, pair)
+  //   }
+  // })
+  // if (found.rules.length === 0) {
+  //   break
+  // }
+  // }
   res.exceptions = found.remaining.concat(Object.entries(found.exceptions))
   res = postProcess(res, inputSize)
   return res
