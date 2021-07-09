@@ -215,9 +215,7 @@
     arr.forEach(function (o, i) {
       var downstream = arr.slice(i + 1, arr.length);
       downstream.forEach(function (d) {
-        if (d.from.endsWith(o.from) && Object.keys(d.exceptions).length === 0) {
-          // console.log(d)
-          // console.log(o.from + '  #' + i + '  ->    #' + ' ' + d.from)
+        if (d.from.endsWith(o.from)) {
           redundant[d.from] = true;
         }
       });
@@ -288,7 +286,7 @@
     };
   };
 
-  var thumb = function thumb(pairs) {
+  var find = function find(pairs) {
     pairs = pairs.filter(function (a) {
       return a && a[0] && a[1];
     }); // look at all patterns
@@ -306,7 +304,7 @@
 
   var percent = function percent(part, total) {
     var num = part / total;
-    num = Math.round(num * 10) / 10;
+    num = Math.round(num * 1000) / 1000;
     return num;
   };
 
@@ -324,9 +322,9 @@
 
     res.rules = res.rules.sort(function (a, b) {
       if (a[0].length > b[0].length) {
-        return 1;
-      } else if (a[0].length < b[0].length) {
         return -1;
+      } else if (a[0].length < b[0].length) {
+        return 1;
       }
 
       return 0;
@@ -337,24 +335,9 @@
 
   var wrapper = function wrapper(pairs) {
     var inputSize = pairs.length;
-    var res = {
-      rules: [],
-      exceptions: []
-    };
-    var found; // for (let i = 0; i < 2; i += 1) {
-
-    found = thumb(pairs);
-    res.rules = res.rules.concat(found.rules);
-    pairs = found.remaining.concat(Object.entries(found.exceptions)); // pairs.forEach((pair) => {
-    //   if (pair[0] === 'abolir') {
-    //     console.log(i, pair)
-    //   }
-    // })
-    // if (found.rules.length === 0) {
-    //   break
-    // }
-    // }
-
+    var res = {};
+    var found = find(pairs);
+    res.rules = found.rules || [];
     res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
     res = postProcess(res, inputSize);
     return res;

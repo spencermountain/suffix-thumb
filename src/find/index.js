@@ -4,7 +4,7 @@ import rank from './03-rank.js'
 import compress from './04-compress.js'
 import format from './05-format.js'
 
-const thumb = function (pairs) {
+const find = function (pairs) {
   pairs = pairs.filter((a) => a && a[0] && a[1])
   // look at all patterns
   const suffixes = produce(pairs)
@@ -20,7 +20,7 @@ const thumb = function (pairs) {
 
 const percent = (part, total) => {
   let num = part / total
-  num = Math.round(num * 10) / 10
+  num = Math.round(num * 1000) / 1000
   return num
 }
 
@@ -38,9 +38,9 @@ const postProcess = function (res, inputSize) {
   // sort rules results
   res.rules = res.rules.sort((a, b) => {
     if (a[0].length > b[0].length) {
-      return 1
-    } else if (a[0].length < b[0].length) {
       return -1
+    } else if (a[0].length < b[0].length) {
+      return 1
     }
     return 0
   })
@@ -50,24 +50,9 @@ const postProcess = function (res, inputSize) {
 
 const wrapper = function (pairs) {
   let inputSize = pairs.length
-  let res = {
-    rules: [],
-    exceptions: [],
-  }
-  let found
-  // for (let i = 0; i < 2; i += 1) {
-  found = thumb(pairs)
-  res.rules = res.rules.concat(found.rules)
-  pairs = found.remaining.concat(Object.entries(found.exceptions))
-  // pairs.forEach((pair) => {
-  //   if (pair[0] === 'abolir') {
-  //     console.log(i, pair)
-  //   }
-  // })
-  // if (found.rules.length === 0) {
-  //   break
-  // }
-  // }
+  let res = {}
+  let found = find(pairs)
+  res.rules = found.rules || []
   res.exceptions = found.remaining.concat(Object.entries(found.exceptions))
   res = postProcess(res, inputSize)
   return res

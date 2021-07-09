@@ -1,6 +1,5 @@
 const compress = function (arr) {
   let redundant = {}
-
   // remove any redundant downstream
   arr.forEach((o, i) => {
     let downstream = arr.slice(i + 1, arr.length)
