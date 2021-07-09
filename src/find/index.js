@@ -1,8 +1,8 @@
-const produce = require('./01-getAll')
-const findBest = require('./02-findBest')
-const rank = require('./03-rank')
-const compress = require('./04-compress')
-const format = require('./05-format')
+import produce from './01-getAll.js'
+import findBest from './02-findBest.js'
+import rank from './03-rank.js'
+import compress from './04-compress.js'
+import format from './05-format.js'
 
 const thumb = function (pairs) {
   pairs = pairs.filter((a) => a && a[0] && a[1])
@@ -72,4 +72,4 @@ const wrapper = function (pairs) {
   res = postProcess(res, inputSize)
   return res
 }
-module.exports = wrapper
+export default wrapper

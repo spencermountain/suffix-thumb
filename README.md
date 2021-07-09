@@ -30,7 +30,7 @@ The assumption is that a word's _suffix_ is the most changeable part of a word.
 ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
 ```js
-const { find, convert } = require('suffix-thumb')
+import { find, convert } from 'suffix-thumb'
 
 const pairs = [
   ['walk', 'walked'],

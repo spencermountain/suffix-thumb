@@ -41,4 +41,4 @@ const rank = function (arr, pairs) {
   })
   return scored
 }
-module.exports = rank
+export default rank

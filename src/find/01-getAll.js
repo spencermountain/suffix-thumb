@@ -28,4 +28,4 @@ const getAll = function (arr) {
   return suffixes
 }
 
-module.exports = getAll
+export default getAll

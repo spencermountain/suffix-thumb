@@ -47,4 +47,4 @@ const format = function (rules, pairs) {
     remaining: untouched,
   }
 }
-module.exports = format
+export default format

@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   ['abaisser', 'abaisserai'],
   ['abandonner', 'abandonnerai'],
   ['abasourdir', 'abasourdirai'],

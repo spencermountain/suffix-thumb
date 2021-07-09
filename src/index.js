@@ -1,7 +1,4 @@
-const convert = require('./convert')
-const find = require('./find')
+import convert from './convert/index.js'
+import find from './find/index.js'
 
-module.exports = {
-  find,
-  convert,
-}
+export { find, convert }

@@ -1,23 +1,23 @@
 {
   "name": "suffix-thumb",
   "description": "learn transformations between two sets of words",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
-  "main": "./builds/suffix-thumb.js",
+  "main": "./src/index.mjs",
   "unpkg": "./builds/suffix-thumb.min.js",
   "module": "./builds/suffix-thumb.mjs",
   "types": "types/index.d.ts",
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
-      "import": "./builds/suffix-thumb.mjs",
+      "import": "./src/index.mjs",
       "require": "./builds/suffix-thumb.js"
     },
     "./find": {
-      "require": "./src/find/index.js"
+      "import": "./src/find/index.js"
     },
     "./convert": {
-      "require": "./src/convert/index.js"
+      "import": "./src/convert/index.js"
     }
   },
   "repository": {
@@ -25,8 +25,8 @@
     "url": "git://github.com/spencermountain/suffix-thumb.git"
   },
   "scripts": {
-    "test": "tape \"./test/**/*.test.js\" | tap-dancer  --color always",
-    "testb": "TESTENV=prod tape \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "test": "tape-es \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "testb": "TESTENV=prod tape-es \"./test/**/*.test.js\" | tap-dancer  --color always",
     "watch": "amble ./scratch.js",
     "build": "rollup -c --silent"
   },
@@ -58,7 +58,8 @@
     "rollup-plugin-filesize-check": "0.0.1",
     "rollup-plugin-terser": "7.0.2",
     "tap-dancer": "0.3.4",
-    "tape": "5.2.2"
+    "tape": "5.2.2",
+    "tape-es": "1.2.15"
   },
   "license": "MIT"
 }

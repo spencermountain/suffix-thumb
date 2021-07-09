@@ -13,4 +13,4 @@ const convert = function (word, model) {
   }
   return null
 }
-module.exports = convert
+export default convert

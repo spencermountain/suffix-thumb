@@ -1,5 +1,5 @@
-const test = require('tape')
-const thumb = require('../src').find
+import test from 'tape'
+import { find } from '../src/index.js'
 
 test('one rule:', function (t) {
   const words = [
@@ -7,7 +7,7 @@ test('one rule:', function (t) {
     ['smoke', 'smoking'],
     ['talk', 'talking'],
   ]
-  let res = thumb(words)
+  let res = find(words)
   t.equal(res.rules.length, 1, 'one rule')
   t.equal(res.rules[0][0], 'lk', 'lk')
   t.equal(res.rules[0][1], 'lking', 'lking')
@@ -22,7 +22,7 @@ test('two rules:', function (t) {
     ['create', 'creating'],
     ['talk', 'talking'],
   ]
-  let res = thumb(words)
+  let res = find(words)
   t.equal(res.rules.length, 2, 'two rules')
   t.equal(res.rules[1][0], 'lk', 'lk')
   t.equal(res.rules[0][0], 'e', 'e')
@@ -36,7 +36,7 @@ test('find append:', function (t) {
     ['wait', 'waiting'],
     ['sing', 'singing'],
   ]
-  let res = thumb(words)
+  let res = find(words)
   t.equal(res.rules.length, 1, 'one rules')
   t.equal(res.rules[0][0], '', 'empty from prefix')
   t.equal(res.rules[0][1], 'ing', 'ing')

@@ -1,6 +1,6 @@
-const test = require('tape')
-const { find, convert } = require('../src')
-const future = require('./data/future-simple.js')
+import test from 'tape'
+import { find, convert } from '../src/index.js'
+import future from './data/future-simple.js'
 
 test('future tense:', function (t) {
   let model = find(future)

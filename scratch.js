@@ -1,5 +1,5 @@
-const { find, convert } = require('./src/index.js')
-const pairs = require('./test/data/future-simple')
+import { find, convert } from './src/index.js'
+import pairs from './test/data/future-simple.js'
 
 let model = find(pairs)
 // console.log(model)

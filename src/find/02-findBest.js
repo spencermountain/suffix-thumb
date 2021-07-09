@@ -37,4 +37,4 @@ const findBest = function (suffixes) {
   return good
 }
 
-module.exports = findBest
+export default findBest
