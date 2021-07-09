@@ -1,4 +1,20 @@
-/* suffix-thumb 0.2.0 MIT */
+/* suffix-thumb 1.0.0 MIT */
+const convert = function (word, model) {
+  // check list of irregulars
+  if (model.exceptions.hasOwnProperty(word)) {
+    return model.exceptions[word]
+  }
+  // try suffix rules
+  for (let i = 0; i < model.rules.length; i += 1) {
+    let suffix = model.rules[i][0];
+    if (word.endsWith(suffix)) {
+      let reg = new RegExp(suffix + '$');
+      return word.replace(reg, model.rules[i][1])
+    }
+  }
+  return null
+};
+
 const getSuffixes = function (str = '') {
   let list = [];
   for (let i = 4; i >= 0; i -= 1) {
@@ -29,8 +45,6 @@ const getAll = function (arr) {
   return suffixes
 };
 
-var _01GetAll = getAll;
-
 const topChange = function (obj, from) {
   let keys = Object.keys(obj);
   let arr = keys.map((to) => {
@@ -51,7 +65,7 @@ const topChange = function (obj, from) {
   return arr
 };
 
-const findBest$1 = function (suffixes) {
+const findBest = function (suffixes) {
   let good = [];
   Object.keys(suffixes).forEach((left) => {
     let top = topChange(suffixes[left], left);
@@ -69,8 +83,6 @@ const findBest$1 = function (suffixes) {
   });
   return good
 };
-
-var _02FindBest = findBest$1;
 
 const getScores = function (arr, pairs) {
   return arr.map((obj) => {
@@ -100,7 +112,7 @@ const getScores = function (arr, pairs) {
   })
 };
 
-const rank$1 = function (arr, pairs) {
+const rank = function (arr, pairs) {
   let scored = getScores(arr, pairs);
   scored = scored.filter((o) => {
     return o.yes > 1 && o.yes > o.no
@@ -115,16 +127,16 @@ const rank$1 = function (arr, pairs) {
   });
   return scored
 };
-var _03Rank = rank$1;
 
-const compress$1 = function (arr) {
+const compress = function (arr) {
   let redundant = {};
   // remove any redundant downstream
   arr.forEach((o, i) => {
     let downstream = arr.slice(i + 1, arr.length);
     downstream.forEach((d) => {
-      if (d.from.endsWith(o.from)) {
-        // console.log(o.from + '  #' + i + '  ->    #' + k + ' ' + d.from)
+      if (d.from.endsWith(o.from) && Object.keys(d.exceptions).length === 0) {
+        // console.log(d)
+        // console.log(o.from + '  #' + i + '  ->    #' + ' ' + d.from)
         redundant[d.from] = true;
       }
     });
@@ -135,7 +147,6 @@ const compress$1 = function (arr) {
   });
   return arr
 };
-var _04Compress = compress$1;
 
 function reverse(str) {
   return str.split('').reverse().join('')
@@ -161,7 +172,7 @@ const fmtRules = function (rules) {
   return rules.map((o) => [o.from, o.to, o.yes])
 };
 
-const format$1 = function (rules, pairs) {
+const format = function (rules, pairs) {
   let exceptions = {};
   rules.forEach((rule) => {
     Object.assign(exceptions, rule.exceptions);
@@ -186,17 +197,11 @@ const format$1 = function (rules, pairs) {
     remaining: untouched,
   }
 };
-var _05Format = format$1;
-
-const produce = _01GetAll;
-const findBest = _02FindBest;
-const rank = _03Rank;
-const compress = _04Compress;
-const format = _05Format;
 
 const thumb = function (pairs) {
+  pairs = pairs.filter((a) => a && a[0] && a[1]);
   // look at all patterns
-  const suffixes = produce(pairs);
+  const suffixes = getAll(pairs);
   // look for the greatest patterns
   let best = findBest(suffixes);
   // run pattern against the pairs
@@ -206,6 +211,60 @@ const thumb = function (pairs) {
   // nice result format
   return format(rules, pairs)
 };
-var src = thumb;
 
-export default src;
+const percent = (part, total) => {
+  let num = part / total;
+  num = Math.round(num * 10) / 10;
+  return num
+};
+
+const postProcess = function (res, inputSize) {
+  let count = 0;
+  res.rules = res.rules.map((a) => {
+    count += a[2];
+    return a.slice(0, 2)
+  });
+  // convert exceptions to an object
+  res.exceptions = res.exceptions.reduce((h, a) => {
+    h[a[0]] = a[1];
+    return h
+  }, {});
+  // sort rules results
+  res.rules = res.rules.sort((a, b) => {
+    if (a[0].length > b[0].length) {
+      return 1
+    } else if (a[0].length < b[0].length) {
+      return -1
+    }
+    return 0
+  });
+  res.coverage = percent(count, inputSize);
+  return res
+};
+
+const wrapper = function (pairs) {
+  let inputSize = pairs.length;
+  let res = {
+    rules: [],
+    exceptions: [],
+  };
+  let found;
+  // for (let i = 0; i < 2; i += 1) {
+  found = thumb(pairs);
+  res.rules = res.rules.concat(found.rules);
+  pairs = found.remaining.concat(Object.entries(found.exceptions));
+  // pairs.forEach((pair) => {
+  //   if (pair[0] === 'abolir') {
+  //     console.log(i, pair)
+  //   }
+  // })
+  // if (found.rules.length === 0) {
+  //   break
+  // }
+  // }
+  res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
+  res = postProcess(res, inputSize);
+  return res
+};
+
+export { convert, wrapper as find };

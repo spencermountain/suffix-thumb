@@ -3,14 +3,14 @@
   "description": "learn transformations between two sets of words",
   "version": "1.0.0",
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
-  "main": "./src/index.mjs",
+  "main": "./builds/suffix-thumb.mjs",
   "unpkg": "./builds/suffix-thumb.min.js",
   "module": "./builds/suffix-thumb.mjs",
   "types": "types/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/index.mjs",
+      "import": "./builds/suffix-thumb.mjs",
       "require": "./builds/suffix-thumb.js"
     },
     "./find": {

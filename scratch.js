@@ -2,7 +2,7 @@ import { find, convert } from './src/index.js'
 import pairs from './test/data/future-simple.js'
 
 let model = find(pairs)
-// console.log(model)
+console.log(model)
 console.log(model.rules.length, 'rules')
 console.log(Object.keys(model.exceptions).length, 'exceptions')
 

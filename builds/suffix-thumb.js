@@ -1,9 +1,28 @@
-/* suffix-thumb 0.2.0 MIT */
+/* suffix-thumb 1.0.0 MIT */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.suffixThumb = factory());
-}(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}));
+}(this, (function (exports) { 'use strict';
+
+  var convert = function convert(word, model) {
+    // check list of irregulars
+    if (model.exceptions.hasOwnProperty(word)) {
+      return model.exceptions[word];
+    } // try suffix rules
+
+
+    for (var i = 0; i < model.rules.length; i += 1) {
+      var suffix = model.rules[i][0];
+
+      if (word.endsWith(suffix)) {
+        var reg = new RegExp(suffix + '$');
+        return word.replace(reg, model.rules[i][1]);
+      }
+    }
+
+    return null;
+  };
 
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
@@ -102,8 +121,6 @@
     return suffixes;
   };
 
-  var _01GetAll = getAll;
-
   var topChange = function topChange(obj, from) {
     var keys = Object.keys(obj);
     var arr = keys.map(function (to) {
@@ -125,7 +142,7 @@
     return arr;
   };
 
-  var findBest$1 = function findBest(suffixes) {
+  var findBest = function findBest(suffixes) {
     var good = [];
     Object.keys(suffixes).forEach(function (left) {
       var top = topChange(suffixes[left], left);
@@ -145,8 +162,6 @@
     });
     return good;
   };
-
-  var _02FindBest = findBest$1;
 
   var getScores = function getScores(arr, pairs) {
     return arr.map(function (obj) {
@@ -177,7 +192,7 @@
     });
   };
 
-  var rank$1 = function rank(arr, pairs) {
+  var rank = function rank(arr, pairs) {
     var scored = getScores(arr, pairs);
     scored = scored.filter(function (o) {
       return o.yes > 1 && o.yes > o.no;
@@ -194,16 +209,15 @@
     return scored;
   };
 
-  var _03Rank = rank$1;
-
-  var compress$1 = function compress(arr) {
+  var compress = function compress(arr) {
     var redundant = {}; // remove any redundant downstream
 
     arr.forEach(function (o, i) {
       var downstream = arr.slice(i + 1, arr.length);
       downstream.forEach(function (d) {
-        if (d.from.endsWith(o.from)) {
-          // console.log(o.from + '  #' + i + '  ->    #' + k + ' ' + d.from)
+        if (d.from.endsWith(o.from) && Object.keys(d.exceptions).length === 0) {
+          // console.log(d)
+          // console.log(o.from + '  #' + i + '  ->    #' + ' ' + d.from)
           redundant[d.from] = true;
         }
       });
@@ -214,8 +228,6 @@
     });
     return arr;
   };
-
-  var _04Compress = compress$1;
 
   function reverse(str) {
     return str.split('').reverse().join('');
@@ -246,7 +258,7 @@
     });
   };
 
-  var format$1 = function format(rules, pairs) {
+  var format = function format(rules, pairs) {
     var exceptions = {};
     rules.forEach(function (rule) {
       Object.assign(exceptions, rule.exceptions);
@@ -276,17 +288,12 @@
     };
   };
 
-  var _05Format = format$1;
-
-  var produce = _01GetAll;
-  var findBest = _02FindBest;
-  var rank = _03Rank;
-  var compress = _04Compress;
-  var format = _05Format;
-
   var thumb = function thumb(pairs) {
-    // look at all patterns
-    var suffixes = produce(pairs); // look for the greatest patterns
+    pairs = pairs.filter(function (a) {
+      return a && a[0] && a[1];
+    }); // look at all patterns
+
+    var suffixes = getAll(pairs); // look for the greatest patterns
 
     var best = findBest(suffixes); // run pattern against the pairs
 
@@ -297,8 +304,65 @@
     return format(rules, pairs);
   };
 
-  var src = thumb;
+  var percent = function percent(part, total) {
+    var num = part / total;
+    num = Math.round(num * 10) / 10;
+    return num;
+  };
 
-  return src;
+  var postProcess = function postProcess(res, inputSize) {
+    var count = 0;
+    res.rules = res.rules.map(function (a) {
+      count += a[2];
+      return a.slice(0, 2);
+    }); // convert exceptions to an object
+
+    res.exceptions = res.exceptions.reduce(function (h, a) {
+      h[a[0]] = a[1];
+      return h;
+    }, {}); // sort rules results
+
+    res.rules = res.rules.sort(function (a, b) {
+      if (a[0].length > b[0].length) {
+        return 1;
+      } else if (a[0].length < b[0].length) {
+        return -1;
+      }
+
+      return 0;
+    });
+    res.coverage = percent(count, inputSize);
+    return res;
+  };
+
+  var wrapper = function wrapper(pairs) {
+    var inputSize = pairs.length;
+    var res = {
+      rules: [],
+      exceptions: []
+    };
+    var found; // for (let i = 0; i < 2; i += 1) {
+
+    found = thumb(pairs);
+    res.rules = res.rules.concat(found.rules);
+    pairs = found.remaining.concat(Object.entries(found.exceptions)); // pairs.forEach((pair) => {
+    //   if (pair[0] === 'abolir') {
+    //     console.log(i, pair)
+    //   }
+    // })
+    // if (found.rules.length === 0) {
+    //   break
+    // }
+    // }
+
+    res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
+    res = postProcess(res, inputSize);
+    return res;
+  };
+
+  exports.convert = convert;
+  exports.find = wrapper;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));

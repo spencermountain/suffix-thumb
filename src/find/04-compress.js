@@ -1,12 +1,11 @@
 const compress = function (arr) {
   let redundant = {}
+
   // remove any redundant downstream
   arr.forEach((o, i) => {
     let downstream = arr.slice(i + 1, arr.length)
     downstream.forEach((d) => {
-      if (d.from.endsWith(o.from) && Object.keys(d.exceptions).length === 0) {
-        // console.log(d)
-        // console.log(o.from + '  #' + i + '  ->    #' + ' ' + d.from)
+      if (d.from.endsWith(o.from)) {
         redundant[d.from] = true
       }
     })
