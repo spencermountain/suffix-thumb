@@ -1,5 +1,5 @@
 const test = require('tape')
-const thumb = require('../src')
+const thumb = require('../src').find
 
 test('one rule:', function (t) {
   const words = [
@@ -40,6 +40,6 @@ test('find append:', function (t) {
   t.equal(res.rules.length, 1, 'one rules')
   t.equal(res.rules[0][0], '', 'empty from prefix')
   t.equal(res.rules[0][1], 'ing', 'ing')
-  t.ok(res.coverage === 1, 'coverage is good')
+  t.equal(res.coverage, 1, 'coverage is good')
   t.end()
 })

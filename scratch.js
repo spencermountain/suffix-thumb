@@ -1,13 +1,12 @@
-const thumb = require('./src')
-// const pairs = []
-const pairs = require('./tmp')
+const { find, convert } = require('./src/index.js')
+const pairs = require('./test/data/future-simple')
 
-let res = thumb(pairs)
-console.log(res)
-/* {
-    rules: [ ['lk', 'lking'], ['e', 'ing'] ],
-    exceptions: {},
-    coverage: 0.83,
-    remaining: [ ['allow', 'allowing'] ] 
+let model = find(pairs)
+console.log(model)
+
+pairs.forEach((a) => {
+  let created = convert(a[0], model)
+  if (created !== a[1]) {
+    console.log(a)
   }
-*/
+})
