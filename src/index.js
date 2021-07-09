@@ -5,6 +5,7 @@ const compress = require('./04-compress')
 const format = require('./05-format')
 
 const thumb = function (pairs) {
+  pairs = pairs.filter((a) => a && a[0] && a[1])
   // look at all patterns
   const suffixes = produce(pairs)
   // look for the greatest patterns

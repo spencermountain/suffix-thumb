@@ -1,5 +1,4 @@
 import commonjs from '@rollup/plugin-commonjs'
-import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
 import babel from 'rollup-plugin-babel'
@@ -19,16 +18,7 @@ export default [
         banner: banner,
       },
     ],
-    plugins: [
-      resolve(),
-      json(),
-      commonjs(),
-      babel({
-        babelrc: false,
-        presets: ['@babel/preset-env'],
-      }),
-      sizeCheck(),
-    ],
+    plugins: [resolve(), commonjs(), sizeCheck()],
   },
   {
     input: 'src/index.js',
@@ -36,14 +26,12 @@ export default [
       {
         file: `builds/${name}.js`,
         format: 'umd',
-        sourcemap: true,
         name: 'suffixThumb',
         banner: banner,
       },
     ],
     plugins: [
       resolve(),
-      json(),
       commonjs(),
       babel({
         babelrc: false,
@@ -63,7 +51,6 @@ export default [
     ],
     plugins: [
       resolve(),
-      json(),
       commonjs(),
       babel({
         babelrc: false,

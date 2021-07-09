@@ -1,4 +1,4 @@
-const getSuffixes = function (str) {
+const getSuffixes = function (str = '') {
   let list = []
   for (let i = 4; i >= 0; i -= 1) {
     if (str.length - 1 <= i) {

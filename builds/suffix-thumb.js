@@ -1,8 +1,8 @@
-/* suffix-thumb 0.1.0 MIT */
+/* suffix-thumb 0.2.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.suffixThumb = factory());
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.suffixThumb = factory());
 }(this, (function () { 'use strict';
 
   function _slicedToArray(arr, i) {
@@ -14,14 +14,17 @@
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
     var _arr = [];
     var _n = true;
     var _d = false;
-    var _e = undefined;
+
+    var _s, _e;
 
     try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
         _arr.push(_s.value);
 
         if (i && _arr.length === i) break;
@@ -45,7 +48,7 @@
     if (typeof o === "string") return _arrayLikeToArray(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
   }
 
@@ -61,7 +64,8 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  var getSuffixes = function getSuffixes(str) {
+  var getSuffixes = function getSuffixes() {
+    var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     var list = [];
 
     for (var i = 4; i >= 0; i -= 1) {
@@ -121,7 +125,7 @@
     return arr;
   };
 
-  var findBest = function findBest(suffixes) {
+  var findBest$1 = function findBest(suffixes) {
     var good = [];
     Object.keys(suffixes).forEach(function (left) {
       var top = topChange(suffixes[left], left);
@@ -142,7 +146,7 @@
     return good;
   };
 
-  var _02FindBest = findBest;
+  var _02FindBest = findBest$1;
 
   var getScores = function getScores(arr, pairs) {
     return arr.map(function (obj) {
@@ -173,7 +177,7 @@
     });
   };
 
-  var rank = function rank(arr, pairs) {
+  var rank$1 = function rank(arr, pairs) {
     var scored = getScores(arr, pairs);
     scored = scored.filter(function (o) {
       return o.yes > 1 && o.yes > o.no;
@@ -190,9 +194,9 @@
     return scored;
   };
 
-  var _03Rank = rank;
+  var _03Rank = rank$1;
 
-  var compress = function compress(arr) {
+  var compress$1 = function compress(arr) {
     var redundant = {}; // remove any redundant downstream
 
     arr.forEach(function (o, i) {
@@ -211,7 +215,7 @@
     return arr;
   };
 
-  var _04Compress = compress;
+  var _04Compress = compress$1;
 
   function reverse(str) {
     return str.split('').reverse().join('');
@@ -242,7 +246,7 @@
     });
   };
 
-  var format = function format(rules, pairs) {
+  var format$1 = function format(rules, pairs) {
     var exceptions = {};
     rules.forEach(function (rule) {
       Object.assign(exceptions, rule.exceptions);
@@ -272,19 +276,25 @@
     };
   };
 
-  var _05Format = format;
+  var _05Format = format$1;
+
+  var produce = _01GetAll;
+  var findBest = _02FindBest;
+  var rank = _03Rank;
+  var compress = _04Compress;
+  var format = _05Format;
 
   var thumb = function thumb(pairs) {
     // look at all patterns
-    var suffixes = _01GetAll(pairs); // look for the greatest patterns
+    var suffixes = produce(pairs); // look for the greatest patterns
 
-    var best = _02FindBest(suffixes); // run pattern against the pairs
+    var best = findBest(suffixes); // run pattern against the pairs
 
-    var rules = _03Rank(best, pairs); // remove duplicates
+    var rules = rank(best, pairs); // remove duplicates
 
-    rules = _04Compress(rules); // nice result format
+    rules = compress(rules); // nice result format
 
-    return _05Format(rules, pairs);
+    return format(rules, pairs);
   };
 
   var src = thumb;
@@ -292,4 +302,3 @@
   return src;
 
 })));
-//# sourceMappingURL=suffix-thumb.js.map
