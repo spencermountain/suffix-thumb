@@ -17,4 +17,54 @@ const thumb = function (pairs) {
   // nice result format
   return format(rules, pairs)
 }
-module.exports = thumb
+
+const percent = (part, total) => {
+  let num = (part / total) * 100
+  num = Math.round(num * 10) / 10
+  return num
+}
+
+const postProcess = function (res, inputSize) {
+  let count = 0
+  res.rules = res.rules.map((a) => {
+    count += a[2]
+    return a.slice(0, 2)
+  })
+  // convert exceptions to an object
+  res.exceptions = res.exceptions.reduce((h, a) => {
+    h[a[0]] = a[1]
+    return h
+  }, {})
+  // sort rules results
+  res.rules = res.rules.sort((a, b) => {
+    if (a[0].length > b[0].length) {
+      return -1
+    } else if (a[0].length < b[0].length) {
+      return 1
+    }
+    return 0
+  })
+  res.coverage = percent(count, inputSize)
+  return res
+}
+
+const wrapper = function (pairs) {
+  let inputSize = pairs.length
+  let res = {
+    rules: [],
+    exceptions: [],
+  }
+  let found
+  for (let i = 0; i < 10; i += 1) {
+    found = thumb(pairs)
+    res.rules = res.rules.concat(found.rules)
+    pairs = found.remaining.concat(Object.entries(found.exceptions))
+    if (found.rules.length === 0) {
+      break
+    }
+  }
+  res.exceptions = found.remaining.concat(Object.entries(found.exceptions))
+  res = postProcess(res, inputSize)
+  return res
+}
+module.exports = wrapper

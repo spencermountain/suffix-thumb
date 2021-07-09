@@ -5,7 +5,7 @@ const compress = function (arr) {
     let downstream = arr.slice(i + 1, arr.length)
     downstream.forEach((d) => {
       if (d.from.endsWith(o.from)) {
-        // console.log(o.from + '  #' + i + '  ->    #' + k + ' ' + d.from)
+        // console.log(o.from + '  #' + i + '  ->    #' + ' ' + d.from)
         redundant[d.from] = true
       }
     })
