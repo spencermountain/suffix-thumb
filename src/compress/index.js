@@ -1,3 +1,4 @@
+// index rules by last-char
 const pressRules = function (rules) {
   let byChar = {}
   rules.forEach((a) => {
@@ -9,7 +10,8 @@ const pressRules = function (rules) {
   return byChar
 }
 
-const overlap = (from, to) => {
+// longest common prefix
+const findOverlap = (from, to) => {
   let all = []
   for (let i = 0; i < from.length; i += 1) {
     if (from[i] === to[i]) {
@@ -21,11 +23,12 @@ const overlap = (from, to) => {
   return all.join('')
 }
 
+// remove redundancies from key-val pairs
 const pressObj = function (obj) {
   let res = {}
   Object.keys(obj).forEach((k) => {
     let val = obj[k]
-    let prefix = overlap(k, val)
+    let prefix = findOverlap(k, val)
     if (prefix.length < 2) {
       res[k] = val
       return
