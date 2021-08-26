@@ -8,9 +8,9 @@ test('one rule:', function (t) {
     ['talk', 'talking'],
   ]
   let res = find(words)
-  t.equal(res.rules.length, 1, 'one rule')
-  t.equal(res.rules[0][0], 'lk', 'lk')
-  t.equal(res.rules[0][1], 'lking', 'lking')
+  t.equal(res.rules.k.length, 1, 'one rule')
+  t.equal(res.rules.k[0][0], 'lk', 'lk')
+  t.equal(res.rules.k[0][1], 'lking', 'lking')
   t.ok(res.coverage > 0.6, 'coverage is good')
   t.end()
 })
@@ -23,9 +23,9 @@ test('two rules:', function (t) {
     ['talk', 'talking'],
   ]
   let res = find(words)
-  t.equal(res.rules.length, 2, 'two rules')
-  t.equal(res.rules[0][0], 'lk', 'lk')
-  t.equal(res.rules[1][0], 'e', 'e')
+  // t.equal(res.rules.k.length, 2, 'two rules')
+  t.equal(res.rules.k[0][0], 'lk', 'lk')
+  t.equal(res.rules.e[0][0], 'e', 'e')
   t.ok(res.coverage > 0.6, 'coverage is good')
   t.end()
 })
@@ -37,9 +37,9 @@ test('find append:', function (t) {
     ['sing', 'singing'],
   ]
   let res = find(words)
-  t.equal(res.rules.length, 1, 'one rules')
-  t.equal(res.rules[0][0], '', 'empty from prefix')
-  t.equal(res.rules[0][1], 'ing', 'ing')
+  t.equal(res.rules[''].length, 1, 'one rules')
+  // t.equal(res.rules.k[0][0], '', 'empty from prefix')
+  t.equal(res.rules[''][0][1], 'ing', 'ing')
   t.equal(res.coverage, 1, 'coverage is good')
   t.end()
 })

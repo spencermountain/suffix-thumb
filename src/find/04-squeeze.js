@@ -1,4 +1,4 @@
-const compress = function (arr) {
+const squeeze = function (arr) {
   let redundant = {}
   // remove any redundant downstream
   arr.forEach((o, i) => {
@@ -15,4 +15,4 @@ const compress = function (arr) {
   })
   return arr
 }
-export default compress
+export default squeeze
