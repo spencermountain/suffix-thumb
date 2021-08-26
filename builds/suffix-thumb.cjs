@@ -1,23 +1,65 @@
-/* suffix-thumb 1.0.0 MIT */
+/* suffix-thumb 2.0.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}));
 }(this, (function (exports) { 'use strict';
 
+  var prefix = /^.([0-9]+)/;
+
+  var isArray = function isArray(arr) {
+    return Object.prototype.toString.call(arr) === '[object Array]';
+  }; // handle compressed form of key-value pair
+
+
+  var getKeyVal = function getKeyVal(word, model) {
+    var val = model.exceptions[word];
+    var m = val.match(prefix);
+
+    if (m === null) {
+      // return not compressed form
+      return model.exceptions[word];
+    } // uncompress it
+
+
+    var num = Number(m[1]) || 0;
+    var pre = word.substr(0, num);
+    return pre + val.replace(prefix, '');
+  }; // get suffix-rules according to last char of word
+
+
+  var getRules = function getRules(word, model) {
+    // support old uncompressed format
+    if (isArray(model.rules)) {
+      return model.rules;
+    }
+
+    var _char = word[word.length - 1];
+    var rules = model.rules[_char] || [];
+
+    if (rules.length === 0) {
+      // do we have a generic suffix?
+      rules = model.rules[''] || rules;
+    }
+
+    return rules;
+  };
+
   var convert = function convert(word, model) {
     // check list of irregulars
     if (model.exceptions.hasOwnProperty(word)) {
-      return model.exceptions[word];
+      return getKeyVal(word, model);
     } // try suffix rules
 
 
-    for (var i = 0; i < model.rules.length; i += 1) {
-      var suffix = model.rules[i][0];
+    var rules = getRules(word, model);
+
+    for (var i = 0; i < rules.length; i += 1) {
+      var suffix = rules[i][0];
 
       if (word.endsWith(suffix)) {
         var reg = new RegExp(suffix + '$');
-        return word.replace(reg, model.rules[i][1]);
+        return word.replace(reg, rules[i][1]);
       }
     }
 
@@ -209,7 +251,7 @@
     return scored;
   };
 
-  var compress = function compress(arr) {
+  var squeeze = function squeeze(arr) {
     var redundant = {}; // remove any redundant downstream
 
     arr.forEach(function (o, i) {
@@ -286,6 +328,57 @@
     };
   };
 
+  var pressRules = function pressRules(rules) {
+    var byChar = {};
+    rules.forEach(function (a) {
+      var suff = a[0] || '';
+
+      var _char = suff[suff.length - 1] || '';
+
+      byChar[_char] = byChar[_char] || [];
+
+      byChar[_char].push(a);
+    });
+    return byChar;
+  };
+
+  var overlap = function overlap(from, to) {
+    var all = [];
+
+    for (var i = 0; i < from.length; i += 1) {
+      if (from[i] === to[i]) {
+        all.push(from[i]);
+      } else {
+        break;
+      }
+    }
+
+    return all.join('');
+  };
+
+  var pressObj = function pressObj(obj) {
+    var res = {};
+    Object.keys(obj).forEach(function (k) {
+      var val = obj[k];
+      var prefix = overlap(k, val);
+
+      if (prefix.length < 2) {
+        res[k] = val;
+        return;
+      }
+
+      var out = '.' + prefix.length + val.substr(prefix.length);
+      res[k] = out;
+    });
+    return res;
+  };
+
+  var compress = function compress(model) {
+    model.rules = pressRules(model.rules);
+    model.exceptions = pressObj(model.exceptions);
+    return model;
+  };
+
   var find = function find(pairs) {
     pairs = pairs.filter(function (a) {
       return a && a[0] && a[1];
@@ -297,7 +390,7 @@
 
     var rules = rank(best, pairs); // remove duplicates
 
-    rules = compress(rules); // nice result format
+    rules = squeeze(rules); // nice result format
 
     return format(rules, pairs);
   };
@@ -340,9 +433,11 @@
     res.rules = found.rules || [];
     res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
     res = postProcess(res, inputSize);
+    res = compress(res);
     return res;
   };
 
+  exports.compress = compress;
   exports.convert = convert;
   exports.find = wrapper;
 

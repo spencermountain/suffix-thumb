@@ -18,8 +18,9 @@ const getKeyVal = function (word, model) {
   return pre + val.replace(prefix, '')
 }
 
-// support old uncompressed format
+// get suffix-rules according to last char of word
 const getRules = function (word, model) {
+  // support old uncompressed format
   if (isArray(model.rules)) {
     return model.rules
   }

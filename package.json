@@ -1,7 +1,7 @@
 {
   "name": "suffix-thumb",
   "description": "learn transformations between two sets of words",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
   "main": "./builds/suffix-thumb.mjs",
   "unpkg": "./builds/suffix-thumb.min.js",
@@ -11,7 +11,7 @@
   "exports": {
     ".": {
       "import": "./builds/suffix-thumb.mjs",
-      "require": "./builds/suffix-thumb.js"
+      "require": "./builds/suffix-thumb.cjs"
     },
     "./find": {
       "import": "./src/find/index.js"
@@ -25,8 +25,8 @@
     "url": "git://github.com/spencermountain/suffix-thumb.git"
   },
   "scripts": {
-    "test": "tape-es \"./test/**/*.test.js\" | tap-dancer  --color always",
-    "testb": "TESTENV=prod tape-es \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "test": "tape \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "testb": "TESTENV=prod tape \"./test/**/*.test.js\" | tap-dancer  --color always",
     "watch": "amble ./scratch.js",
     "build": "rollup -c --silent"
   },
@@ -45,21 +45,20 @@
     "builds/*.js"
   ],
   "devDependencies": {
-    "@babel/core": "7.14.6",
-    "@babel/preset-env": "7.14.7",
-    "@rollup/plugin-commonjs": "19.0.0",
+    "@babel/core": "7.15.0",
+    "@babel/preset-env": "7.15.0",
+    "@rollup/plugin-commonjs": "20.0.0",
     "@rollup/plugin-json": "4.1.0",
-    "@rollup/plugin-node-resolve": "13.0.0",
+    "@rollup/plugin-node-resolve": "13.0.4",
     "amble": "1.3.0",
-    "efrt": "2.3.0",
-    "eslint": "7.30.0",
-    "rollup": "2.53.0",
+    "efrt": "2.3.2",
+    "eslint": "7.32.0",
+    "rollup": "2.56.3",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-filesize-check": "0.0.1",
     "rollup-plugin-terser": "7.0.2",
     "tap-dancer": "0.3.4",
-    "tape": "5.2.2",
-    "tape-es": "1.2.15"
+    "tape": "5.3.1"
   },
   "license": "MIT"
 }

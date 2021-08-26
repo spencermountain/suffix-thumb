@@ -38,9 +38,10 @@ const pairs = [
   ['go', 'went'],
 ]
 let model = find(pairs)
-/* { rules: [ ['alk', 'alked'] ],
-    exceptions: {go:'went'},
-    coverage: 0.66,
+/* {
+  rules: { k: [ [ 'alk', 'alked' ] ] },
+  exceptions: { go: 'went' },
+  coverage: 0.667
 }*/
 
 const pairs = [
@@ -51,15 +52,11 @@ const pairs = [
   ['poofoo', 'poobar'],
 ]
 let model = find(pairs)
-/*
-  { 
-    rules: [ 
-      [ 'foo', 'bar', 2 ],
-      [ 'il', 'el', 3 ]
-    ],
-    exceptions: {},
-    percent: 100 
-  }
+/* {
+  rules: { o: [ [ 'foo', 'bar' ] ], l: [ [ 'il', 'el' ] ] },
+  exceptions: {},
+  coverage: 1
+}
 */
 
 let out = convert('snafoo', model)

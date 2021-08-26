@@ -1,15 +1,51 @@
-/* suffix-thumb 1.0.0 MIT */
+/* suffix-thumb 2.0.0 MIT */
+const prefix = /^.([0-9]+)/;
+
+const isArray = function (arr) {
+  return Object.prototype.toString.call(arr) === '[object Array]'
+};
+
+// handle compressed form of key-value pair
+const getKeyVal = function (word, model) {
+  let val = model.exceptions[word];
+  let m = val.match(prefix);
+  if (m === null) {
+    // return not compressed form
+    return model.exceptions[word]
+  }
+  // uncompress it
+  let num = Number(m[1]) || 0;
+  let pre = word.substr(0, num);
+  return pre + val.replace(prefix, '')
+};
+
+// get suffix-rules according to last char of word
+const getRules = function (word, model) {
+  // support old uncompressed format
+  if (isArray(model.rules)) {
+    return model.rules
+  }
+  let char = word[word.length - 1];
+  let rules = model.rules[char] || [];
+  if (rules.length === 0) {
+    // do we have a generic suffix?
+    rules = model.rules[''] || rules;
+  }
+  return rules
+};
+
 const convert = function (word, model) {
   // check list of irregulars
   if (model.exceptions.hasOwnProperty(word)) {
-    return model.exceptions[word]
+    return getKeyVal(word, model)
   }
   // try suffix rules
-  for (let i = 0; i < model.rules.length; i += 1) {
-    let suffix = model.rules[i][0];
+  const rules = getRules(word, model);
+  for (let i = 0; i < rules.length; i += 1) {
+    let suffix = rules[i][0];
     if (word.endsWith(suffix)) {
       let reg = new RegExp(suffix + '$');
-      return word.replace(reg, model.rules[i][1])
+      return word.replace(reg, rules[i][1])
     }
   }
   return null
@@ -128,7 +164,7 @@ const rank = function (arr, pairs) {
   return scored
 };
 
-const compress = function (arr) {
+const squeeze = function (arr) {
   let redundant = {};
   // remove any redundant downstream
   arr.forEach((o, i) => {
@@ -196,6 +232,50 @@ const format = function (rules, pairs) {
   }
 };
 
+const pressRules = function (rules) {
+  let byChar = {};
+  rules.forEach((a) => {
+    let suff = a[0] || '';
+    let char = suff[suff.length - 1] || '';
+    byChar[char] = byChar[char] || [];
+    byChar[char].push(a);
+  });
+  return byChar
+};
+
+const overlap = (from, to) => {
+  let all = [];
+  for (let i = 0; i < from.length; i += 1) {
+    if (from[i] === to[i]) {
+      all.push(from[i]);
+    } else {
+      break
+    }
+  }
+  return all.join('')
+};
+
+const pressObj = function (obj) {
+  let res = {};
+  Object.keys(obj).forEach((k) => {
+    let val = obj[k];
+    let prefix = overlap(k, val);
+    if (prefix.length < 2) {
+      res[k] = val;
+      return
+    }
+    let out = '.' + prefix.length + val.substr(prefix.length);
+    res[k] = out;
+  });
+  return res
+};
+
+const compress = function (model) {
+  model.rules = pressRules(model.rules);
+  model.exceptions = pressObj(model.exceptions);
+  return model
+};
+
 const find = function (pairs) {
   pairs = pairs.filter((a) => a && a[0] && a[1]);
   // look at all patterns
@@ -205,7 +285,7 @@ const find = function (pairs) {
   // run pattern against the pairs
   let rules = rank(best, pairs);
   // remove duplicates
-  rules = compress(rules);
+  rules = squeeze(rules);
   // nice result format
   return format(rules, pairs)
 };
@@ -247,7 +327,8 @@ const wrapper = function (pairs) {
   res.rules = found.rules || [];
   res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
   res = postProcess(res, inputSize);
+  res = compress(res);
   return res
 };
 
-export { convert, wrapper as find };
+export { compress, convert, wrapper as find };
