@@ -5,8 +5,15 @@ const squeeze = function (arr) {
     let downstream = arr.slice(i + 1, arr.length)
     downstream.forEach((d) => {
       if (d.from.endsWith(o.from)) {
+        // if (d.from === 'aged') {
+        //   console.log(d)
+        //   console.log(o)
+        //   console.log('\n=-=-=-=-=-\n')
+
+        // }
+        // if (d.yes
         // also ensure the surviving one has no exceptions
-        if (Object.keys(o.exceptions).length === 0) {
+        if (d.no === 0) {
           redundant[d.from] = true
         }
       }
