@@ -5,7 +5,10 @@ const squeeze = function (arr) {
     let downstream = arr.slice(i + 1, arr.length)
     downstream.forEach((d) => {
       if (d.from.endsWith(o.from)) {
-        redundant[d.from] = true
+        // also ensure the surviving one has no exceptions
+        if (Object.keys(o.exceptions).length === 0) {
+          redundant[d.from] = true
+        }
       }
     })
   })
