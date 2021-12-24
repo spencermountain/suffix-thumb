@@ -3,16 +3,23 @@ import { learn, convert, compress, uncompress } from './src/index.js'
 import fs from 'fs'
 
 let pairs = [
-  ['walk', 'walked'],
-  ['talk', 'talked'],
+  // ['walk', 'walked'],
+  // ['talk', 'talked'],
 
-  ['spied', 'spy'],
-  ['tried', 'try'],
+  // ['spied', 'spy'],
+  // ['tried', 'try'],
 
-  ['art', 'design'],
-  ['sportscart', 'sportscrazy']
+  // ['sportscart', 'sportscrazy']
   // ['smoked', 'smoke'],
-  // ['fooked', 'fook'],
+  // ['apaiser', 'apaiserai'],
+  // ['apanager', 'apanagerai'],
+  // ['apercevoir', 'apercevrai'],
+  // ['avoir', 'aurai'],
+  ['avoisiner', 'avoisinerai'],
+
+
+  ['automaintenir', 'automaintenirai'],
+  ['contenir', 'contiendrai'],
 ]
 // import future from './test/data/future-simple.js'
 // pairs = future

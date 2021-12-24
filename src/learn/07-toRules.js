@@ -18,7 +18,7 @@ const suffixSort = function (arr) {
   })
 }
 
-const isAlone = function (min, w, others) {
+const collision = function (min, others) {
   return others.some(str => str.endsWith(min))
 }
 const splitOn = (str, i) => [str.substring(0, i), str.substring(i)]
@@ -32,7 +32,7 @@ const shrink = function (word, val, already, others) {
     if (pre !== val.substring(0, i)) {
       return min
     }
-    if (already.hasOwnProperty(post) || !isAlone(post, word, others)) {
+    if (already.hasOwnProperty(post) || collision(post, others) === true) {
       return min
     }
     min = post
@@ -53,18 +53,26 @@ const toRules = function (model) {
   }, {})
   let others = Object.keys(model.exceptions)
   // others = suffixSort(others)
-  // console.log(JSON.stringify(others, null, 2))
   Object.entries(model.exceptions).forEach((a, n) => {
     let [word, val] = a
     let rest = others.filter(s => s !== word)
-    // console.log(word + '|', rest)
     let suffix = shrink(word, val, already, rest)
     let pair = getSuffix(val, word, suffix)
     if (suffix !== word) {
+      // console.log('+', suffix, pair)
       model.rules.push([suffix, pair])
       already[suffix] = pair
       delete model.exceptions[word]
     }
+  })
+  // re-sort the rules
+  model.rules = model.rules.sort((a, b) => {
+    if (a[0].length > b[0].length) {
+      return -1
+    } else if (a[0].length < b[0].length) {
+      return 1
+    }
+    return 0
   })
   return model
 }
