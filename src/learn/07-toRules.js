@@ -46,12 +46,13 @@ const getSuffix = function (str, word, min) {
 }
 
 // convert exceptions to suffix rules, when possible
-const toRules = function (model) {
+const toRules = function (model, pairs) {
   let already = model.rules.reduce((h, a) => {
     h[a[0]] = a[1]
     return h
   }, {})
-  let others = Object.keys(model.exceptions)
+  // let others = Object.keys(model.exceptions)
+  let others = pairs.map(a => a[0])
   // others = suffixSort(others)
   Object.entries(model.exceptions).forEach((a, n) => {
     let [word, val] = a

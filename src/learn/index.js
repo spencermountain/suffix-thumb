@@ -28,7 +28,7 @@ const wrapper = function (pairs) {
   res.rules = found.rules || []
   res.exceptions = found.remaining.concat(Object.entries(found.exceptions))
   res = postProcess(res, inputSize)
-  res = toRules(res)
+  res = toRules(res, pairs)
   res = pack(res)
   return res
 }
