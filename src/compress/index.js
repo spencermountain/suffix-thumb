@@ -1,4 +1,4 @@
-import { pack } from 'efrt'
+import { pack, unpack } from 'efrt'
 // import toRules from '../learn/toRules.js'
 
 // longest common prefix
@@ -30,9 +30,24 @@ const pressObj = function (obj) {
   // res = pack(res)
   return res
 }
+const toObj = (rules) => {
+  let obj = {}
+  Object.keys(rules).forEach(k => {
+    rules[k].forEach(a => {
+      obj[a[0]] = a[1]
+    })
+  })
+  return obj
+}
+
 const compress = function (model = {}) {
+  // let ruleObj = toObj(model.rules)
+  // console.log(ruleObj)
+  // model.rules = pressObj(ruleObj)
+  // model.rules = pack(model.rules)
+  // console.log(unpack(model.rules))
+  // compress exceptions
   model.exceptions = pressObj(model.exceptions)
-  // model = toRules(model)
   model.exceptions = pack(model.exceptions)
   return model
 }

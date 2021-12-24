@@ -29,8 +29,9 @@ let pairs = [
 // pairs = future
 
 let model = learn(pairs)
-// model = compress(model)
+model = compress(model)
 
+console.log('\n\n')
 console.dir(model, { depth: 5 })
 
 // model = uncompress(model)
