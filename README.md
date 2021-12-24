@@ -30,14 +30,14 @@ The assumption is that a word's _suffix_ is the most changeable part of a word.
 ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
 ```js
-import { find, convert } from 'suffix-thumb'
+import { learn, convert } from 'suffix-thumb'
 
 const pairs = [
   ['walk', 'walked'],
   ['talk', 'talked'],
   ['go', 'went'],
 ]
-let model = find(pairs)
+let model = learn(pairs)
 /* {
   rules: { k: [ [ 'alk', 'alked' ] ] },
   exceptions: { go: 'went' },
@@ -51,7 +51,7 @@ const pairs = [
   ['snafoo', 'snabar'],
   ['poofoo', 'poobar'],
 ]
-let model = find(pairs)
+let model = learn(pairs)
 /* {
   rules: { o: [ [ 'foo', 'bar' ] ], l: [ [ 'il', 'el' ] ] },
   exceptions: {},

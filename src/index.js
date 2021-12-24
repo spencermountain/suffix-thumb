@@ -1,5 +1,6 @@
 import convert from './convert/index.js'
-import find from './find/index.js'
+import learn from './learn/index.js'
 import compress from './compress/index.js'
+import uncompress from './uncompress/index.js'
 
-export { find, convert, compress }
+export { learn, convert, compress, uncompress }

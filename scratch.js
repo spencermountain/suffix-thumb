@@ -1,45 +1,35 @@
-import { find, convert, compress } from './src/index.js'
+import { learn, convert, compress, uncompress } from './src/index.js'
 // import pairs from './test/data/fr-nous.js'
+import fs from 'fs'
 
-const pairs = [
-  ['managed', 'manage'],
-  ['lodged', 'lodge'],
-  ['changed', 'change'],
-  ['encouraged', 'encourage'],
-  ['charged', 'charge'],
-  ['arranged', 'arrange'],
-  ['urged', 'urge'],
-  ['packaged', 'package'],
-  ['engaged', 'engage'],
-  ['barraged', 'barrage'],
-  ['tinged', 'ting'],
-  ['emerged', 'emerge'],
-  ['aged', 'age'],
-  ['plunged', 'plunge'],
-  ['challenged', 'challenge'],
-  ['discharged', 'discharge'],
-  ['well-managed', 'well-manage'],
-  ['surged', 'surge'],
-  ['edged', 'edge'],
-  ['envisaged', 'envisage'],
-  ['averaged', 'average'],
-  ['enlarged', 'enlarge'],
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
 
-  ['bagged', 'bag'],
-  ['pegged', 'peg'],
-  ['dragged', 'drag'],
-  ['fragged', 'ofofofj'],
+  ['spied', 'spy'],
+  ['tried', 'try'],
+
+  ['art', 'design'],
+  ['sportscart', 'sportscrazy']
+  // ['smoked', 'smoke'],
+  // ['fooked', 'fook'],
 ]
-let model = find(pairs)
-// console.dir(model)
-console.dir(model, { depth: 5 })
+// import future from './test/data/future-simple.js'
+// pairs = future
+
+let model = learn(pairs)
 // model = compress(model)
-// console.log(convert('vouloir', model))
-// console.log('errors:')
-// pairs.forEach((a) => {
-//   let created = convert(a[0], model)
-//   if (created !== a[1]) {
-//     console.log('err', a, created)
-//   }
-// })
-// console.log('   -done')
+
+console.dir(model, { depth: 5 })
+
+// model = uncompress(model)
+// console.log(convert('cried', model))
+
+console.log('errors:')
+pairs.forEach((a) => {
+  let created = convert(a[0], model)
+  if (created !== a[1]) {
+    console.log('err', a, created)
+  }
+})
+console.log('   -done')

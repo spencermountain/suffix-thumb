@@ -4,7 +4,8 @@ import rank from './03-rank.js'
 import squeeze from './04-squeeze.js'
 import format from './05-format.js'
 import postProcess from './06-postProcess.js'
-import compress from '../compress/index.js'
+import pack from './08-pack.js'
+import toRules from './07-toRules.js'
 
 const find = function (pairs) {
   pairs = pairs.filter((a) => a && a[0] && a[1])
@@ -27,7 +28,8 @@ const wrapper = function (pairs) {
   res.rules = found.rules || []
   res.exceptions = found.remaining.concat(Object.entries(found.exceptions))
   res = postProcess(res, inputSize)
-  res = compress(res)
+  res = toRules(res)
+  res = pack(res)
   return res
 }
 export default wrapper
