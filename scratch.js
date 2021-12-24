@@ -15,11 +15,15 @@ let pairs = [
   // ['apanager', 'apanagerai'],
   // ['apercevoir', 'apercevrai'],
   // ['avoir', 'aurai'],
-  ['avoisiner', 'avoisinerai'],
+  // ['avoisiner', 'avoisinerai'],
 
+  // ['automaintenir', 'automaintenirai'],
+  // ['contenir', 'contiendrai'],
 
-  ['automaintenir', 'automaintenirai'],
-  ['contenir', 'contiendrai'],
+  ['walk', 'walking'],
+  ['smoke', 'smoking'],
+  ['create', 'creating'],
+  ['talk', 'talking'],
 ]
 // import future from './test/data/future-simple.js'
 // pairs = future
