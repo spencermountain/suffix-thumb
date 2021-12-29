@@ -18,6 +18,18 @@ const unIndex = function (byChar) {
   return arr
 }
 
+const sortRules = function (rules) {
+  rules = rules.sort((a, b) => {
+    if (a[0].length > b[0].length) {
+      return -1
+    } else if (a[0].length < b[0].length) {
+      return 1
+    }
+    return 0
+  })
+  return rules
+}
+
 export {
-  indexRules, unIndex
+  indexRules, unIndex, sortRules
 }

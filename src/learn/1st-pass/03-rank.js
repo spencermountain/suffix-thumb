@@ -5,7 +5,7 @@ const getScores = function (arr, pairs) {
     let exceptions = {}
     pairs.forEach((pair) => {
       if (pair[0].endsWith(obj.from)) {
-        let reg = new RegExp(obj.from + '$')
+        let reg = new RegExp(obj.from + '$')//unsafe
         let have = pair[0].replace(reg, obj.to)
         if (have === pair[1]) {
           yes += 1
@@ -28,9 +28,11 @@ const getScores = function (arr, pairs) {
 
 const rank = function (arr, pairs) {
   let scored = getScores(arr, pairs)
+  // baseline filter
   scored = scored.filter((o) => {
     return o.yes > 1 && o.yes > o.no
   })
+  // sort by # of positive
   scored = scored.sort((a, b) => {
     if (a.yes > b.yes) {
       return -1

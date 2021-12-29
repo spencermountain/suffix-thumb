@@ -16,6 +16,9 @@ const shrink = function (word, val, already, others) {
       return min
     }
     if (already.hasOwnProperty(post) || collision(post, others) === true) {
+      // if (collision(post, others)) {
+      //   console.log(post)
+      // }
       return min
     }
     min = post

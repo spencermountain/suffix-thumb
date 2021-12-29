@@ -1,4 +1,4 @@
-const max = 5
+const max = 6
 
 const getSuffixes = function (str = '') {
   let list = []
@@ -6,7 +6,8 @@ const getSuffixes = function (str = '') {
     if (str.length - 1 <= i) {
       continue
     }
-    let suffix = str.substring(str.length - i - 1)
+    let n = str.length - i - 1
+    let suffix = str.substring(n, n + str.length - 1)
     list.push(suffix)
   }
   return list
