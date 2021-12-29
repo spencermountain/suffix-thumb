@@ -1,7 +1,10 @@
 const collision = function (min, others) {
   return others.some(str => str.endsWith(min))
 }
-const splitOn = (str, i) => [str.substring(0, i), str.substring(i)]
+
+const splitOn = (str, i) => {
+  return [str.substring(0, i), str.substring(i)]
+}
 
 // how small can we make this word, until there's a collision
 const shrink = function (word, val, already, others) {
@@ -31,10 +34,7 @@ const toRules = function (model, pairs) {
     h[a[0]] = a[1]
     return h
   }, {})
-  // let others = Object.keys(model.exceptions)
   let others = pairs.map(a => a[0])
-  let before = Object.keys(model.exceptions).length
-  // others = suffixSort(others)
   Object.entries(model.exceptions).forEach((a, n) => {
     let [word, val] = a
     let rest = others.filter(s => s !== word)
@@ -48,7 +48,7 @@ const toRules = function (model, pairs) {
     }
   })
   let after = Object.keys(model.exceptions).length
-  console.log(before, '->', after)
+  // console.log(before, '->', after)
   // re-sort the rules
   model.rules = model.rules.sort((a, b) => {
     if (a[0].length > b[0].length) {

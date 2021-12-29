@@ -1,5 +1,5 @@
-import shrink from '../2nd-pass/06-shrink.js'
-import toRules from './07-toRules.js'
+import shrink from './01-redundancy.js'
+import toRules from './02-toRules.js'
 
 const secondPass = function (res, pairs) {
   // remove redundant exceptions
