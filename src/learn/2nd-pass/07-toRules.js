@@ -1,23 +1,3 @@
-const reverse = (str) => str.split('').reverse().join('')
-
-const suffixSort = function (arr) {
-  return arr.sort((a, b) => {
-    if (a.length > b.length) {
-      return -1
-    } else if (a.length < b.length) {
-      return 1
-    }
-    a = reverse(a)
-    b = reverse(b)
-    if (a > b) {
-      return 1
-    } else if (a < b) {
-      return -1
-    }
-    return 0
-  })
-}
-
 const collision = function (min, others) {
   return others.some(str => str.endsWith(min))
 }
@@ -53,6 +33,7 @@ const toRules = function (model, pairs) {
   }, {})
   // let others = Object.keys(model.exceptions)
   let others = pairs.map(a => a[0])
+  let before = Object.keys(model.exceptions).length
   // others = suffixSort(others)
   Object.entries(model.exceptions).forEach((a, n) => {
     let [word, val] = a
@@ -66,6 +47,8 @@ const toRules = function (model, pairs) {
       delete model.exceptions[word]
     }
   })
+  let after = Object.keys(model.exceptions).length
+  console.log(before, '->', after)
   // re-sort the rules
   model.rules = model.rules.sort((a, b) => {
     if (a[0].length > b[0].length) {

@@ -1,9 +1,4 @@
 
-const percent = (part, total) => {
-  let num = part / total
-  num = Math.round(num * 1000) / 1000
-  return num
-}
 
 const reduceExceptions = function (res) {
   let final = {}
@@ -30,17 +25,15 @@ const reduceExceptions = function (res) {
 }
 
 
-const postProcess = function (res, inputSize) {
-  let count = 0
+const postProcess = function (res) {
   res.rules = res.rules.map((a) => {
-    count += a[2]
     return a.slice(0, 2)
   })
   // convert exceptions to an object
-  res.exceptions = res.exceptions.reduce((h, a) => {
-    h[a[0]] = a[1]
-    return h
-  }, {})
+  // res.exceptions = res.exceptions.reduce((h, a) => {
+  //   h[a[0]] = a[1]
+  //   return h
+  // }, {})
   // sort rules results
   res.rules = res.rules.sort((a, b) => {
     if (a[0].length > b[0].length) {
@@ -52,8 +45,6 @@ const postProcess = function (res, inputSize) {
   })
   // some exceptions are not anymore
   res.exceptions = reduceExceptions(res)
-  // add percentage covered
-  res.coverage = percent(count, inputSize)
   return res
 }
 export default postProcess

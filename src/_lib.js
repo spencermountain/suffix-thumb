@@ -1,5 +1,5 @@
 // index rules by last-char
-const pressRules = function (rules) {
+const indexRules = function (rules) {
   let byChar = {}
   rules.forEach((a) => {
     let suff = a[0] || ''
@@ -10,10 +10,14 @@ const pressRules = function (rules) {
   return byChar
 }
 
-
-const compress = function (model) {
-  model.rules = pressRules(model.rules)
-  // console.dir(model, { depth: 5 })
-  return model
+const unIndex = function (byChar) {
+  let arr = []
+  Object.keys(byChar).forEach(k => {
+    arr = arr.concat(byChar[k])
+  })
+  return arr
 }
-export default compress
+
+export {
+  indexRules, unIndex
+}
