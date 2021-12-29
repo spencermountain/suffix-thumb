@@ -1,10 +1,12 @@
+const max = 5
+
 const getSuffixes = function (str = '') {
   let list = []
-  for (let i = 4; i >= 0; i -= 1) {
+  for (let i = max; i >= 0; i -= 1) {
     if (str.length - 1 <= i) {
       continue
     }
-    let suffix = str.substr(str.length - i - 1, str.length - 1)
+    let suffix = str.substring(str.length - i - 1)
     list.push(suffix)
   }
   return list

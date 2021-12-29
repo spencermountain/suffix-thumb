@@ -2,6 +2,7 @@ import firstPass from './1st-pass/index.js'
 import secondPass from './2nd-pass/index.js'
 import { indexRules } from '../_lib.js'
 
+// make sure inputs are not impossible to square-up
 const checkDupes = function (arr) {
   let obj = {}
   arr = arr.filter(a => {

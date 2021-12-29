@@ -10,6 +10,7 @@ const firstPass = function (pairs) {
   const suffixes = getAll(pairs)
   // look for the greatest patterns
   let best = findBest(suffixes)
+  // console.log(best)
   // run pattern against the pairs
   let rules = rank(best, pairs)
   // remove duplicates

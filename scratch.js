@@ -24,20 +24,20 @@ let pairs = [
   // ['create', 'creating'],
   // ['talk', 'talking'],
 
-  // ['neighbouring', 'neighbour'],
-  // ['colouring', 'colour'],
-  // ['flavouring', 'flavour'],
-  // ['touring', 'tour'],
-  // ['scouring', 'scour'],
-  // ['honouring', 'honour'],
-  // ['favouring', 'favour'],
+  ['neighbouring', 'neighbour'],
+  ['colouring', 'colour'],
+  ['flavouring', 'flavour'],
+  ['touring', 'tour'],
+  ['scouring', 'scour'],
+  ['honouring', 'honour'],
+  ['favouring', 'favour'],
   ['labouring', 'labour'],
   ['devouring', 'devour'],
-  // ['harbouring', 'harbour'],
-  // ['clamouring', 'clamour'],
-  // ['pouring', 'pour'],
-  // ['contouring', 'contour'],
-  // ['endeavouring', 'endeavour']
+  ['harbouring', 'harbour'],
+  ['clamouring', 'clamour'],
+  ['pouring', 'pour'],
+  ['contouring', 'contour'],
+  ['endeavouring', 'endeavour']
 ]
 // import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
 // pairs = Object.entries(vbg)
