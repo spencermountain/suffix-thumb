@@ -1,7 +1,4 @@
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
-import babel from 'rollup-plugin-babel'
 import sizeCheck from 'rollup-plugin-filesize-check'
 const name = 'suffix-thumb'
 
@@ -18,7 +15,7 @@ export default [
         banner: banner,
       },
     ],
-    plugins: [resolve(), commonjs(), sizeCheck()],
+    plugins: [sizeCheck()],
   },
   {
     input: 'src/index.js',
@@ -31,31 +28,18 @@ export default [
       },
     ],
     plugins: [
-      resolve(),
-      commonjs(),
-      babel({
-        babelrc: false,
-        presets: ['@babel/preset-env'],
-      }),
       sizeCheck(),
     ],
   },
   {
-    input: 'src/index.js',
+    input: 'src/_client-side.js',
     output: [
       {
-        file: `builds/${name}.min.js`,
-        format: 'umd',
-        name: 'suffixThumb',
+        file: `builds/${name}-client.js`,
+        format: 'esm',
       },
     ],
     plugins: [
-      resolve(),
-      commonjs(),
-      babel({
-        babelrc: false,
-        presets: ['@babel/preset-env'],
-      }),
       terser(),
       sizeCheck(),
     ],

@@ -1,5 +1,5 @@
 import { unpack } from 'efrt'
-import { unIndex, indexRules, sortRules } from '../_lib.js'
+import { indexRules, sortRules } from '../_lib.js'
 const prefix = /^.([0-9]+)/
 
 const unEncode = function (obj) {

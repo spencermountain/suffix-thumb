@@ -17,7 +17,9 @@
     <code>npm install suffix-thumb</code>
   </div>
   
-   <hr/>
+  <!-- spacer -->
+  <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
+
   
 </div>
 
@@ -25,9 +27,13 @@
 
 It was built to learn rules about verb conjugations, but in a way, it is just a generic compression algorithm.
 
-The assumption is that a word's _suffix_ is the most changeable part of a word.
+The assumption is that a word's _suffix_ is the most-changed part of a word.
 
-![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
+<!-- ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png) -->
+
+### Learn → Convert
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ```js
 import { learn, convert } from 'suffix-thumb'
@@ -60,6 +66,8 @@ let model = learn(pairs)
 let out = convert('snafoo', model)
 // 'snabar'
 ```
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ### Reverse
 the model also works transforming the words the other way:
@@ -81,6 +89,9 @@ by default, the model ensures all two-way transformation - if you only require 1
 learn(pairs, {inverse: false})
 ```
 you can expect the model to be 5% smaller or so - not much.
+
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ### Compress
 by default, the model is small, but remains human-readable (and human-editable).
@@ -106,6 +117,8 @@ let out = convert('walk', model)
 ```
 The models must be uncompressed before they are used, or reversed.
 
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ### Validation
 sometimes you can accidentally send in an impossible set of transformations. This library quietly ignores duplicates, by default.
@@ -131,6 +144,9 @@ let out = convert('ok', model)
 // 'right'
 ```
 
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
+
 ## How it works
 
 For each word-pair, it generates all **n-suffixes** of the left-side, and **n-suffixes** of the right-side.
@@ -147,6 +163,8 @@ The library drops case-information - and numbers and some characters[1](https://
 
 There may be wordlists with few helpful patterns. Conjugation datasets in English and French tend to get ~85% filesize compression.
 
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ### See also
 * [efrt](https://github.com/spencermountain/efrt) - trie-based JSON compression

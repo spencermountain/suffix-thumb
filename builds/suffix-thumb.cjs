@@ -1,220 +1,144 @@
-/* suffix-thumb 2.0.0 MIT */
+/* suffix-thumb 3.0.0 MIT */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('efrt')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'efrt'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}, global.efrt));
+})(this, (function (exports, efrt) { 'use strict';
 
-  var prefix = /^.([0-9]+)/;
+  const prefix$1 = /^.([0-9]+)/;
 
-  var isArray = function isArray(arr) {
-    return Object.prototype.toString.call(arr) === '[object Array]';
-  }; // handle compressed form of key-value pair
+  const isArray = function (arr) {
+    return Object.prototype.toString.call(arr) === '[object Array]'
+  };
 
-
-  var getKeyVal = function getKeyVal(word, model) {
-    var val = model.exceptions[word];
-    var m = val.match(prefix);
-
+  // handle compressed form of key-value pair
+  const getKeyVal = function (word, model) {
+    let val = model.exceptions[word];
+    let m = val.match(prefix$1);
     if (m === null) {
       // return not compressed form
-      return model.exceptions[word];
-    } // uncompress it
+      return model.exceptions[word]
+    }
+    // uncompress it
+    let num = Number(m[1]) || 0;
+    let pre = word.substr(0, num);
+    return pre + val.replace(prefix$1, '')
+  };
 
-
-    var num = Number(m[1]) || 0;
-    var pre = word.substr(0, num);
-    return pre + val.replace(prefix, '');
-  }; // get suffix-rules according to last char of word
-
-
-  var getRules = function getRules(word, model) {
+  // get suffix-rules according to last char of word
+  const getRules = function (word, model) {
     // support old uncompressed format
     if (isArray(model.rules)) {
-      return model.rules;
+      return model.rules
     }
-
-    var _char = word[word.length - 1];
-    var rules = model.rules[_char] || [];
-
+    let char = word[word.length - 1];
+    let rules = model.rules[char] || [];
     if (rules.length === 0) {
       // do we have a generic suffix?
       rules = model.rules[''] || rules;
     }
-
-    return rules;
+    return rules
   };
 
-  var convert = function convert(word, model) {
+  const convert = function (word, model) {
     // check list of irregulars
     if (model.exceptions.hasOwnProperty(word)) {
-      return getKeyVal(word, model);
-    } // try suffix rules
-
-
-    var rules = getRules(word, model);
-
-    for (var i = 0; i < rules.length; i += 1) {
-      var suffix = rules[i][0];
-
+      return getKeyVal(word, model)
+    }
+    // try suffix rules
+    const rules = getRules(word, model);
+    for (let i = 0; i < rules.length; i += 1) {
+      let suffix = rules[i][0];
       if (word.endsWith(suffix)) {
-        var reg = new RegExp(suffix + '$');
-        return word.replace(reg, rules[i][1]);
+        let reg = new RegExp(suffix + '$');
+        return word.replace(reg, rules[i][1])
       }
     }
-
-    return null;
+    // return the original word unchanged
+    return word
   };
 
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-  }
+  const max = 6;
 
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArrayLimit(arr, i) {
-    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-
-    if (_i == null) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-
-    var _s, _e;
-
-    try {
-      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  var getSuffixes = function getSuffixes() {
-    var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    var list = [];
-
-    for (var i = 4; i >= 0; i -= 1) {
+  const getSuffixes = function (str = '') {
+    let list = [];
+    for (let i = max; i >= 0; i -= 1) {
       if (str.length - 1 <= i) {
-        continue;
+        continue
       }
-
-      var suffix = str.substr(str.length - i - 1, str.length - 1);
+      let n = str.length - i - 1;
+      let suffix = str.substring(n, n + str.length - 1);
       list.push(suffix);
     }
-
-    return list;
+    return list
   };
 
-  var getAll = function getAll(arr) {
-    var suffixes = {};
-    arr.forEach(function (a) {
-      var _a = _slicedToArray(a, 2),
-          from = _a[0],
-          to = _a[1];
-
-      var fromList = getSuffixes(from);
+  const getAll = function (arr) {
+    const suffixes = {};
+    arr.forEach((a) => {
+      let [from, to] = a;
+      let fromList = getSuffixes(from);
       fromList.push(''); //add a prepend-only option
-
-      fromList.forEach(function (left) {
+      fromList.forEach((left) => {
         suffixes[left] = suffixes[left] || {};
-        var toList = getSuffixes(to);
-        toList.forEach(function (right) {
+        let toList = getSuffixes(to);
+        toList.forEach((right) => {
           suffixes[left][right] = suffixes[left][right] || 0;
           suffixes[left][right] += 1;
         });
       });
     });
-    return suffixes;
+    return suffixes
   };
 
-  var topChange = function topChange(obj, from) {
-    var keys = Object.keys(obj);
-    var arr = keys.map(function (to) {
+  const topChange = function (obj, from) {
+    let keys = Object.keys(obj);
+    let arr = keys.map((to) => {
       return {
         from: from,
         to: to,
-        yes: obj[to]
-      };
-    });
-    arr = arr.sort(function (a, b) {
-      if (a.yes > b.yes) {
-        return -1;
-      } else if (a.yes < b.yes) {
-        return 1;
+        yes: obj[to],
       }
-
-      return 0;
     });
-    return arr;
+    arr = arr.sort((a, b) => {
+      if (a.yes > b.yes) {
+        return -1
+      } else if (a.yes < b.yes) {
+        return 1
+      }
+      return 0
+    });
+    return arr
   };
 
-  var findBest = function findBest(suffixes) {
-    var good = [];
-    Object.keys(suffixes).forEach(function (left) {
-      var top = topChange(suffixes[left], left);
-
+  const findBest = function (suffixes) {
+    let good = [];
+    Object.keys(suffixes).forEach((left) => {
+      let top = topChange(suffixes[left], left);
       if (top[0] && top[0].yes > 1) {
         good.push(top[0]);
       }
     });
-    good = good.sort(function (a, b) {
+    good = good.sort((a, b) => {
       if (a.yes > b.yes) {
-        return -1;
+        return -1
       } else if (a.yes < b.yes) {
-        return 1;
+        return 1
       }
-
-      return 0;
+      return 0
     });
-    return good;
+    return good
   };
 
-  var getScores = function getScores(arr, pairs) {
-    return arr.map(function (obj) {
-      var yes = 0;
-      var no = 0;
-      var exceptions = {};
-      pairs.forEach(function (pair) {
+  const getScores = function (arr, pairs) {
+    return arr.map((obj) => {
+      let yes = 0;
+      let no = 0;
+      let exceptions = {};
+      pairs.forEach((pair) => {
         if (pair[0].endsWith(obj.from)) {
-          var reg = new RegExp(obj.from + '$');
-          var have = pair[0].replace(reg, obj.to);
-
+          let reg = new RegExp(obj.from + '$');//unsafe
+          let have = pair[0].replace(reg, obj.to);
           if (have === pair[1]) {
             yes += 1;
           } else {
@@ -229,218 +153,379 @@
         yes: yes,
         no: no,
         percent: yes / (yes + no),
-        exceptions: exceptions
-      };
-    });
-  };
-
-  var rank = function rank(arr, pairs) {
-    var scored = getScores(arr, pairs);
-    scored = scored.filter(function (o) {
-      return o.yes > 1 && o.yes > o.no;
-    });
-    scored = scored.sort(function (a, b) {
-      if (a.yes > b.yes) {
-        return -1;
-      } else if (a.yes < b.yes) {
-        return 1;
+        exceptions: exceptions,
       }
-
-      return 0;
-    });
-    return scored;
+    })
   };
 
-  var squeeze = function squeeze(arr) {
-    var redundant = {}; // remove any redundant downstream
+  const rank = function (arr, pairs) {
+    let scored = getScores(arr, pairs);
+    // baseline filter
+    scored = scored.filter((o) => {
+      return o.yes > 1 && o.yes > o.no
+    });
+    // sort by # of positive
+    scored = scored.sort((a, b) => {
+      if (a.yes > b.yes) {
+        return -1
+      } else if (a.yes < b.yes) {
+        return 1
+      }
+      return 0
+    });
+    return scored
+  };
 
-    arr.forEach(function (o, i) {
-      var downstream = arr.slice(i + 1, arr.length);
-      downstream.forEach(function (d) {
+  // remove any redundant rules
+  const squeeze = function (arr) {
+    let redundant = {};
+    arr.forEach((o, i) => {
+      let downstream = arr.slice(i + 1, arr.length);
+      downstream.forEach((d) => {
         if (d.from.endsWith(o.from)) {
-          redundant[d.from] = true;
+          // also ensure the surviving one has no exceptions
+          if (d.no === 0) {
+            redundant[d.from] = true;
+          }
         }
       });
-    }); // actually remove any redundant suffixes
-
-    arr = arr.filter(function (o) {
-      return redundant.hasOwnProperty(o.from) === false;
     });
-    return arr;
+    // actually remove any redundant suffixes
+    arr = arr.filter((o) => {
+      return redundant.hasOwnProperty(o.from) === false
+    });
+    return arr
   };
 
-  function reverse(str) {
-    return str.split('').reverse().join('');
+  function reverse$1(str) {
+    return str.split('').reverse().join('')
   }
 
-  var fmtRules = function fmtRules(rules) {
+  const fmtRules = function (rules) {
     // sort by length, then by suffix
-    rules = rules.sort(function (a, b) {
+    rules = rules.sort((a, b) => {
       if (a.from.length > b.from.length) {
-        return -1;
+        return -1
       } else if (a.from.length < b.from.length) {
-        return 1;
+        return 1
       }
-
-      a = reverse(a.from);
-      b = reverse(b.from);
-
+      a = reverse$1(a.from);
+      b = reverse$1(b.from);
       if (a > b) {
-        return 1;
+        return 1
       } else if (a < b) {
-        return -1;
+        return -1
       }
-
-      return 0;
+      return 0
     });
-    return rules.map(function (o) {
-      return [o.from, o.to, o.yes];
-    });
+    return rules.map((o) => [o.from, o.to])
   };
 
-  var format = function format(rules, pairs) {
-    var exceptions = {};
-    rules.forEach(function (rule) {
+  const format = function (rules, pairs) {
+    let exceptions = {};
+    rules.forEach((rule) => {
       Object.assign(exceptions, rule.exceptions);
-    }); // find remaining pairs with no rule
+    });
+    rules = fmtRules(rules);
 
-    var untouched = pairs.filter(function (pair) {
+    // find remaining pairs with no rule
+    let remaining = pairs.filter((pair) => {
       if (exceptions.hasOwnProperty(pair[0])) {
-        return false;
-      } // console.log(rules.find((rule) => pair[0].endsWith(rule.from)))
-
-
-      if (rules.find(function (rule) {
-        return pair[0].endsWith(rule.from);
-      })) {
-        return false;
+        return false
       }
-
-      return true;
+      // console.log(rules.find((rule) => pair[0].endsWith(rule.from)))
+      if (rules.find((rule) => pair[0].endsWith(rule.from))) {
+        return false
+      }
+      return true
     });
-    var coverage = pairs.length - untouched.length;
-    var percent = coverage / pairs.length;
+    // add them to exceptions list
+    remaining.forEach(a => {
+      exceptions[a[0]] = a[1];
+    });
     return {
-      rules: fmtRules(rules),
+      rules,
       exceptions: exceptions,
-      coverage: percent,
-      remaining: untouched
-    };
+    }
   };
 
-  var pressRules = function pressRules(rules) {
-    var byChar = {};
-    rules.forEach(function (a) {
-      var suff = a[0] || '';
+  const firstPass = function (pairs) {
+    pairs = pairs.filter((a) => a && a[0] && a[1]);
+    // look at all patterns
+    const suffixes = getAll(pairs);
+    // look for the greatest patterns
+    let best = findBest(suffixes);
+    // run pattern against the pairs
+    let rules = rank(best, pairs);
+    // console.log(rules)
+    // remove duplicates
+    rules = squeeze(rules);
+    // nice result format
+    let res = format(rules, pairs);
+    // console.log(res)
+    return res
+  };
 
-      var _char = suff[suff.length - 1] || '';
-
-      byChar[_char] = byChar[_char] || [];
-
-      byChar[_char].push(a);
+  const reduceExceptions = function (res) {
+    let final = {};
+    let { rules, exceptions } = res;
+    Object.keys(exceptions).forEach(k => {
+      let found = rules.find((rule) => {
+        return k.endsWith(rule[0])
+      });
+      // no rule applies
+      if (!found) {
+        final[k] = exceptions[k];
+        return
+      }
+      let tmp = k.replace(found[0], found[1]);
+      // did we do it wrong?
+      if (tmp !== exceptions[k]) {
+        final[k] = exceptions[k]; //still an exception then
+      }
     });
-    return byChar;
+    return final
   };
 
-  var overlap = function overlap(from, to) {
-    var all = [];
 
-    for (var i = 0; i < from.length; i += 1) {
+  const postProcess = function (res) {
+    // some exceptions are not anymore
+    res.exceptions = reduceExceptions(res);
+    return res
+  };
+
+  // index rules by last-char
+  const indexRules = function (rules) {
+    let byChar = {};
+    rules.forEach((a) => {
+      let suff = a[0] || '';
+      let char = suff[suff.length - 1] || '';
+      byChar[char] = byChar[char] || [];
+      byChar[char].push(a);
+    });
+    return byChar
+  };
+
+  const unIndex = function (byChar) {
+    let arr = [];
+    Object.keys(byChar).forEach(k => {
+      arr = arr.concat(byChar[k]);
+    });
+    return arr
+  };
+
+  const sortRules = function (rules) {
+    rules = rules.sort((a, b) => {
+      if (a[0].length > b[0].length) {
+        return -1
+      } else if (a[0].length < b[0].length) {
+        return 1
+      }
+      return 0
+    });
+    return rules
+  };
+
+  // add all reverse-exceptions
+  const addInverse = function (model, pairs) {
+    // create a reverse model
+    let tmp = Object.assign({}, model);
+    tmp.rules = indexRules(model.rules);
+    let rev = reverse(tmp);
+    // look for exceptions
+    pairs.forEach(a => {
+      let [left, right] = a;
+      if (convert(right, rev) !== left) {
+        // console.log(a)
+        model.exceptions[a[0]] = a[1];
+      }
+    });
+    // console.log(convert('relearn', rev))
+    return model
+  };
+
+  const secondPass = function (res, pairs, opts) {
+    // remove redundant exceptions
+    res = postProcess(res);
+    // turn some exceptions into singleton suffix-rules
+    // res = toRules(res, pairs)
+    if (opts.inverse !== false) {
+      res = addInverse(res, pairs);
+    }
+    return res
+  };
+
+  // make sure inputs are not impossible to square-up
+  const validate = function (pairs, opts = {}) {
+    let left = {};
+    let right = {};
+    pairs = pairs.filter(a => {
+      if (left[a[0]] !== undefined) {
+        if (opts.verbose) {
+          console.warn('Duplicate left side:');
+          console.log('  1.', [a[0], left[a[0]]]);
+          console.log('  2.', a);
+        }
+        return false
+      }
+      if (right[a[1]] !== undefined) {
+        if (opts.verbose) {
+          console.warn('Duplicate right side:');
+          console.log('  1.', [right[a[1]], a[1]]);
+          console.log('  2.', a);
+        }
+        if (opts.inverse === false) {
+          return true //allow it
+        }
+        return false
+      }
+      left[a[0]] = a[1];
+      right[a[1]] = a[0];
+      return true
+    });
+    return pairs
+  };
+
+  const learn = function (pairs, opts = {}) {
+    // ensure input pairs are possible
+    pairs = validate(pairs, opts);
+    // create basic {rules, exceptions}
+    let res = firstPass(pairs);
+    // optimize it further
+    res = secondPass(res, pairs, opts);
+    // organize rules by their suffix char
+    res.rules = indexRules(res.rules);
+    return res
+  };
+
+  // longest common prefix
+  const findOverlap = (from, to) => {
+    let all = [];
+    for (let i = 0; i < from.length; i += 1) {
       if (from[i] === to[i]) {
         all.push(from[i]);
       } else {
-        break;
+        break
       }
     }
-
-    return all.join('');
+    return all.join('')
   };
 
-  var pressObj = function pressObj(obj) {
-    var res = {};
-    Object.keys(obj).forEach(function (k) {
-      var val = obj[k];
-      var prefix = overlap(k, val);
-
+  // remove shared data in key-val pairs
+  // uses an ad-hoc run-length encoding format 
+  // {walk: walking}  -> {walk: '.4ing'}
+  const pressObj = function (obj) {
+    let res = {};
+    Object.keys(obj).forEach((k) => {
+      let val = obj[k];
+      let prefix = findOverlap(k, val);
       if (prefix.length < 2) {
         res[k] = val;
-        return;
+        return
       }
-
-      var out = '.' + prefix.length + val.substr(prefix.length);
+      let out = '.' + prefix.length + val.substr(prefix.length);
       res[k] = out;
     });
-    return res;
+    return res
   };
 
-  var compress = function compress(model) {
-    model.rules = pressRules(model.rules);
-    model.exceptions = pressObj(model.exceptions);
-    return model;
-  };
-
-  var find = function find(pairs) {
-    pairs = pairs.filter(function (a) {
-      return a && a[0] && a[1];
-    }); // look at all patterns
-
-    var suffixes = getAll(pairs); // look for the greatest patterns
-
-    var best = findBest(suffixes); // run pattern against the pairs
-
-    var rules = rank(best, pairs); // remove duplicates
-
-    rules = squeeze(rules); // nice result format
-
-    return format(rules, pairs);
-  };
-
-  var percent = function percent(part, total) {
-    var num = part / total;
-    num = Math.round(num * 1000) / 1000;
-    return num;
-  };
-
-  var postProcess = function postProcess(res, inputSize) {
-    var count = 0;
-    res.rules = res.rules.map(function (a) {
-      count += a[2];
-      return a.slice(0, 2);
-    }); // convert exceptions to an object
-
-    res.exceptions = res.exceptions.reduce(function (h, a) {
+  const toObj = (rules) => {
+    return rules.reduce((h, a) => {
       h[a[0]] = a[1];
-      return h;
-    }, {}); // sort rules results
-
-    res.rules = res.rules.sort(function (a, b) {
-      if (a[0].length > b[0].length) {
-        return -1;
-      } else if (a[0].length < b[0].length) {
-        return 1;
-      }
-
-      return 0;
-    });
-    res.coverage = percent(count, inputSize);
-    return res;
+      return h
+    }, {})
   };
 
-  var wrapper = function wrapper(pairs) {
-    var inputSize = pairs.length;
-    var res = {};
-    var found = find(pairs);
-    res.rules = found.rules || [];
-    res.exceptions = found.remaining.concat(Object.entries(found.exceptions));
-    res = postProcess(res, inputSize);
-    res = compress(res);
-    return res;
+  const packRules = function (rules) {
+    rules = unIndex(rules);
+    rules = toObj(rules);
+    rules = pressObj(rules);
+    rules = efrt.pack(rules);
+    return rules
+  };
+
+  const compress = function (model = {}) {
+    model.rules = packRules(model.rules);
+    // compress exceptions
+    model.exceptions = pressObj(model.exceptions);
+    model.exceptions = efrt.pack(model.exceptions);
+    return model
+  };
+
+  const prefix = /^.([0-9]+)/;
+
+  const unEncode = function (obj) {
+    Object.keys(obj).forEach(k => {
+      let val = obj[k];
+      let m = val.match(prefix);
+      if (m !== null) {
+        let num = Number(m[1]) || 0;
+        let pre = k.substring(0, num);
+        let full = pre + val.replace(prefix, '');
+        obj[k] = full;
+      }
+    });
+    return obj
+  };
+
+  const unpackRules = function (rules) {
+    // un-do our trie compression
+    rules = efrt.unpack(rules);
+    // un-do our run-length encoding
+    rules = unEncode(rules);
+    // turn into an array
+    rules = Object.entries(rules);
+    // ensure they are longest-first order
+    rules = sortRules(rules);
+    // index by end-char
+    rules = indexRules(rules);
+    return rules
+  };
+
+
+  const uncompress = function (model = {}) {
+    if (typeof model.exceptions === 'string') {
+      model.exceptions = efrt.unpack(model.exceptions);
+      model.exceptions = unEncode(model.exceptions);
+    }
+    if (typeof model.rules === 'string') {
+      model.rules = unpackRules(model.rules);
+    }
+    return model
+  };
+
+  const reverseObj = function (obj) {
+    return Object.entries(obj).reduce((h, a) => {
+      h[a[1]] = a[0];
+      return h
+    }, {})
+  };
+
+  const reverseArr = function (arr) {
+    return arr.map(a => [a[1], a[0]])
+  };
+
+  const reverse = function (model) {
+    let allRules = [];
+    Object.keys(model.rules).forEach(k => {
+      allRules = allRules.concat(reverseArr(model.rules[k]));
+    });
+    allRules = sortRules(allRules);
+    let rules = indexRules(allRules);
+    let exceptions = reverseObj(model.exceptions);
+    return {
+      rules,
+      exceptions
+    }
   };
 
   exports.compress = compress;
   exports.convert = convert;
-  exports.find = wrapper;
+  exports.learn = learn;
+  exports.reverse = reverse;
+  exports.uncompress = uncompress;
+  exports.validate = validate;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
