@@ -116,7 +116,9 @@ There are some compromises, magic-numbers, and opinionated decisions - in-order 
 * compression is slow, uncompression is fast
 * it should always return a perfect result
 
-There may be wordlists with few helpful patterns. English and French conjugation datasets tend to get ~85% filesize compression.
+The library drops case-information - and numbers and some characters[1](https://github.com/spencermountain/efrt) will not compress properly.
+
+There may be wordlists with few helpful patterns. Conjugation datasets in English and French tend to get ~85% filesize compression.
 
 
 ### See also
