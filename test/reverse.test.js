@@ -17,7 +17,7 @@ test('future tense:', function (t) {
 
 test('french-nous:', function (t) {
   let pairs = validate(nous, { inverse: true })
-  let model = learn(nous)
+  let model = learn(pairs)
   let rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
