@@ -1,4 +1,4 @@
-import { learn, convert, compress, uncompress, reverse } from './src/index.js'
+import { learn, convert, compress, uncompress, reverse, validate } from './src/index.js'
 // import pairs from './test/data/fr-nous.js'
 // import fs from 'fs'
 let pairs = [
@@ -62,8 +62,11 @@ let pairs = [
   ['entwining', 'entwine'],
 
 ]
-import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-pairs = Object.entries(vbg)
+// import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
+import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+// pairs = Object.entries(nous)
+pairs = validate(nous, { inverse: true })
+// console.log(pairs)
 
 let model = learn(pairs, { inverse: true })
 let rev = reverse(model)
