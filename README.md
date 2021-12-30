@@ -1,4 +1,8 @@
 <div align="center">
+  <!-- spacer -->
+  <img height="15px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
+
+
   <img src="https://cloud.githubusercontent.com/assets/399657/23590290/ede73772-01aa-11e7-8915-181ef21027bc.png" />
 
   <div>find the optimal transormations between sets of words</div>
@@ -31,9 +35,13 @@ The assumption is that a word's _suffix_ is the most-changed part of a word.
 
 <!-- ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png) -->
 
-### Learn → Convert
+![carbon](https://user-images.githubusercontent.com/399657/147782728-60a59bdb-7851-43db-a374-69011c9dd8d6.png)
+
+
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
+
+### Learn → Convert
 
 ```js
 import { learn, convert } from 'suffix-thumb'
@@ -49,22 +57,8 @@ let model = learn(pairs)
   exceptions: { go: 'went' },
 }*/
 
-let pairs = [
-  ['aail', 'aael'],
-  ['bbil', 'bbel'],
-  ['cil', 'cel'],
-  ['snafoo', 'snabar'],
-  ['poofoo', 'poobar'],
-]
-let model = learn(pairs)
-/* {
-  rules: { o: [ [ 'foo', 'bar' ] ], l: [ [ 'il', 'el' ] ] },
-  exceptions: {},
-}
-*/
-
-let out = convert('snafoo', model)
-// 'snabar'
+let out = convert('walk', model)
+// 'walked'
 ```
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
