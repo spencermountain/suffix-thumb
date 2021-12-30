@@ -1,5 +1,5 @@
 import { unpack } from 'efrt'
-import { unIndex, indexRules } from '../_lib.js'
+import { unIndex, indexRules, sortRules } from '../_lib.js'
 const prefix = /^.([0-9]+)/
 
 const unEncode = function (obj) {
@@ -23,6 +23,8 @@ const unpackRules = function (rules) {
   rules = unEncode(rules)
   // turn into an array
   rules = Object.entries(rules)
+  // ensure they are longest-first order
+  rules = sortRules(rules)
   // index by end-char
   rules = indexRules(rules)
   return rules
