@@ -7,7 +7,6 @@ const secondPass = function (res, pairs, opts) {
   res = shrink(res)
   // turn some exceptions into singleton suffix-rules
   // res = toRules(res, pairs)
-
   if (opts.inverse !== false) {
     res = addInverse(res, pairs)
   }
