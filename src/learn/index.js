@@ -4,27 +4,27 @@ import { indexRules } from '../_lib.js'
 
 // make sure inputs are not impossible to square-up
 const checkDupes = function (arr) {
-  let obj = {}
+  let left = {}
   arr = arr.filter(a => {
-    if (obj[a[0]] !== undefined) {
+    if (left[a[0]] !== undefined) {
       console.warn('Duplicate input issue:')
-      console.log('  1.', [a[0], obj[a[0]]])
+      console.log('  1.', [a[0], left[a[0]]])
       console.log('  2.', a)
       return false
     }
-    obj[a[0]] = a[1]
+    left[a[0]] = a[1]
     return true
   })
   return arr
 }
 
 
-const learn = function (pairs) {
+const learn = function (pairs, opts = {}) {
   pairs = checkDupes(pairs)
   // create basic {rules, exceptions}
   let res = firstPass(pairs)
   // optimize it further
-  res = secondPass(res, pairs)
+  res = secondPass(res, pairs, opts)
   // organize rules by their suffix char
   res.rules = indexRules(res.rules)
   return res

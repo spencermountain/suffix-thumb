@@ -8,37 +8,28 @@ let pairs = [
   // ['spied', 'spy'],
   // ['tried', 'try'],
 
-  // ['bargaining', 'bargain'],
-  // ['binning', 'bin'],
-  // ['boning', 'bone'],
-  // ['reconditioning', 'recondition'],
-  // ['pinning', 'pin'],
-  // ['sidelining', 'sideline'],
-  // ['dehorning', 'dehorn'],
-  // ['poisoning', 'poison'],
-  // ['portioning', 'portion'],
-  // ['margining', 'margin'],
-  // ['auctioning', 'auction'],
-  // ['slackening', 'slacken'],
-  // ['adjoining', 'adjoin'],
-  // ['rezoning', 'rezon'],
-  // ['planing', 'plane'],
-  // ['enjoining', 'enjoin'],
-  // ['intertwining', 'intertwine'],
-  // ['ever-widening', 'ever-widen'],
-  // ['hastening', 'hasten'],
-  // ['saddening', 'sadden'],
-  // ['crowning', 'crown'],
-  // ['disdaining', 'disdain'],
-  // ['steepening', 'steepen'],
-  // ['cushioning', 'cushion'],
-  // ['donning', 'don'],
-  // ['disheartening', 'dishearten'],
-  // ['likening', 'liken'],
-  // ['awakening', 'awaken'],
-  // ['chaperoning', 'chaperon'],
-  // ['abstaining', 'abstain'],
-  // ['headlining', 'headline'],
+  ['reconditioning', 'recondition'],
+  ['dehorning', 'dehorn'],
+  ['poisoning', 'poison'],
+  ['portioning', 'portion'],
+  ['margining', 'margin'],
+  ['auctioning', 'auction'],
+  ['slackening', 'slacken'],
+  ['adjoining', 'adjoin'],
+  ['rezoning', 'rezon'],
+  ['enjoining', 'enjoin'],
+  ['ever-widening', 'ever-widen'],
+  ['hastening', 'hasten'],
+  ['saddening', 'sadden'],
+  ['crowning', 'crown'],
+  ['disdaining', 'disdain'],
+  ['steepening', 'steepen'],
+  ['cushioning', 'cushion'],
+  ['disheartening', 'dishearten'],
+  ['likening', 'liken'],
+  ['awakening', 'awaken'],
+  ['chaperoning', 'chaperon'],
+  ['abstaining', 'abstain'],
 
 
 
@@ -72,20 +63,20 @@ let pairs = [
 
 ]
 import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-// pairs = Object.entries(vbg)
+pairs = Object.entries(vbg)
 
-let model = learn(pairs)
+let model = learn(pairs, { inverse: true })
 let rev = reverse(model)
 
 // model = compress(model)
 // model.rules.g.shift()
-console.dir(model, { depth: 5 })
-console.dir(rev, { depth: 5 })
+// console.dir(model, { depth: 5 })
+// console.dir(rev, { depth: 5 })
 // console.log('   ', Object.keys(model.rules).length, 'rules', Object.keys(model.exceptions).length, 'exceptions')
 
 // model = uncompress(model)
 // model = uncompress(model)
-console.log(convert('detain', rev))
+// console.log(convert('detain', rev))
 
 pairs.forEach((a) => {
   let created = convert(a[0], model)
@@ -94,9 +85,17 @@ pairs.forEach((a) => {
   }
 })
 
+let wrong = 0
 pairs.forEach((a) => {
   let created = convert(a[1], rev)
   if (created !== a[0]) {
+    wrong += 1
     console.log('rev:', a, created)
   }
 })
+const percent = (part, total) => {
+  let num = (part / total) * 100;
+  num = Math.round(num * 10) / 10;
+  return num + '%'
+};
+console.log(percent(wrong, pairs.length))
