@@ -47,6 +47,7 @@ const convert = function (word, model) {
       return word.replace(reg, rules[i][1])
     }
   }
-  return null
+  // return the original word unchanged
+  return word
 }
 export default convert

@@ -30,14 +30,13 @@ The assumption is that a word's _suffix_ is the most changeable part of a word.
 ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
 ```js
-import { learn, validate, convert } from 'suffix-thumb'
+import { learn, convert } from 'suffix-thumb'
 
 let pairs = [
   ['walk', 'walked'],
   ['talk', 'talked'],
   ['go', 'went'],
 ]
-pairs = validate(pairs) //make sure there's no dupes
 let model = learn(pairs)
 /* {
   rules: { k: [ [ 'alk', 'alked' ] ] },
@@ -51,7 +50,6 @@ let pairs = [
   ['snafoo', 'snabar'],
   ['poofoo', 'poobar'],
 ]
-pairs = validate(pairs)
 let model = learn(pairs)
 /* {
   rules: { o: [ [ 'foo', 'bar' ] ], l: [ [ 'il', 'el' ] ] },
@@ -64,21 +62,25 @@ let out = convert('snafoo', model)
 ```
 
 ### Reverse
-the model also works well transforming the words the other way:
+the model also works transforming the words the other way:
 ```js
-import { learn, reverse, validate, convert } from 'suffix-thumb'
+import { learn, reverse, convert } from 'suffix-thumb'
 
 let pairs = [
   ['walk', 'walked'],
   ['talk', 'talked'],
   ['go', 'went'],
 ]
-pairs = validate(pairs, {inverse:true}) // avoid any dupes both-ways
 let model = learn(pairs)
 let rev = reverse(model)
 let out = convert('walked', rev)
 // 'walk'
 ```
+by default, the model ensures all two-way transformation - if you only require 1-way, you can do:
+```js
+learn(pairs, {inverse: false})
+```
+you can expect the model to be 5% smaller or so - not much.
 
 ### Compress
 by default, the model is small, but remains human-readable (and human-editable).
@@ -104,6 +106,30 @@ let out = convert('walk', model)
 ```
 The models must be uncompressed before they are used, or reversed.
 
+
+### Validation
+sometimes you can accidentally send in an impossible set of transformations. This library quietly ignores duplicates, by default.
+You can use `{verbose:true}` to log warnings about this, or validate your input manually:
+```js
+import { validate } from 'suffix-thumb'
+let pairs = [
+  ['left', 'right'],
+  ['left', 'right-two'],
+  ['ok', 'right'],
+]
+pairs = validate(pairs) //remove dupes (on both sides)
+```
+
+If you are just doing one-way transformation, and not reverse, you may want to allow duplicates on the right side:
+```js
+let pairs = [
+  ['left', 'right'],
+  ['ok', 'right'],
+]
+let model = learn(pairs, {inverse: false})
+let out = convert('ok', model)
+// 'right'
+```
 
 ## How it works
 

@@ -12,7 +12,7 @@ const validate = function (pairs, opts = {}) {
       }
       return false
     }
-    if (opts.inverse && right[a[1]] !== undefined) {
+    if (opts.inverse !== false && right[a[1]] !== undefined) {
       if (opts.verbose) {
         console.warn('Duplicate right side:')
         console.log('  1.', [right[a[1]], a[1]])

@@ -61,24 +61,31 @@ let pairs = [
   ['headlining', 'headline'],
   ['entwining', 'entwine'],
 
+  ["revokes", "revoke"],
+  ["accedes", "accede"],
+  ["juxtaposes", "juxtapose"],
+  ["crafted", "be"],
+  ["unclear", "be"],
+  ["divided", "be"],
+
 ]
-// import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
-// pairs = Object.entries(nous)
-// pairs = validate(nous, { inverse: true })
+// import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
+// import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+// pairs = Object.entries(vbg)
+// pairs = validate(pairs)
 // console.log(pairs)
 
-let model = learn(pairs, { inverse: true })
+let model = learn(pairs, { inverse: false })
 let rev = reverse(model)
 
+// model = compress(model)
 console.dir(model, { depth: 5 })
-model = compress(model)
-// model.rules.g.shift()
-model = uncompress(model)
+// model = uncompress(model)
 // console.dir(rev, { depth: 5 })
 // console.log('   ', Object.keys(model.rules).length, 'rules', Object.keys(model.exceptions).length, 'exceptions')
 
-// console.log(convert('detain', rev))
+console.log(convert('unclear', model))
+console.log(convert('divided', model))
 
 // pairs.forEach((a) => {
 //   let created = convert(a[0], model)
