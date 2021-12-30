@@ -30,32 +30,32 @@ The assumption is that a word's _suffix_ is the most changeable part of a word.
 ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png)
 
 ```js
-import { learn, convert } from 'suffix-thumb'
+import { learn, validate, convert } from 'suffix-thumb'
 
-const pairs = [
+let pairs = [
   ['walk', 'walked'],
   ['talk', 'talked'],
   ['go', 'went'],
 ]
+pairs = validate(pairs) //make sure there's no dupes
 let model = learn(pairs)
 /* {
   rules: { k: [ [ 'alk', 'alked' ] ] },
   exceptions: { go: 'went' },
-  coverage: 0.667
 }*/
 
-const pairs = [
+let pairs = [
   ['aail', 'aael'],
   ['bbil', 'bbel'],
   ['cil', 'cel'],
   ['snafoo', 'snabar'],
   ['poofoo', 'poobar'],
 ]
+pairs = validate(pairs)
 let model = learn(pairs)
 /* {
   rules: { o: [ [ 'foo', 'bar' ] ], l: [ [ 'il', 'el' ] ] },
   exceptions: {},
-  coverage: 1
 }
 */
 
@@ -63,18 +63,63 @@ let out = convert('snafoo', model)
 // 'snabar'
 ```
 
+### Reverse
+the model also works well transforming the words the other way:
+```js
+import { learn, reverse, validate, convert } from 'suffix-thumb'
+
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['go', 'went'],
+]
+pairs = validate(pairs, {inverse:true}) // avoid any dupes both-ways
+let model = learn(pairs)
+let rev = reverse(model)
+let out = convert('walked', rev)
+// 'walk'
+```
+
+### Compress
+by default, the model is small, but remains human-readable (and human-editable).
+We can compress it further, turning it into a snowball inscrutible characters:
+
+```js
+import { learn, compress, uncompress, convert } from 'suffix-thumb'
+
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['go', 'went'],
+]
+let model = learn(pairs)
+// shrink it
+model = compress(shrink)
+// {rules:'LSKs3H2-LNL.S3DH'}
+// pop it back
+model = uncompress(model)
+let out = convert('walk', model)
+// 'walked'
+
+```
+
+
 ## How it works
 
-For each word-pair, it generates all **n-suffixes** of the left, and **n-suffixes** of the right.
+For each word-pair, it generates all **n-suffixes** of the left-side, and **n-suffixes** of the right-side.
 
-any pattern between the two sets of words begins to pop out.
+any good correlations between the two suffix pairs begins to pop out. Exceptions to these rules are remembered. It then exhaustively reduces any redundancies in these rules.
 
-it reduces any redundancies in this list.
+There are some compromises, magic-numbers, and opinionated decisions - in-order to allow productive, but imperfect rules.
 
-it then runs the patters on the dataset, to get a score, and any exceptions.
+* The library is meant optimize for file-size of the model
+* compression is slow, uncompression is fast
+* it should always return a perfect result
 
-There may be wordlists with no helpful patterns.
+There may be wordlists with few helpful patterns. English and French conjugation datasets tend to get ~85% filesize compression.
 
-Ideally, you should be able to take a list of word-pairs, create a model for them, and then delete the 2nd half of the word pairs.
+
+### See also
+* [efrt](https://github.com/spencermountain/efrt) - trie-based JSON compression
 
 MIT
