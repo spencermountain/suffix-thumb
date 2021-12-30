@@ -27,15 +27,15 @@
   
 </div>
 
-`suffix-thumb` tries to discover the way two sets of words map to one another, according to changes in their suffix.
+discover the minimal rules for mapping two sets of words to one another, according to changes in their suffix.
 
-It was built to learn rules about verb conjugations, but in a way, it is just a generic compression algorithm.
+It was built for learning rules about verb conjugations, but in a way, it is just a generic compression algorithm.
 
-The assumption is that a word's _suffix_ is the most-changed part of a word.
+The assumption is that a word's _suffix_ is the most-often changed part of a word.
 
 <!-- ![carbon(1)](https://user-images.githubusercontent.com/399657/79898840-e7e66780-83d9-11ea-9ff3-099bf39cf892.png) -->
 
-![carbon](https://user-images.githubusercontent.com/399657/147782728-60a59bdb-7851-43db-a374-69011c9dd8d6.png)
+![preview](https://user-images.githubusercontent.com/399657/147783157-f8bdf781-0925-4af3-9fdc-beb84073803e.png)
 
 
 <!-- spacer -->
@@ -160,7 +160,12 @@ There may be wordlists with few helpful patterns. Conjugation datasets in Englis
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
+
 ### See also
 * [efrt](https://github.com/spencermountain/efrt) - trie-based JSON compression
+  
+<!-- spacer -->
+<img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
+
 
 MIT
