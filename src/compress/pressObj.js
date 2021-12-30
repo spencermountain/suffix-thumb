@@ -11,7 +11,9 @@ const findOverlap = (from, to) => {
   return all.join('')
 }
 
-// remove redundancies from key-val pairs
+// remove shared data in key-val pairs
+// uses an ad-hoc run-length encoding format 
+// {walk: walking}  -> {walk: '.4ing'}
 const pressObj = function (obj) {
   let res = {}
   Object.keys(obj).forEach((k) => {
@@ -24,7 +26,6 @@ const pressObj = function (obj) {
     let out = '.' + prefix.length + val.substr(prefix.length)
     res[k] = out
   })
-  // res = pack(res)
   return res
 }
 export default pressObj

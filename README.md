@@ -102,6 +102,7 @@ let out = convert('walk', model)
 // 'walked'
 
 ```
+The models must be uncompressed before they are used, or reversed.
 
 
 ## How it works

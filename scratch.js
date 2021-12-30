@@ -65,40 +65,39 @@ let pairs = [
 // import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
 import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 // pairs = Object.entries(nous)
-pairs = validate(nous, { inverse: true })
+// pairs = validate(nous, { inverse: true })
 // console.log(pairs)
 
 let model = learn(pairs, { inverse: true })
 let rev = reverse(model)
 
-// model = compress(model)
+console.dir(model, { depth: 5 })
+model = compress(model)
 // model.rules.g.shift()
-// console.dir(model, { depth: 5 })
+model = uncompress(model)
 // console.dir(rev, { depth: 5 })
 // console.log('   ', Object.keys(model.rules).length, 'rules', Object.keys(model.exceptions).length, 'exceptions')
 
-// model = uncompress(model)
-// model = uncompress(model)
 // console.log(convert('detain', rev))
 
-pairs.forEach((a) => {
-  let created = convert(a[0], model)
-  if (created !== a[1]) {
-    console.log('error:', a, created)
-  }
-})
+// pairs.forEach((a) => {
+//   let created = convert(a[0], model)
+//   if (created !== a[1]) {
+//     console.log('error:', a, created)
+//   }
+// })
 
-let wrong = 0
-pairs.forEach((a) => {
-  let created = convert(a[1], rev)
-  if (created !== a[0]) {
-    wrong += 1
-    console.log('rev:', a, created)
-  }
-})
-const percent = (part, total) => {
-  let num = (part / total) * 100;
-  num = Math.round(num * 10) / 10;
-  return num + '%'
-};
-console.log(percent(wrong, pairs.length))
+// let wrong = 0
+// pairs.forEach((a) => {
+//   let created = convert(a[1], rev)
+//   if (created !== a[0]) {
+//     wrong += 1
+//     console.log('rev:', a, created)
+//   }
+// })
+// const percent = (part, total) => {
+//   let num = (part / total) * 100;
+//   num = Math.round(num * 10) / 10;
+//   return num + '%'
+// };
+// console.log(percent(wrong, pairs.length))
