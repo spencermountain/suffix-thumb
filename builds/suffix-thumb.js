@@ -1,4 +1,4 @@
-/* suffix-thumb 3.1.2 MIT */
+/* suffix-thumb 3.1.3 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('efrt')) :
   typeof define === 'function' && define.amd ? define(['exports', 'efrt'], factory) :
@@ -541,14 +541,6 @@
     return { found: null }
   };
 
-  Object.defineProperty(exports, 'pack', {
-    enumerable: true,
-    get: function () { return efrt.pack; }
-  });
-  Object.defineProperty(exports, 'unpack', {
-    enumerable: true,
-    get: function () { return efrt.unpack; }
-  });
   exports.compress = compress;
   exports.convert = convert;
   exports.debug = debug;

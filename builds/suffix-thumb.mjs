@@ -1,6 +1,5 @@
-/* suffix-thumb 3.1.2 MIT */
+/* suffix-thumb 3.1.3 MIT */
 import { pack, unpack } from 'efrt';
-export { pack, unpack } from 'efrt';
 
 const prefix$1 = /^.([0-9]+)/;
 
