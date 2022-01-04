@@ -1,4 +1,4 @@
-import { pack, unpack } from 'efrt'
+import { pack } from 'efrt'
 import pressObj from './pressObj.js'
 import { unIndex } from '../_lib.js'
 

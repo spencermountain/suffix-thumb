@@ -1,4 +1,4 @@
-/* suffix-thumb 3.1.0 MIT */
+/* suffix-thumb 3.1.1 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('efrt')) :
   typeof define === 'function' && define.amd ? define(['exports', 'efrt'], factory) :
