@@ -1,4 +1,4 @@
-/* suffix-thumb 3.1.1 MIT */
+/* suffix-thumb 3.1.2 MIT */
 import { pack, unpack } from 'efrt';
 export { pack, unpack } from 'efrt';
 
