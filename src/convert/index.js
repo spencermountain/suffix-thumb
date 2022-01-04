@@ -1,9 +1,5 @@
 const prefix = /^.([0-9]+)/
 
-const isArray = function (arr) {
-  return Object.prototype.toString.call(arr) === '[object Array]'
-}
-
 // handle compressed form of key-value pair
 const getKeyVal = function (word, model) {
   let val = model.exceptions[word]
@@ -20,10 +16,6 @@ const getKeyVal = function (word, model) {
 
 // get suffix-rules according to last char of word
 const getRules = function (word, model) {
-  // support old uncompressed format
-  if (isArray(model.rules)) {
-    return model.rules
-  }
   let char = word[word.length - 1]
   let rules = model.rules[char] || []
   if (rules.length === 0) {

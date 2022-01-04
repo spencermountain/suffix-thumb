@@ -21,7 +21,7 @@ export default [
     input: 'src/index.js',
     output: [
       {
-        file: `builds/${name}.cjs`,
+        file: `builds/${name}.js`,
         format: 'umd',
         name: 'suffixThumb',
         banner: banner,

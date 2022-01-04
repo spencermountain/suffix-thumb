@@ -17,6 +17,9 @@ const unEncode = function (obj) {
 }
 
 const unpackRules = function (rules) {
+  if (!rules) {
+    return {}
+  }
   // un-do our trie compression
   rules = unpack(rules)
   // un-do our run-length encoding

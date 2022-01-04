@@ -1,4 +1,7 @@
 
+### 3.1.0 [Jan 2022]
+- **[new]** - add debug method
+
 ### 3.0.0 [Dec 2021]
 - **[breaking]** - rename 'find' to 'learn'
 - **[breaking]** - model format change

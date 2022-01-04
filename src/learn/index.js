@@ -3,7 +3,6 @@ import secondPass from './2nd-pass/index.js'
 import { indexRules } from '../_lib.js'
 import validate from './validate.js'
 
-
 const learn = function (pairs, opts = {}) {
   // ensure input pairs are possible
   pairs = validate(pairs, opts)

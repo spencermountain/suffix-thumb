@@ -157,6 +157,12 @@ The library drops case-information - and numbers and some characters[1](https://
 
 There may be wordlists with few helpful patterns. Conjugation datasets in English and French tend to get ~85% filesize compression.
 
+if you find an issue, you can use debug():
+```js
+import { debug } from 'suffix-thumb'
+let out = debug('walk', model)
+// --which rule/exception was triggered--
+```
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 

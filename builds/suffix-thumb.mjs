@@ -1,11 +1,8 @@
-/* suffix-thumb 3.0.0 MIT */
+/* suffix-thumb 3.1.0 MIT */
 import { pack, unpack } from 'efrt';
+export { pack, unpack } from 'efrt';
 
 const prefix$1 = /^.([0-9]+)/;
-
-const isArray = function (arr) {
-  return Object.prototype.toString.call(arr) === '[object Array]'
-};
 
 // handle compressed form of key-value pair
 const getKeyVal = function (word, model) {
@@ -22,11 +19,7 @@ const getKeyVal = function (word, model) {
 };
 
 // get suffix-rules according to last char of word
-const getRules = function (word, model) {
-  // support old uncompressed format
-  if (isArray(model.rules)) {
-    return model.rules
-  }
+const getRules$1 = function (word, model) {
   let char = word[word.length - 1];
   let rules = model.rules[char] || [];
   if (rules.length === 0) {
@@ -42,7 +35,7 @@ const convert = function (word, model) {
     return getKeyVal(word, model)
   }
   // try suffix rules
-  const rules = getRules(word, model);
+  const rules = getRules$1(word, model);
   for (let i = 0; i < rules.length; i += 1) {
     let suffix = rules[i][0];
     if (word.endsWith(suffix)) {
@@ -465,6 +458,9 @@ const unEncode = function (obj) {
 };
 
 const unpackRules = function (rules) {
+  if (!rules) {
+    return {}
+  }
   // un-do our trie compression
   rules = unpack(rules);
   // un-do our run-length encoding
@@ -515,4 +511,31 @@ const reverse = function (model) {
   }
 };
 
-export { compress, convert, learn, reverse, uncompress, validate };
+// get suffix-rules according to last char of word
+const getRules = function (word, model) {
+  let char = word[word.length - 1];
+  let rules = model.rules[char] || [];
+  if (rules.length === 0) {
+    // do we have a generic suffix?
+    rules = model.rules[''] || rules;
+  }
+  return rules
+};
+
+const debug = function (word, model) {
+  if (model.exceptions.hasOwnProperty(word)) {
+    let obj = {};
+    obj[word] = model.exceptions[word];
+    return { found: 'exception', exception: obj }
+  }
+  const rules = getRules(word, model);
+  for (let i = 0; i < rules.length; i += 1) {
+    let suffix = rules[i][0];
+    if (word.endsWith(suffix)) {
+      return { found: 'rule', rule: rules[i] }
+    }
+  }
+  return { found: null }
+};
+
+export { compress, convert, debug, learn, reverse, uncompress, validate };
