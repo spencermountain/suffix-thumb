@@ -8,28 +8,34 @@ const growth = (from, to) => {
 
 const cull = function (score, pairs) {
   let done = new Set(score.done)
-  let len = pairs.length
+  // let len = pairs.length
   pairs = pairs.filter(a => !done.has(a[0]))
-  console.log(' minus ' + score.done.length.toLocaleString(), growth(len, pairs.length))
-  console.log('    -now  ' + pairs.length.toLocaleString() + '\n')
+  // console.log(' minus ' + score.done.length.toLocaleString(), growth(len, pairs.length))
+  // console.log('    -now  ' + pairs.length.toLocaleString() + '\n')
   return pairs
 }
 
 
 const findRules = function (pairs) {
+  let len = pairs.length
   let rules = []
+  let already = new Set()
   const doIt = function () {
-    let sub = findBest(pairs)[0]
+    let sub = findBest(pairs, already)[0]
     if (!sub) {
       return pairs
     }
     let score = getScore(sub, pairs)
     rules.push([sub.left, sub.right])
+    already.add(sub.left)
     pairs = cull(score, pairs)
     doIt() //recurse
   }
   // kick it off
   doIt()
+  rules = rules.reverse()
+
+  console.log(`removed ${len - pairs.length} exceptions with ${rules.length} rules`)
   return { rules, exceptions: pairs }
 }
 

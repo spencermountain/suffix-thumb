@@ -40,7 +40,7 @@ const topk = function (arr) {
   return res.sort((a, b) => (a[1] > b[1] ? -1 : 0))
 }
 
-const findBest = function (pairs) {
+const findBest = function (pairs, already) {
   let subs = pairs.map(a => {
     let res = getBestDiff(a[0], a[1])
     return `${res.left}|${res.right}`
@@ -54,6 +54,8 @@ const findBest = function (pairs) {
   })
   // remove unchanged ones, for now
   res = res.filter(o => o.left)
+  // remove any suffixes we've already used
+  res = res.filter(o => !already.has(o.left))
   return res
 }
 export default findBest
