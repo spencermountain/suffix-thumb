@@ -62,8 +62,8 @@ const findStatic = function (rules, exceptions, pairs) {
   })
   // remove these words from our list of exceptions
   exceptions = exceptions.filter(a => captured[a[0]] !== true)
-  // console.log(`removed ${len - exceptions.length} exceptions with ${newRules} new rules`)
-  // console.log(`   now ${exceptions.length}`)
+  console.log(`removed ${len - exceptions.length} exceptions with ${newRules} new rules`)
+  console.log(`   now ${exceptions.length}`)
   return { rules, exceptions }
 }
 

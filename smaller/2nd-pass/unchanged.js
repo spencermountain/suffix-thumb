@@ -12,8 +12,8 @@ const passThrough = function (rules, exceptions) {
     }
     return true
   })
-  // console.log(`removed ${len - exceptions.length} exceptions clean pass-through`)
-  // console.log(`   now ${exceptions.length}`)
+  console.log(`removed ${len - exceptions.length} exceptions clean pass-through`)
+  console.log(`   now ${exceptions.length}`)
   return { rules, exceptions }
 }
 
