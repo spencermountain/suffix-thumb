@@ -34,8 +34,7 @@ const findRules = function (pairs) {
   // kick it off
   doIt()
   rules = rules.reverse()
-
-  console.log(`removed ${len - pairs.length} exceptions with ${rules.length} rules`)
+  // console.log(`removed ${len - pairs.length} exceptions with ${rules.length} rules`)
   return { rules, exceptions: pairs }
 }
 
