@@ -19,7 +19,7 @@ let pairs = [
   ["sing", "sing"],
 
 ]
-import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
+import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
 pairs = vbg
 // import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 // pairs = Object.entries(vbg)
