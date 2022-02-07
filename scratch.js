@@ -1,38 +1,32 @@
-import { learn, convert, compress, uncompress, reverse, validate, debug } from './src/index.js'
-// import pairs from './test/data/fr-nous.js'
-// import fs from 'fs'
+import { convert, compress, uncompress, reverse, validate, debug, test } from './src/index.js'
+import learn from './smaller/index.js'
+
+
+
 let pairs = [
   // ['walk', 'walked'],
   // ['talk', 'talked'],
 
-  // ['spied', 'spy'],
-  // ['tried', 'try'],
-
-  // ["revokes", "revoke"],
-  // ["accedes", "accede"],
-
-  ["be", "be"],
-  ["cool", "cool"],
-  ["fool", "fool"],
-  ["fun", "fun"],
-  ["nice", "nice"],
-  ["sing", "sing"],
+  ['walk', 'walking'],
+  ['smoke', 'smoking'],
+  ['talk', 'talking'],
 
 ]
 import vbg from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
-pairs = vbg
 // import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
-// pairs = Object.entries(vbg)
-// console.log(pairs)
-pairs = validate(pairs)
+pairs = vbg
 
 
-let model = learn(pairs)
-let rev = reverse(model)
+// let model = learn(pairs)
+test(pairs)
+// let rev = reverse(model)
+// console.dir(rev, { depth: 5 })
+// model = compress(model)
+// model = uncompress(model)
+// console.dir(model, { depth: 5 })
+// console.log(log(model))
 
-model = compress(model)
-model = uncompress(model)
-console.dir(model, { depth: 5 })
+// console.log(convert('smile', model))
 
 // console.dir(rev, { depth: 5 })
 // console.log(convert('hotter', model))
@@ -44,7 +38,7 @@ console.dir(model, { depth: 5 })
 //   }
 // })
 
-// // test reverse, too
+// test reverse, too
 // let wrong = 0
 // pairs.forEach((a) => {
 //   // console.log(debug(a[1], rev))

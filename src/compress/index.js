@@ -18,6 +18,7 @@ const packRules = function (rules) {
 }
 
 const compress = function (model = {}) {
+  model = Object.assign({}, model)
   model.rules = packRules(model.rules)
   // compress exceptions
   model.exceptions = pressObj(model.exceptions)

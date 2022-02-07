@@ -53,9 +53,11 @@ const findBest = function (pairs, already) {
     return { left, right, yes: a[1] }
   })
   // remove unchanged ones, for now
-  res = res.filter(o => o.left)
+  // res = res.filter(o => o.left)
   // remove any suffixes we've already used
   res = res.filter(o => !already.has(o.left))
   return res
 }
+
+
 export default findBest

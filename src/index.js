@@ -5,9 +5,10 @@ import uncompress from './uncompress/index.js'
 import reverse from './reverse/index.js'
 import debug from './convert/debug.js'
 import profile from './profile/index.js'
+import test from './test/index.js'
 
 
 // import learn from './learn/index.js'
 import learn from '../smaller/index.js'
 
-export { learn, convert, compress, uncompress, reverse, validate, debug, profile }
+export { learn, convert, compress, uncompress, reverse, validate, debug, profile, test }
