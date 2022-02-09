@@ -64,7 +64,7 @@ const test = function (pairs, opts) {
   let model = learn(pairs, opts)
   stats(model)
   // 
-  // testSize(pairs, model)
+  testSize(pairs, model)
   // 
   testFwd(pairs, model)
   // testBack(pairs, model)

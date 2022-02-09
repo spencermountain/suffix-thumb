@@ -5,7 +5,7 @@ const indexRules = function (rules) {
     let suff = a[0] || ''
     let char = suff[suff.length - 1] || ''
     byChar[char] = byChar[char] || []
-    byChar[char].unshift(a)
+    byChar[char].push(a)
   })
   return byChar
 }

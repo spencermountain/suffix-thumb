@@ -58,7 +58,7 @@ const wide = function (pairs, opts) {
   console.log('\n\n\n\n')
   // console.log(main)
 
-  // main.rules = indexRules(main.rules)
+  main.rules = indexRules(main.rules)
   return main
 }
 export default wide

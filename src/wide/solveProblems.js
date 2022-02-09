@@ -52,8 +52,14 @@ const trimIssues = function (issues, best) {
 
 const solveProblems = function (top, pairs) {
   console.log(top, ':')
-  let rules = [top]
+  let rules = [top.slice(0, 2)]
   let exceptions = {}
+  if (!top) {
+    pairs.forEach(a => {
+      exceptions[a[0]] = a[1]
+    })
+    return { rules: [], exceptions }
+  }
   let { issues, good } = findProblems(top, pairs)
   while (issues.length > 0) {
     // console.log(issues.length, 'issues')
@@ -70,7 +76,7 @@ const solveProblems = function (top, pairs) {
       break
     }
     issues = trimIssues(issues, diffs[0])
-    rules.unshift(diffs[0])
+    rules.unshift(diffs[0].slice(0, 2))
   }
   return { rules, exceptions }
 }

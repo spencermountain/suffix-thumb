@@ -31,7 +31,7 @@ const convert = function (word, model) {
     return getKeyVal(word, model)
   }
   // try suffix rules
-  const rules = model.rules//getRules(word, model)
+  const rules = getRules(word, model)
   for (let i = 0; i < rules.length; i += 1) {
     let suffix = rules[i][0]
     if (word.endsWith(suffix)) {
