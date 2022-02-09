@@ -22,7 +22,6 @@ const score = function (diffs, pairs) {
     let { yes, no } = getCounts(diff, pairs)
     diff.push(yes)
     diff.push(no)
-    // diff.push(percent(yes, yes + no))
     return diff
   })
   diffs = diffs.sort((a, b) => {

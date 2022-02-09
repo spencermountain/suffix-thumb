@@ -42,24 +42,23 @@ const findRemaining = function (pairs, main) {
 const wide = function (pairs, opts) {
   let main = { rules: [], exceptions: {} }
 
-  for (let i = 0; i < 3; i += 1) {
-
+  while (pairs.length > 0) {
     let diffs = find(pairs)
     diffs = score(diffs, pairs)
     diffs = noDupes(diffs, main)
     let updates = solveFor(diffs[0], pairs)
-    console.log('+ ' + updates.rules.length + ' rules')
-    console.log('+ ' + Object.keys(updates.exceptions).length + ' exceptions')
+    console.log('   + ' + updates.rules.length + ' rules')
+    console.log('   + ' + Object.keys(updates.exceptions).length + ' exceptions')
     if (updates) {
       main = merge(main, updates)
     }
     pairs = findRemaining(pairs, main)
-    console.log(pairs.length + '---- remaining')
+    console.log(pairs.length + ' remaining\n\n')
   }
   console.log('\n\n\n\n')
   // console.log(main)
 
-  main.rules = indexRules(main.rules)
+  // main.rules = indexRules(main.rules)
   return main
 }
 export default wide

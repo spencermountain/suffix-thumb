@@ -9,6 +9,7 @@ import test from './test/index.js'
 
 
 // import learn from './learn/index.js'
-import learn from '../smaller/index.js'
+// import learn from '../smaller/index.js'
+import learn from './wide/index.js'
 
 export { learn, convert, compress, uncompress, reverse, validate, debug, profile, test }

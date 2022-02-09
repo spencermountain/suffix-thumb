@@ -3,6 +3,7 @@ import score from './02-score.js'
 
 const findProblems = function (diff, pairs) {
   let issues = []
+  let good = []
   pairs.forEach(pair => {
     let [left, right] = pair
     let reg = new RegExp(diff[0] + '$')
@@ -12,9 +13,18 @@ const findProblems = function (diff, pairs) {
     let res = left.replace(reg, diff[1])
     if (res !== right) {
       issues.push(pair)
+    } else {
+      good.push(pair)
     }
   })
-  return issues
+  return { issues, good }
+}
+
+const noCollision = function (diffs, good) {
+  diffs = diffs.filter(diff => {
+    return !good.some((a) => a[0].endsWith(diff[0]))
+  })
+  return diffs
 }
 
 const noDupes = function (diffs, main) {
@@ -41,16 +51,16 @@ const trimIssues = function (issues, best) {
 
 
 const solveProblems = function (top, pairs) {
-  console.log(top)
-  let issues = pairs
+  console.log(top, ':')
   let rules = [top]
   let exceptions = {}
-  issues = findProblems(top, issues)
+  let { issues, good } = findProblems(top, pairs)
   while (issues.length > 0) {
-    console.log(issues.length, 'issues')
+    // console.log(issues.length, 'issues')
     let diffs = find(issues)
     diffs = score(diffs, issues)
     diffs = noDupes(diffs, rules)
+    diffs = noCollision(diffs, good)
     // no rules, only exceptions?
     if (diffs.length === 0) {
       issues.forEach(a => {
