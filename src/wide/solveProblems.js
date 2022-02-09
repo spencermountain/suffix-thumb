@@ -49,6 +49,8 @@ const solveProblems = function (top, pairs) {
   while (issues.length > 0) {
     console.log(issues.length, 'issues')
     let diffs = find(issues)
+    diffs = score(diffs, issues)
+    diffs = noDupes(diffs, rules)
     // no rules, only exceptions?
     if (diffs.length === 0) {
       issues.forEach(a => {
@@ -57,8 +59,6 @@ const solveProblems = function (top, pairs) {
       // break out of while-loop
       break
     }
-    diffs = score(diffs, issues)
-    diffs = noDupes(diffs, rules)
     issues = trimIssues(issues, diffs[0])
     rules.unshift(diffs[0])
   }

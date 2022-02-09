@@ -1,4 +1,4 @@
-import learn from '../learn/index.js'
+import learn from '../wide/index.js'
 import compress from '../compress/index.js'
 import reverse from '../reverse/index.js'
 import convert from '../convert/index.js'
@@ -67,6 +67,6 @@ const test = function (pairs, opts) {
   testSize(pairs, model)
   // 
   testFwd(pairs, model)
-  testBack(pairs, model)
+  // testBack(pairs, model)
 }
 export default test
