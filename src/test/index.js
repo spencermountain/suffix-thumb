@@ -7,12 +7,8 @@ import filesize from './filesize.js'
 const green = str => '\x1b[32m' + str + '\x1b[0m'
 const red = str => '\x1b[31m' + str + '\x1b[0m'
 const blue = str => '\x1b[34m' + str + '\x1b[0m'
-const magenta = str => '\x1b[35m' + str + '\x1b[0m'
-const cyan = str => '\x1b[36m' + str + '\x1b[0m'
 const yellow = str => '\x1b[33m' + str + '\x1b[0m'
-const black = str => '\x1b[30m' + str + '\x1b[0m'
 const dim = str => '\x1b[2m' + str + '\x1b[0m'
-
 
 const testFwd = function (pairs, model) {
   let wrong = 0
@@ -20,13 +16,13 @@ const testFwd = function (pairs, model) {
     let created = convert(a[0], model)
     if (created !== a[1]) {
       wrong += 1
-      console.log(red('error:', a, created))
+      console.log(red('error:'), yellow(a[0] + ' →' + created))
     }
   })
   if (wrong === 0) {
     console.log(green(`  ✓ forward`))
   } else {
-    console.log(red(` ✗ ${wrong} `) + 'errors')
+    console.log(red(` ✗ ${wrong} `) + 'errors\n')
   }
   return wrong
 }
@@ -38,13 +34,13 @@ const testBack = function (pairs, model) {
     let created = convert(a[1], rev)
     if (created !== a[0]) {
       wrong += 1
-      console.log(red('error:', a, created))
+      console.log(red('rev ✗: '), yellow(a[1] + ' → ' + created))
     }
   })
   if (wrong === 0) {
     console.log(green(`  ✓ backward`))
   } else {
-    console.log(red(` ✗ ${wrong} `) + 'errors')
+    console.log(red(` ✗ ${wrong} `) + 'errors reversed\n')
   }
   return wrong
 }
@@ -53,9 +49,8 @@ const testSize = function (pairs, model) {
   let before = filesize(pairs)
   let smol = compress(model)
   let after = filesize(smol)
-  console.log(`  ${before} -> ${after}`)
+  console.log(`  ${dim(before)} -> ${blue(after)}`)
 }
-
 
 const stats = function (model) {
   let rules = 0
@@ -65,6 +60,7 @@ const stats = function (model) {
 }
 
 const test = function (pairs, opts) {
+  console.log(yellow(pairs.length.toLocaleString()) + ` pairs -  ${dim(filesize(pairs))}`)
   let model = learn(pairs, opts)
   stats(model)
   // 
