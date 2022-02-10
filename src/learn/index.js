@@ -1,17 +1,34 @@
-import firstPass from './1st-pass/index.js'
-import secondPass from './2nd-pass/index.js'
+import candidates from './candidates/index.js'
+import dependents from './dependents/solveProblems.js'
 import { indexRules } from '../_lib.js'
-import validate from './validate.js'
+import { noDupes, findRemaining } from './lib.js'
 
-const learn = function (pairs, opts = {}) {
-  // ensure input pairs are possible
-  pairs = validate(pairs, opts)
-  // create basic {rules, exceptions}
-  let res = firstPass(pairs)
-  // optimize it further
-  res = secondPass(res, pairs, opts)
-  // organize rules by their suffix char
-  res.rules = indexRules(res.rules)
-  return res
+
+const merge = function (main, updates) {
+  main.exceptions = Object.assign(main.exceptions, updates.exceptions)
+  main.rules = updates.rules.concat(main.rules)
+  return main
+}
+
+const learn = function (pairs) {
+  let main = { rules: [], exceptions: {} }
+
+  while (pairs.length > 0) {
+    let diffs = candidates(pairs)
+    diffs = noDupes(diffs, main)
+    let updates = dependents(diffs[0], pairs)
+    console.log('   + ' + updates.rules.length + ' rules')
+    console.log('   + ' + Object.keys(updates.exceptions).length + ' exceptions')
+    if (updates) {
+      main = merge(main, updates)
+    }
+    pairs = findRemaining(pairs, main)
+    console.log(pairs.length + ' remaining\n\n')
+  }
+  console.log('\n\n\n\n')
+  // console.log(main)
+
+  main.rules = indexRules(main.rules)
+  return main
 }
 export default learn

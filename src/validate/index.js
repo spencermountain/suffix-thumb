@@ -1,4 +1,3 @@
-
 // make sure inputs are not impossible to square-up
 const validate = function (pairs, opts = {}) {
   let left = {}
