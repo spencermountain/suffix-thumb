@@ -1,8 +1,7 @@
 import candidates from './candidates/index.js'
-import dependents from './dependents/solveProblems.js'
+import dependents from './dependents/index.js'
 import { indexRules } from '../_lib.js'
-import { noDupes, findRemaining } from './lib.js'
-
+import { findRemaining } from './lib.js'
 
 const merge = function (main, updates) {
   main.exceptions = Object.assign(main.exceptions, updates.exceptions)
@@ -14,8 +13,7 @@ const learn = function (pairs) {
   let main = { rules: [], exceptions: {} }
 
   while (pairs.length > 0) {
-    let diffs = candidates(pairs)
-    diffs = noDupes(diffs, main)
+    let diffs = candidates(pairs, main.rules)
     let updates = dependents(diffs[0], pairs)
     console.log('   + ' + updates.rules.length + ' rules')
     console.log('   + ' + Object.keys(updates.exceptions).length + ' exceptions')

@@ -1,7 +1,6 @@
 import candidates from '../candidates/index.js'
 import { trimDown } from '../lib.js'
 
-
 const findProblems = function (diff, pairs) {
   let issues = []
   let good = []
@@ -28,16 +27,6 @@ const noCollision = function (diffs, good) {
   return diffs
 }
 
-const noDupes = function (diffs, main) {
-  let already = new Set()
-  main.forEach(m => {
-    already.add(m[0])
-  })
-  diffs = diffs.filter(m => !already.has(m[0]))
-  return diffs
-}
-
-
 const solveProblems = function (top, pairs) {
   console.log(top, ':')
   let exceptions = {}
@@ -51,8 +40,7 @@ const solveProblems = function (top, pairs) {
   let { issues, good } = findProblems(top, pairs)
   while (issues.length > 0) {
     // console.log(issues.length, 'issues')
-    let diffs = candidates(issues)
-    diffs = noDupes(diffs, rules)
+    let diffs = candidates(issues, rules)
     diffs = noCollision(diffs, good)
     // no rules, only exceptions?
     if (diffs.length === 0) {
