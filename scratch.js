@@ -1,17 +1,16 @@
 import { convert, learn, compress, uncompress, reverse, validate, debug, test } from './src/index.js'
 // import learn from './smaller/index.js'
 
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
-import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
+import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
 // let pairs = [
-//   ["passes", "pass", 110],
-//   ["gasses", "gas", 3],
-//   ["doses", "dose", 3],
-//   ["enthuses", "enthuse", 2],
+//   ["lumbermen", "lumberman", 2],
+//   ["ptarmigan", "ptarmigan", 2],
+//   ["handymen", "handyman", 2],
 // ]
 
 // let model = learn(pairs)

@@ -28,7 +28,7 @@ const noCollision = function (diffs, good) {
 }
 
 const solveProblems = function (top, pairs) {
-  console.log(top, ':')
+  // console.log(top, ':')
   let exceptions = {}
   if (!top) {
     pairs.forEach(a => {
@@ -39,7 +39,6 @@ const solveProblems = function (top, pairs) {
   let rules = []
   let { issues, good } = findProblems(top, pairs)
   while (issues.length > 0) {
-    // console.log(issues.length, 'issues')
     let diffs = candidates(issues, rules)
     diffs = noCollision(diffs, good)
     // no rules, only exceptions?
@@ -50,8 +49,10 @@ const solveProblems = function (top, pairs) {
       // break out of while-loop
       break
     }
-    issues = trimDown(issues, diffs[0])
-    rules.push(diffs[0].slice(0, 2))
+    let res = trimDown(issues, diffs[0])
+    issues = res.fail
+    good = good.concat(res.pass)
+    rules.unshift(diffs[0].slice(0, 2))
   }
   rules.push(top.slice(0, 2))
   return { rules, exceptions }
