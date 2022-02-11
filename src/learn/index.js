@@ -11,7 +11,6 @@ const merge = function (main, updates) {
 
 const learn = function (pairs) {
   let main = { rules: [], exceptions: {} }
-
   while (pairs.length > 0) {
     let diffs = candidates(pairs, main.rules)
     let updates = dependents(diffs[0], pairs)
@@ -21,7 +20,7 @@ const learn = function (pairs) {
       main = merge(main, updates)
     }
     pairs = findRemaining(pairs, main)
-    console.log(pairs.length + ' remaining\n\n')
+    // console.log(pairs.length + ' remaining\n\n')
   }
   console.log('\n\n\n\n')
   // console.log(main)

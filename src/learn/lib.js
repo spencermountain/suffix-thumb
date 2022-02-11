@@ -1,7 +1,7 @@
 
 const trimDown = function (issues, best) {
   let reg = new RegExp(best[0] + '$')
-  return issues.filter(a => {
+  issues = issues.filter(a => {
     if (!a[0].match(reg)) {
       return true//still a problem
     }
@@ -10,6 +10,7 @@ const trimDown = function (issues, best) {
     }
     return true
   })
+  return issues
 }
 
 const findRemaining = function (pairs, main) {

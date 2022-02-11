@@ -36,7 +36,7 @@ const solveProblems = function (top, pairs) {
     })
     return { rules: [], exceptions }
   }
-  let rules = [top.slice(0, 2)]
+  let rules = []
   let { issues, good } = findProblems(top, pairs)
   while (issues.length > 0) {
     // console.log(issues.length, 'issues')
@@ -51,8 +51,9 @@ const solveProblems = function (top, pairs) {
       break
     }
     issues = trimDown(issues, diffs[0])
-    rules.unshift(diffs[0].slice(0, 2))
+    rules.push(diffs[0].slice(0, 2))
   }
+  rules.push(top.slice(0, 2))
   return { rules, exceptions }
 }
 export default solveProblems
