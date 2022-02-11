@@ -67,6 +67,6 @@ const test = function (pairs, opts) {
   testSize(pairs, model)
   // 
   testFwd(pairs, model)
-  // testBack(pairs, model)
+  testBack(pairs, model)
 }
 export default test
