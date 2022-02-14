@@ -44,7 +44,7 @@ const learn = function (pairs, opts = {}) {
   }
   main.rules = indexRules(main.rules)
   if (opts.reverse !== false) {
-    let revs = suggestReverse(main, pairs)
+    // let revs = suggestReverse(main, pairs)
   }
   return main
 }

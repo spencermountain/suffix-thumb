@@ -7,5 +7,6 @@ import profile from './profile/index.js'
 import test from './test/index.js'
 import learn from './learn/index.js'
 import validate from './validate/index.js'
+import classify from './classify/index.js'
 
-export { learn, convert, compress, uncompress, reverse, validate, debug, profile, test }
+export { learn, convert, compress, uncompress, reverse, validate, debug, profile, test, classify }
