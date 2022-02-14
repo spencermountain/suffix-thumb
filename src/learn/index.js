@@ -1,5 +1,7 @@
 import candidates from './candidates/index.js'
 import dependents from './dependents/index.js'
+import suggestReverse from './addReverse.js'
+
 import { indexRules } from '../_lib.js'
 import { findRemaining } from './lib.js'
 
@@ -27,19 +29,23 @@ const firstGoodDiff = function (candidates, main) {
   })
 }
 
-const learn = function (pairs) {
+const learn = function (pairs, opts = {}) {
   let main = { rules: [], exceptions: {} }
-  while (pairs.length > 0) {
-    let diffs = candidates(pairs, main.rules)
+  let remain = pairs.slice(0)
+  while (remain.length > 0) {
+    let diffs = candidates(remain, main.rules)
     let bestDiff = firstGoodDiff(diffs, main)
-    let updates = dependents(bestDiff, pairs)
+    let updates = dependents(bestDiff, remain)
     if (updates) {
       main = merge(main, updates)
     }
-    pairs = findRemaining(pairs, main)
+    remain = findRemaining(remain, main)
     // console.log(pairs.length + ' remaining\n\n')
   }
   main.rules = indexRules(main.rules)
+  if (opts.reverse !== false) {
+    let revs = suggestReverse(main, pairs)
+  }
   return main
 }
 export default learn
