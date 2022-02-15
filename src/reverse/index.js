@@ -13,15 +13,18 @@ const reverseArr = function (arr) {
 
 const reverse = function (model) {
   let allRules = []
-  Object.keys(model.rules).forEach(k => {
-    allRules = allRules.concat(reverseArr(model.rules[k]))
+  let { rules, exceptions, rev } = model
+  Object.keys(rules).forEach(k => {
+    allRules = allRules.concat(reverseArr(rules[k]))
   })
   allRules = sortRules(allRules)
-  let rules = indexRules(allRules)
-  let exceptions = reverseObj(model.exceptions)
+  rules = indexRules(allRules)
+  exceptions = reverseObj(exceptions)
   return {
+    reversed: !Boolean(model.reversed),//toggle this
     rules,
-    exceptions
+    exceptions,
+    rev
   }
 }
 export default reverse
