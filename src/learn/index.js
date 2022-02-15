@@ -36,7 +36,8 @@ const revProblems = function (pairs, model) {
   const rev = reverse(model)
   pairs.forEach(a => {
     let [left, right] = a
-    if (convert(right, rev) !== left) {
+    let found = convert(right, rev)
+    if (found !== left) {
       issues.push(a.slice(0, 2).reverse())
     }
   })
@@ -47,7 +48,7 @@ const learn = function (pairs, opts = {}) {
   let main = { rules: [], exceptions: {} }
   let remain = pairs.slice(0)
   while (remain.length > 0) {
-    let diffs = candidates(remain, main.rules)
+    let diffs = candidates(remain, main.rules, opts)
     let bestDiff = firstGoodDiff(diffs, main)
     let updates = dependents(bestDiff, remain)
     if (updates) {
@@ -60,9 +61,11 @@ const learn = function (pairs, opts = {}) {
   // should we add any required reverse rules too?
   if (opts.reverse !== false) {
     let issues = revProblems(pairs, main)
-    let backModel = learn(issues, { reverse: false })//recursive
-    main.rev = backModel.rules
-    Object.assign(main.exceptions, backModel.exceptions)
+    let diffs = candidates(issues, unIndex(main.rules), opts)
+    console.log(diffs)
+    // let backModel = learn(issues, { reverse: false })//recursive
+    // main.rev = backModel.rules
+    // Object.assign(main.exceptions, backModel.exceptions)
   }
   return main
 }

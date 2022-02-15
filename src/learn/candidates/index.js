@@ -10,9 +10,12 @@ const noDupes = function (diffs, rules) {
   return diffs
 }
 
-const suggestDiffs = function (pairs, rules) {
+const suggestDiffs = function (pairs, rules, opts = {}) {
   let diffs = getAll(pairs)
   diffs = score(diffs, pairs)
+  if (opts.reverse !== false) {
+    // diffs = diffs.filter(o => o[4] === 0)
+  }
   diffs = noDupes(diffs, rules)
   return diffs
 }
