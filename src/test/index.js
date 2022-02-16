@@ -71,8 +71,8 @@ const test = function (pairs, opts) {
   testSize(pairs, model)
   console.log(yellow('\nForward:'))
   testFwd(pairs, model)
-  // console.log(yellow('\nBackward:'))
-  // testBack(pairs, model)
+  console.log(yellow('\nBackward:'))
+  testBack(pairs, model)
   // hmm
   // console.log(yellow('\nClassify:'))
   // testSide(pairs, model, 'Left')

@@ -18,9 +18,9 @@ const getKeyVal = function (word, model) {
 const getRules = function (word, rules = {}) {
   let char = word[word.length - 1]
   let list = rules[char] || []
-  if (list.length === 0) {
-    // do we have a generic suffix?
-    list = rules[''] || []
+  // do we have a generic suffix?
+  if (rules['']) {
+    list = list.concat(rules[''])
   }
   return list
 }
@@ -56,6 +56,9 @@ const convert = function (word, model, debug) {
       let reg = new RegExp(suffix + '$')
       return word.replace(reg, rules[i][1])
     }
+  }
+  if (debug) {
+    console.log(' x - ' + word)
   }
   // return the original word unchanged
   return word

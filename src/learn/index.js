@@ -2,6 +2,7 @@ import validate from '../validate/index.js'
 import { findRules, updateRules } from './01-generate/index.js'
 import { trimPairs, trimRules } from './02-trim/index.js'
 import { indexRules } from '../_lib.js'
+import addReverse from './03-reverse/index.js'
 
 const learn = function (pairs, opts = {}) {
   pairs = validate(pairs, opts)
@@ -34,15 +35,24 @@ const learn = function (pairs, opts = {}) {
     }
   }
 
+  // turn em upside-down
+  chosen = chosen.reverse()
+
   // remaining pairs are exceptions
   let exceptions = pairsLeft.reduce((h, a) => {
     h[a[0]] = a[1]
     return h
   }, {})
 
-  return {
-    rules: indexRules(chosen.reverse()),
+  let model = {
+    rules: indexRules(chosen),
     exceptions
   }
+  if (opts.reverse !== false) {
+    let { rev, revEx } = addReverse(chosen, exceptions, pairs)
+    model.rev = indexRules(rev)
+    model.exceptions = revEx
+  }
+  return model
 }
 export default learn
