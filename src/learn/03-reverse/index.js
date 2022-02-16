@@ -58,6 +58,6 @@ const addReverse = function (rules, exceptions, pairs, opts = {}) {
     h[a[1]] = a[0]
     return h
   }, {})
-  return { rev: chosen, revEx: ex }
+  return { rev: chosen.reverse(), revEx: ex }
 }
 export default addReverse

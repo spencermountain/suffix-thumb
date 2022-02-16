@@ -1,48 +1,40 @@
 import { convert, learn, reverse, test, compress, uncompress } from './src/index.js'
 
-import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
-// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
 // let pairs = [
-//   ["offering", "offer", 1346],
-//   ["considering", "consider", 1334],
-//   ["entering", "enter", 1082],
-//   ["delivering", "deliver", 1080],
-//   ["fostering", "foster", 1065],
-//   ["covering", "cover", 1013],
-//   ["administering", "administer", 611],
-//   ["partnering", "partner", 541],
-//   ["transferring", "transfer", 297],
-//   ["referring", "refer", 293],
-//   ["ordering", "order", 272],
-//   ["gathering", "gather", 267],
-//   ["registering", "register", 260],
-//   ["tendering", "tender", 245],
-//   ["volunteering", "volunteer", 223],
-//   ["differing", "differ", 213],
-//   ["suffering", "suffer", 199],
-//   ["lowering", "lower", 164],
-//   ["furthering", "further", 160],
+//   ["appeared", "appear", 501],
+//   ["heard", "hear", 220],
+//   ["bore", "bear", 28],
+//   ["wore", "wear", 26],
+//   ["feared", "fear", 24],
+//   ["cleared", "clear", 23],
+//   ["disappeared", "disappear", 17],
+//   ["endeared", "endear", 3],
+//   ["swore", "swear", 2],
+//   ["tore", "tear", 2],
+//   ["forbore", "forbear", 2],
+//   ["neared", "near", 2],
 // ]
 
 // let model = learn(pairs, { debug: false })
 
 
-// console.log(model.rules.d)
 // model = compress(model)
 // model = uncompress(model)
 // console.log(model.rules.d)
 
 // console.dir(model, { depth: 5 })
 // console.log(Object.keys(model.exceptions).length, 'exceptions')
-// console.log(convert('conveyed', model, true))
 // console.log(convert('save', model, true))
 
 // const rev = reverse(model)
-// console.log(convert('convey', rev, true))
+// console.log(convert('heard', model, true))
+// console.log(convert('hear', rev, true))
 // console.log(convert('overprint', rev, true))
 
 // const rev = reverse(model)

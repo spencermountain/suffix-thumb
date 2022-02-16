@@ -1,58 +1,37 @@
-import validate from '../validate/index.js'
-import { findRules, updateRules } from './01-generate/index.js'
-import { trimPairs, trimRules } from './02-trim/index.js'
-import { indexRules } from '../_lib.js'
-import addReverse from './03-reverse/index.js'
+import learn from './learn.js'
+import { indexRules, unIndex } from '../_lib.js'
 
-const learn = function (pairs, opts = {}) {
-  pairs = validate(pairs, opts)
-  let rules = findRules(pairs)
-  let pairsLeft = pairs
-  let pairsDone = []
-  let chosen = []
-
-  // pick our top rule
-  while (pairsLeft.length > 0 && rules.length > 0) {
-    let rule = rules.pop()
-    chosen.push([rule.from, rule.to])
-
-    // remove now-covered pairs
-    let res = trimPairs(pairsLeft, rule)
-    pairsLeft = res.remain
-    pairsDone = pairsDone.concat(res.done)
-
-    // remove now-unsafe rules
-    rules = trimRules(rules, pairsDone)
-    // re-rank our rules
-    rules = updateRules(rules, pairsLeft, opts)
-
-    // logging
-    if (opts.debug) {
-      console.log(`${rule.from} -> ${rule.to || "''"}`)
-      console.log(`    \x1b[32m +${res.done.length.toLocaleString()} pairs\x1b[0m`)
-      console.log('   ', pairsLeft.length, 'remaining')
-      console.log('   ', rules.length, 'rules left')
-    }
-  }
-
-  // turn em upside-down
-  chosen = chosen.reverse()
-
-  // remaining pairs are exceptions
-  let exceptions = pairsLeft.reduce((h, a) => {
-    h[a[0]] = a[1]
-    return h
-  }, {})
-
-  let model = {
-    rules: indexRules(chosen),
-    exceptions
-  }
-  if (opts.reverse !== false) {
-    let { rev, revEx } = addReverse(chosen, exceptions, pairs)
-    model.rev = indexRules(rev)
-    Object.assign(model.exceptions, revEx)
-  }
-  return model
+const diffRules = function (fwd, bkwd) {
+  console.log(bkwd.length)
+  bkwd = bkwd.filter(b => {
+    let [left, right] = b
+    return !fwd.find(a => a[1] === left && a[0] === right)
+  })
+  console.log(bkwd.length)
+  return bkwd
 }
-export default learn
+
+const mergeExceptions = function (fwd, bkwd) {
+  Object.entries(bkwd).forEach(b => {
+    fwd[b[1]] = b[0]
+  })
+  return fwd
+}
+
+const learnBoth = function (pairs, opts = {}) {
+  let fwd = learn(pairs, opts)
+  if (opts.reverse !== false) {
+    pairs = pairs.map(a => [a[1], a[0]])
+    let bkwd = learn(pairs, opts)
+    // merge exceptions
+    fwd.exceptions = mergeExceptions(fwd.exceptions, bkwd.exceptions)
+    // merge rules
+    // fwd.rev = diffRules(fwd.rules, bkwd.rules)
+    fwd.rev = bkwd.rules
+    fwd.rev = indexRules(fwd.rev)
+  }
+  fwd.rules = indexRules(fwd.rules)
+  return fwd
+}
+
+export default learnBoth
