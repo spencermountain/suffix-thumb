@@ -1,6 +1,6 @@
 import { learn, convert, compress, uncompress, reverse } from '../index.js'
 import filesize from './filesize.js'
-// import testSide from './classify.js'
+import testSide from './classify.js'
 
 const green = str => '\x1b[32m' + str + '\x1b[0m'
 const red = str => '\x1b[31m' + str + '\x1b[0m'
@@ -75,9 +75,9 @@ const test = function (pairs, opts) {
   console.log(yellow('\nBackward:'))
   testBack(pairs, model)
   // hmm
-  // console.log(yellow('\nClassify:'))
-  // testSide(pairs, model, 'Left')
-  // testSide(pairs, model, 'Right')
+  console.log(yellow('\nClassify:'))
+  testSide(pairs, model, 'Left')
+  testSide(pairs, model, 'Right')
 
 }
 export default test

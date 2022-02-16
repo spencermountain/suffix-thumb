@@ -22,9 +22,9 @@ import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 // ]
 
 // let model = learn(pairs, { debug: false })
+// model = compress(model)
 // console.dir(model, { depth: 5 })
 
-// model = compress(model)
 // model = uncompress(model)
 // console.dir(model, { depth: 5 })
 // console.log(model.rules.d)
