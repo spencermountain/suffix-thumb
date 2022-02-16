@@ -42,6 +42,9 @@ const uncompress = function (model = {}) {
   if (typeof model.rules === 'string') {
     model.rules = unpackRules(model.rules)
   }
+  if (typeof model.rev === 'string') {
+    model.rev = unpackRules(model.rev)
+  }
   return model
 }
 export default uncompress

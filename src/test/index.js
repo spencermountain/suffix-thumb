@@ -1,5 +1,6 @@
 import learn from '../learn/index.js'
 import compress from '../compress/index.js'
+import uncompress from '../uncompress/index.js'
 import reverse from '../reverse/index.js'
 import convert from '../convert/index.js'
 import filesize from './filesize.js'
@@ -69,6 +70,10 @@ const test = function (pairs, opts) {
   console.log(yellow('\nSize:'))
   stats(model)
   testSize(pairs, model)
+
+  // model = compress(model)
+  // model = uncompress(model)
+
   console.log(yellow('\nForward:'))
   testFwd(pairs, model)
   console.log(yellow('\nBackward:'))

@@ -51,7 +51,7 @@ const learn = function (pairs, opts = {}) {
   if (opts.reverse !== false) {
     let { rev, revEx } = addReverse(chosen, exceptions, pairs)
     model.rev = indexRules(rev)
-    model.exceptions = revEx
+    Object.assign(model.exceptions, revEx)
   }
   return model
 }

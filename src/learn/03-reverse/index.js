@@ -39,8 +39,11 @@ const addReverse = function (rules, exceptions, pairs, opts = {}) {
     return { from: a[1], to: a[0], reg: reg }
   })
   let { issues, resolved } = findIssues(rules, exceptions, pairs)
+  // console.log(issues.length, 'issues')
   let suggest = findRules(issues)
+  // console.log(suggest.length, 'suggestions')
   suggest = trimRules(suggest, resolved)
+  // console.log(suggest.length, 'trimmed')
   let { chosen, remain } = compute(issues, resolved, suggest, opts)
   // logger
   if (opts.debug) {
@@ -52,7 +55,7 @@ const addReverse = function (rules, exceptions, pairs, opts = {}) {
   }
   // setup exceptions
   let ex = remain.reduce((h, a) => {
-    h[a[0]] = a[1]
+    h[a[1]] = a[0]
     return h
   }, {})
   return { rev: chosen, revEx: ex }
