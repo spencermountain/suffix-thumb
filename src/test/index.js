@@ -1,4 +1,4 @@
-import { learn, convert, compress, uncompress, reverse, validate, profile, classify } from '../index.js'
+import { learn, convert, compress, uncompress, reverse } from '../index.js'
 import filesize from './filesize.js'
 // import testSide from './classify.js'
 

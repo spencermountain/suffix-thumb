@@ -3,8 +3,8 @@ import { convert, learn, reverse, test, compress, uncompress } from './src/index
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
-// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
+import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
 // let pairs = [
 //   ["appeared", "appear", 501],
