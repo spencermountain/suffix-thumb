@@ -1,4 +1,4 @@
-import candidates from '../generate/index.js'
+import candidates from '../candidates/index.js'
 import { trimDown } from '../lib.js'
 
 const findProblems = function (diff, pairs) {
