@@ -33,6 +33,7 @@ const learn = function (pairs, opts = {}) {
       console.log('   ', rules.length, 'rules left')
     }
   }
+
   // remaining pairs are exceptions
   let exceptions = pairsLeft.reduce((h, a) => {
     h[a[0]] = a[1]
