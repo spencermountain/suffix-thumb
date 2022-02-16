@@ -1,6 +1,6 @@
 import convert from './convert/index.js'
 import compress from './compress/index.js'
-import uncompress from './uncompress/index.js'
+import uncompress from './compress/uncompress.js'
 import reverse from './reverse/index.js'
 import profile from './profile/index.js'
 import test from './test/index.js'

@@ -1,10 +1,6 @@
-import learn from '../learn/index.js'
-import compress from '../compress/index.js'
-import uncompress from '../uncompress/index.js'
-import reverse from '../reverse/index.js'
-import convert from '../convert/index.js'
+import { learn, convert, compress, uncompress, reverse, validate, profile, classify } from '../index.js'
 import filesize from './filesize.js'
-import testSide from './classify.js'
+// import testSide from './classify.js'
 
 const green = str => '\x1b[32m' + str + '\x1b[0m'
 const red = str => '\x1b[31m' + str + '\x1b[0m'
@@ -71,8 +67,8 @@ const test = function (pairs, opts) {
   stats(model)
   testSize(pairs, model)
 
-  // model = compress(model)
-  // model = uncompress(model)
+  model = compress(model)
+  model = uncompress(model)
 
   console.log(yellow('\nForward:'))
   testFwd(pairs, model)
