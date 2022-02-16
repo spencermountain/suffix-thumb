@@ -25,9 +25,12 @@ const getRules = function (word, rules = {}) {
   return list
 }
 
-const convert = function (word, model) {
+const convert = function (word, model, debug) {
   // check list of irregulars
   if (model.exceptions.hasOwnProperty(word)) {
+    if (debug) {
+      console.log("exception, ", word, model.exceptions[word])
+    }
     return getKeyVal(word, model)
   }
   // if model is reversed, try rev rules
@@ -47,6 +50,9 @@ const convert = function (word, model) {
   for (let i = 0; i < rules.length; i += 1) {
     let suffix = rules[i][0]
     if (word.endsWith(suffix)) {
+      if (debug) {
+        console.log("rule, ", rules[i])
+      }
       let reg = new RegExp(suffix + '$')
       return word.replace(reg, rules[i][1])
     }

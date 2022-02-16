@@ -14,32 +14,26 @@ const revCount = function (rule, pairs) {
   return no
 }
 
-const getCounts = function (rule, pairs, opts) {
+const getCounts = function (rule, pairs) {
   let yes = 0
   let no = 0
   pairs.forEach(pair => {
     let [left, right] = pair
-    if (!left.match(rule.reg)) {
+    if (!rule.reg.test(left)) {
       return
     }
-    let res = left.replace(rule.reg, rule.to)
-    if (res === right) {
+    if (left.replace(rule.reg, rule.to) === right) {
       yes += 1
     } else {
       no += 1
     }
   })
-  let rev = 0
-  if (opts.reverse !== false) {
-    // rev = revCount(rule, pairs)
-    // no += rev
-  }
   return { yes, no }
 }
 
 const score = function (rules, pairs, opts = {}) {
   rules = rules.map(rule => {
-    let { yes, no } = getCounts(rule, pairs, opts)
+    let { yes, no } = getCounts(rule, pairs)
     rule.yes = yes
     rule.no = no
     delete rule.id

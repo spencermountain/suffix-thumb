@@ -15,14 +15,27 @@ const trimPairs = function (pairs, rule) {
   return { remain, done }
 }
 
-const trimRules = function (rules, rule) {
+// remove any rules that challenge existing pairs
+const trimRules = function (rules, pairsDone) {
   return rules.filter(r => {
-    if (r.from.endsWith(rule.from)) {
-      return false
+    for (let i = 0; i < pairsDone.length; i += 1) {
+      let pair = pairsDone[i]
+      if (r.reg.test(pair[0]) && pair[0].replace(r.reg, r.to) !== pair[1]) {
+        // console.log('banned rule:', r)
+        return false
+      }
     }
     return true
   })
 }
+// const trimRules = function (rules, rule) {
+//   return rules.filter(r => {
+//     if (r.from.endsWith(rule.from)) {
+//       return false
+//     }
+//     return true
+//   })
+// }
 
 
 export { trimRules, trimPairs }

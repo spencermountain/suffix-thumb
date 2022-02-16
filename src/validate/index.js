@@ -4,7 +4,7 @@ const validate = function (pairs, opts = {}) {
   let right = {}
   pairs = pairs.filter(a => {
     if (left[a[0]] !== undefined) {
-      if (opts.verbose) {
+      if (opts.debug) {
         console.warn('Duplicate left side:')
         console.log('  1.', [a[0], left[a[0]]])
         console.log('  2.', a)
@@ -12,7 +12,7 @@ const validate = function (pairs, opts = {}) {
       return false
     }
     if (right[a[1]] !== undefined) {
-      if (opts.verbose) {
+      if (opts.debug) {
         console.warn('Duplicate right side:')
         console.log('  1.', [right[a[1]], a[1]])
         console.log('  2.', a)

@@ -12,7 +12,7 @@ const noDupes = function (rules) {
 
 const cleanup = function (rules) {
   // only helpful ones
-  rules = rules.filter(r => r.yes > r.no)
+  rules = rules.filter(r => r.yes > 0 && r.yes > r.no)
   // one rule per suffix
   rules = noDupes(rules)
   return rules
