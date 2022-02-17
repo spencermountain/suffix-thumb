@@ -25,4 +25,19 @@ const findRemaining = function (pairs, main) {
   return pairs
 }
 
-export { trimDown, findRemaining }
+// faster than a regex replace
+const replace = function (w, suff, to) {
+  // not a match
+  if (w.substring(w.length - suff.length) !== suff) {
+    return w
+  }
+  return w.substring(0, w.length - suff.length) + to
+}
+
+const match = function (w, suff) {
+  return w.substring(w.length - suff.length) === suff
+}
+
+export { trimDown, findRemaining, replace, match }
+
+// console.log(replace('swimming', 'ing', 's'))

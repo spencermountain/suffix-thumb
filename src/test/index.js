@@ -62,7 +62,11 @@ const stats = function (model) {
 const test = function (pairs, opts) {
   console.log('\n')
   console.log(yellow(pairs.length.toLocaleString()) + ` pairs -  ${dim(filesize(pairs))}`)
+  let begin = new Date()
   let model = learn(pairs, opts)
+  let end = new Date()
+  console.log('   ', (end.getTime() - begin.getTime()) / 1000, 'seconds')
+
   console.log(yellow('\nSize:'))
   stats(model)
   testSize(pairs, model)
@@ -75,9 +79,9 @@ const test = function (pairs, opts) {
   console.log(yellow('\nBackward:'))
   testBack(pairs, model)
   // hmm
-  console.log(yellow('\nClassify:'))
-  testSide(pairs, model, 'Left')
-  testSide(pairs, model, 'Right')
+  // console.log(yellow('\nClassify:'))
+  // testSide(pairs, model, 'Left')
+  // testSide(pairs, model, 'Right')
 
 }
 export default test

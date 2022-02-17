@@ -1,11 +1,13 @@
+import { replace } from '../lib.js'
 
 const trimPairs = function (pairs, rule) {
-  let { reg, to } = rule
+  let { reg, from, to } = rule
   let done = []
   let remain = pairs.filter(pair => {
     let [left, right] = pair
     if (left.match(reg)) {
-      if (left.replace(reg, to) === right) {
+      if (replace(left, rule.from, rule.to) === right) {
+        // if (left.replace(reg, to) === right) {
         done.push(pair)
         return false //done with it
       }
@@ -20,7 +22,8 @@ const trimRules = function (rules, pairsDone) {
   return rules.filter(r => {
     for (let i = 0; i < pairsDone.length; i += 1) {
       let pair = pairsDone[i]
-      if (r.reg.test(pair[0]) && pair[0].replace(r.reg, r.to) !== pair[1]) {
+      let res = replace(pair[0], r.from, r.to)
+      if (res !== pair[0] && res !== pair[1]) {
         // console.log('banned rule:', r)
         return false
       }
@@ -28,14 +31,5 @@ const trimRules = function (rules, pairsDone) {
     return true
   })
 }
-// const trimRules = function (rules, rule) {
-//   return rules.filter(r => {
-//     if (r.from.endsWith(rule.from)) {
-//       return false
-//     }
-//     return true
-//   })
-// }
-
 
 export { trimRules, trimPairs }

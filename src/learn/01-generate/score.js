@@ -1,18 +1,19 @@
-const revCount = function (rule, pairs) {
-  let no = 0
-  pairs.forEach(pair => {
-    let [left, right] = pair
-    let reg = new RegExp(rule[1] + '$')
-    if (!right.match(reg)) {
-      return
-    }
-    let res = right.replace(reg, rule[0])
-    if (res !== left) {
-      no += 1
-    }
-  })
-  return no
-}
+import { replace } from '../lib.js'
+// const revCount = function (rule, pairs) {
+//   let no = 0
+//   pairs.forEach(pair => {
+//     let [left, right] = pair
+//     let reg = new RegExp(rule[1] + '$')
+//     if (!right.match(reg)) {
+//       return
+//     }
+//     let res = right.replace(reg, rule[0])
+//     if (res !== left) {
+//       no += 1
+//     }
+//   })
+//   return no
+// }
 
 const getCounts = function (rule, pairs) {
   let yes = 0
@@ -22,7 +23,9 @@ const getCounts = function (rule, pairs) {
     if (!rule.reg.test(left)) {
       return
     }
-    if (left.replace(rule.reg, rule.to) === right) {
+    // console.log(replace(left, rule.from, rule.to), left.replace(rule.reg, rule.to))
+    if (replace(left, rule.from, rule.to) === right) {
+      // if (left.replace(rule.reg, rule.to) === right) {
       yes += 1
     } else {
       no += 1

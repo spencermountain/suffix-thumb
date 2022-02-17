@@ -34,13 +34,21 @@ const convert = function (word, model, debug) {
     return getKeyVal(word, model)
   }
   // if model is reversed, try rev rules
-  let rules = model.rules
   if (model.reversed) {
-    rules = model.rev
+    let rules = getRules(word, model.rev)
+    for (let i = 0; i < rules.length; i += 1) {
+      let suffix = rules[i][0]
+      if (word.endsWith(suffix)) {
+        if (debug) {
+          console.log("rule, ", rules[i])
+        }
+        let reg = new RegExp(suffix + '$')
+        return word.replace(reg, rules[i][1])
+      }
+    }
   }
-
   // try suffix rules
-  rules = getRules(word, rules)
+  let rules = getRules(word, model.rules)
   for (let i = 0; i < rules.length; i += 1) {
     let suffix = rules[i][0]
     if (word.endsWith(suffix)) {
