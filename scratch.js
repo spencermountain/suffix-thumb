@@ -1,61 +1,42 @@
-import { learn, convert, compress, uncompress, reverse, validate, debug } from './src/index.js'
-// import pairs from './test/data/fr-nous.js'
-// import fs from 'fs'
+import { convert, learn, reverse, test, compress, uncompress, classify } from './src/index.js'
+
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
+// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+
 let pairs = [
-  // ['walk', 'walked'],
-  // ['talk', 'talked'],
-
-  // ['spied', 'spy'],
-  // ['tried', 'try'],
-
-  // ["revokes", "revoke"],
-  // ["accedes", "accede"],
-
-  ["be", "be"],
-  ["cool", "cool"],
-  ["fool", "fool"],
-  ["fun", "fun"],
-  ["nice", "nice"],
-  ["sing", "sing"],
-
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['smoke', 'smoked'],
+  ['bike', 'biked'],
+  ['go', 'went'],
 ]
-// import vbg from '/Users/spencer/mountain/minimum-model/pairs/JJR.js'
-// import nous from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
-// pairs = Object.entries(vbg)
-// console.log(pairs)
-pairs = validate(pairs)
-
-
 let model = learn(pairs)
-let rev = reverse(model)
+console.log(model.rev)
+let out = classify('waited', model)
+console.log(out)
+// let pairs = [
+//   ["read", "read"],
+//   ["spread", "spread"],
+//   ["bread", "breaded"],
+//   ["head", "headed"],
+//   ["spearhead", "spearheaded"],
+//   ["thread", "threaded"],
+//   ["reread", "reread"],
+// ]
 
-// model = compress(model)
-// model = uncompress(model)
-console.dir(model, { depth: 5 })
+// let model = learn(pairs, { debug: true })
+// console.dir(model, { depth: 5 })
 
-// console.dir(rev, { depth: 5 })
-// console.log(convert('hotter', model))
+// const rev = reverse(model)
+// pairs.forEach(pair => {
+//   let res = convert(pair[0], model)
+//   if (res !== pair[1]) {
+//     console.log(pair[0] + ' - > ', res)
+//   }
+// })
+// console.log(convert('bread', rev, true))
 
-pairs.forEach((a) => {
-  let created = convert(a[0], model)
-  if (created !== a[1]) {
-    console.log('error:', a, created)
-  }
-})
-
-// // test reverse, too
-let wrong = 0
-pairs.forEach((a) => {
-  // console.log(debug(a[1], rev))
-  let created = convert(a[1], rev)
-  if (created !== a[0]) {
-    wrong += 1
-    console.log('rev:', a, created)
-  }
-})
-const percent = (part, total) => {
-  let num = (part / total) * 100;
-  num = Math.round(num * 10) / 10;
-  return num + '%'
-};
-console.log(percent(wrong, pairs.length))
+test(pairs, { debug: false })

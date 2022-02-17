@@ -15,29 +15,43 @@ const getKeyVal = function (word, model) {
 }
 
 // get suffix-rules according to last char of word
-const getRules = function (word, model) {
+const getRules = function (word, rules = {}) {
   let char = word[word.length - 1]
-  let rules = model.rules[char] || []
-  if (rules.length === 0) {
-    // do we have a generic suffix?
-    rules = model.rules[''] || rules
+  let list = rules[char] || []
+  // do we have a generic suffix?
+  if (rules['']) {
+    list = list.concat(rules[''])
   }
-  return rules
+  return list
 }
 
-const convert = function (word, model) {
+const convert = function (word, model, debug) {
   // check list of irregulars
   if (model.exceptions.hasOwnProperty(word)) {
+    if (debug) {
+      console.log("exception, ", word, model.exceptions[word])
+    }
     return getKeyVal(word, model)
   }
+  // if model is reversed, try rev rules
+  let rules = model.rules
+  if (model.reversed) {
+    rules = model.rev
+  }
   // try suffix rules
-  const rules = getRules(word, model)
+  rules = getRules(word, rules)
   for (let i = 0; i < rules.length; i += 1) {
     let suffix = rules[i][0]
     if (word.endsWith(suffix)) {
+      if (debug) {
+        console.log("rule, ", rules[i])
+      }
       let reg = new RegExp(suffix + '$')
       return word.replace(reg, rules[i][1])
     }
+  }
+  if (debug) {
+    console.log(' x - ' + word)
   }
   // return the original word unchanged
   return word
