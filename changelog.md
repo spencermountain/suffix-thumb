@@ -1,4 +1,8 @@
 
+### 4.0.0 [Jan 2022]
+- **[breaking]** - model format change
+- **[new]** - add classifier, test
+
 ### 3.1.0 [Jan 2022]
 - **[new]** - add debug method
 

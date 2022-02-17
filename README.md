@@ -80,7 +80,7 @@ let out = convert('walked', rev)
 ```
 by default, the model ensures all two-way transformation - if you only require 1-way, you can do:
 ```js
-learn(pairs, {inverse: false})
+learn(pairs, {reverse: false})
 ```
 you can expect the model to be 5% smaller or so - not much.
 
@@ -133,13 +133,29 @@ let pairs = [
   ['left', 'right'],
   ['ok', 'right'],
 ]
-let model = learn(pairs, {inverse: false})
+let model = learn(pairs, {reverse: false})
 let out = convert('ok', model)
 // 'right'
 ```
 
 ### Classify
-you
+the model can also be used to classify whether a given word belongs to either Left or Right sides.
+
+```js
+import { learn, classify } from 'suffix-thumb'
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['go', 'went'],
+]
+let model = learn(pairs)
+let out = classify('stalked', model)
+// 'Right'
+out = classify('waited', model)
+// null
+```
+Unlike convert, the classifier is not guarnteed to return 100% on the training data.
+The classifier will generally hit high-90s on the given dataset, but how-well it generalizes to novel input is up-to the dataset.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
@@ -171,7 +187,7 @@ let out = debug('walk', model)
 
 
 ### See also
-* [efrt](https://github.com/spencermountain/efrt) - trie-based JSON compression
+* [efrt](https://github.com/spencermountain/efrt) - trie-based prefix compression for JSON
   
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>

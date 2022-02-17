@@ -1,12 +1,22 @@
-import { convert, learn, reverse, test, compress, uncompress } from './src/index.js'
+import { convert, learn, reverse, test, compress, uncompress, classify } from './src/index.js'
 
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
-
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['smoke', 'smoked'],
+  ['bike', 'biked'],
+  ['go', 'went'],
+]
+let model = learn(pairs)
+console.log(model.rev)
+let out = classify('waited', model)
+console.log(out)
 // let pairs = [
 //   ["read", "read"],
 //   ["spread", "spread"],
