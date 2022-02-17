@@ -1,30 +1,32 @@
 import { convert, learn, reverse, test, compress, uncompress } from './src/index.js'
 
-import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
+// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
+import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
+
 // let pairs = [
-//   ["appeared", "appear", 501],
-//   ["heard", "hear", 220],
-//   ["bore", "bear", 28],
-//   ["wore", "wear", 26],
-//   ["feared", "fear", 24],
-//   ["cleared", "clear", 23],
-//   ["disappeared", "disappear", 17],
-//   ["endeared", "endear", 3],
-//   ["swore", "swear", 2],
-//   ["tore", "tear", 2],
-//   ["forbore", "forbear", 2],
-//   ["neared", "near", 2],
+//   ["read", "read"],
+//   ["spread", "spread"],
+//   ["bread", "breaded"],
+//   ["head", "headed"],
+//   ["spearhead", "spearheaded"],
+//   ["thread", "threaded"],
+//   ["reread", "reread"],
 // ]
 
-let model = learn(pairs, { debug: false })
+// let model = learn(pairs, { debug: true })
 // console.dir(model, { depth: 5 })
 
-const rev = reverse(model)
-console.log(convert('bread', rev, true))
+// const rev = reverse(model)
+// pairs.forEach(pair => {
+//   let res = convert(pair[0], model)
+//   if (res !== pair[1]) {
+//     console.log(pair[0] + ' - > ', res)
+//   }
+// })
+// console.log(convert('bread', rev, true))
 
-// test(pairs, { debug: false })
+test(pairs, { debug: false })

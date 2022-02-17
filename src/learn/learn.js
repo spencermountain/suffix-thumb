@@ -1,8 +1,6 @@
 import validate from '../validate/index.js'
 import { findRules, updateRules } from './01-generate/index.js'
 import { trimPairs, trimRules } from './02-trim/index.js'
-// import { indexRules } from '../_lib.js'
-// import addReverse from './03-reverse/index.js'
 
 const learn = function (pairs, opts = {}) {
   pairs = validate(pairs, opts)
@@ -28,7 +26,7 @@ const learn = function (pairs, opts = {}) {
 
     // logging
     if (opts.debug) {
-      console.log(`${rule.from} -> ${rule.to || "''"}`)
+      console.log(`\n${rule.from} -> ${rule.to || "''"}`)
       console.log(`    \x1b[32m +${res.done.length.toLocaleString()} pairs\x1b[0m`)
       console.log('   ', pairsLeft.length, 'remaining')
       console.log('   ', rules.length, 'rules left')
@@ -44,15 +42,9 @@ const learn = function (pairs, opts = {}) {
     return h
   }, {})
 
-  let model = {
+  return {
     rules: chosen,
     exceptions
   }
-  // if (opts.reverse !== false) {
-  //   let { rev, revEx } = addReverse(chosen, exceptions, pairs)
-  //   model.rev = indexRules(rev)
-  //   Object.assign(model.exceptions, revEx)
-  // }
-  return model
 }
 export default learn
