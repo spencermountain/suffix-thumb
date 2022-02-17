@@ -1,4 +1,4 @@
-/* suffix-thumb 4.0.1 MIT */
+/* suffix-thumb 4.0.2 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -165,8 +165,10 @@
     model.rules = indexRules(model.rules);
 
     // compress reverse rules
-    model.rev = toArray(model.rev);
-    model.rev = indexRules(model.rev);
+    if (model.rev) {
+      model.rev = toArray(model.rev);
+      model.rev = indexRules(model.rev);
+    }
 
     // compress exceptions
     model.exceptions = toArray(model.exceptions);

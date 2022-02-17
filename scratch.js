@@ -6,20 +6,17 @@ import { convert, learn, reverse, test, compress, uncompress, classify } from '.
 // import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 
-import model from '/Users/spencer/mountain/compromise/data/models/Comparative.js'
-console.log(compress(model))
-
-// let pairs = [
-//   ['walk', 'walked'],
-//   ['talk', 'talked'],
-//   ['smoke', 'smoked'],
-//   ['bike', 'biked'],
-//   ['go', 'went'],
-// ]
-// let model = learn(pairs)
-// console.log(model.rev)
-// let out = classify('waited', model)
-// console.log(out)
+let pairs = [
+  ['walk', 'walked'],
+  ['talk', 'talked'],
+  ['smoke', 'smoked'],
+  ['bike', 'biked'],
+  ['go', 'went'],
+]
+let model = learn(pairs)
+console.log(model.rev)
+let out = classify('waited', model)
+console.log(out)
 // let pairs = [
 //   ["read", "read"],
 //   ["spread", "spread"],

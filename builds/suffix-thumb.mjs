@@ -1,4 +1,4 @@
-/* suffix-thumb 4.0.1 MIT */
+/* suffix-thumb 4.0.2 MIT */
 const prefix$1 = /^.([0-9]+)/;
 
 // handle compressed form of key-value pair
@@ -159,8 +159,10 @@ const uncompress = function (model = {}) {
   model.rules = indexRules(model.rules);
 
   // compress reverse rules
-  model.rev = toArray(model.rev);
-  model.rev = indexRules(model.rev);
+  if (model.rev) {
+    model.rev = toArray(model.rev);
+    model.rev = indexRules(model.rev);
+  }
 
   // compress exceptions
   model.exceptions = toArray(model.exceptions);

@@ -29,8 +29,10 @@ const uncompress = function (model = {}) {
   model.rules = indexRules(model.rules)
 
   // compress reverse rules
-  model.rev = toArray(model.rev)
-  model.rev = indexRules(model.rev)
+  if (model.rev) {
+    model.rev = toArray(model.rev)
+    model.rev = indexRules(model.rev)
+  }
 
   // compress exceptions
   model.exceptions = toArray(model.exceptions)
