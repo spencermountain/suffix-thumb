@@ -24,7 +24,6 @@ const trimRules = function (rules, pairsDone) {
       let pair = pairsDone[i]
       let res = replace(pair[0], r.from, r.to)
       if (res !== pair[0] && res !== pair[1]) {
-        // console.log('banned rule:', r)
         return false
       }
     }

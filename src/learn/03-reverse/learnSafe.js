@@ -5,7 +5,7 @@ import { trimPairs, trimRules } from '../02-trim/index.js'
 const learnSafe = function (issues, resolved, opts) {
   let rules = findRules(issues)
   // trim any that interfere with resolved
-  rules = trimRules(rules, resolved)
+  rules = trimRules(rules, resolved, true)
 
   let remaining = issues
   let pairsDone = []
