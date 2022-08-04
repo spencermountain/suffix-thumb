@@ -23,13 +23,13 @@ const noRedundant = function (arr) {
   return arr.filter(a => a)
 }
 
-const fmt = function (diffA, diffB) {
+const fmt = function (diffA, diffB, labelA, labelB) {
   let res = {}
   diffA.forEach(a => {
-    res[a[0]] = res[a[0]] || 'a'
+    res[a[0]] = res[a[0]] || labelA
   })
   diffB.forEach(a => {
-    res[a[0]] = res[a[0]] || 'b'
+    res[a[0]] = res[a[0]] || labelB
   })
   let out = [null]
   Object.keys(res).forEach(k => {
@@ -40,7 +40,9 @@ const fmt = function (diffA, diffB) {
   return out
 }
 
-const fingerPrint = function (listA, listB) {
+const fingerPrint = function (listA, listB, labelA, labelB) {
+  labelA = labelA || 'a'
+  labelB = labelB || 'b'
   let suffA = generate(listA)
   let suffB = generate(listB)
   let { diffA, diffB } = diff(suffA, suffB)
@@ -50,8 +52,9 @@ const fingerPrint = function (listA, listB) {
   diffA = noRedundant(diffA)
   diffB = noRedundant(diffB)
 
-  let rules = fmt(diffA, diffB)
-  score(listA, listB, rules)
+  let rules = fmt(diffA, diffB, labelA, labelB)
+  score(listA, listB, rules, labelA, labelB)
+
   return rules
 }
 export default fingerPrint

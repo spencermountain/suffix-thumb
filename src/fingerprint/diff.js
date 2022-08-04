@@ -43,14 +43,21 @@ const generate = function (list) {
   }, {})
 }
 
+let threshold = 0.05
 const diff = function (objA, objB) {
   let diffA = {}
   Object.keys(objA).forEach(k => {
     diffA[k] = objA[k] - (objB[k] || 0)
+    if (diffA[k] <= threshold) {
+      delete diffA[k]
+    }
   })
   let diffB = {}
   Object.keys(objB).forEach(k => {
     diffB[k] = objB[k] - (objA[k] || 0)
+    if (diffB[k] <= threshold) {
+      delete diffB[k]
+    }
   })
   return { diffA, diffB }
 }

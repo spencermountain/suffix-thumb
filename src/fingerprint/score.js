@@ -21,15 +21,18 @@ const percent = (part, total) => {
   return num;
 };
 
-const score = function (listA, listB, rules) {
+const score = function (listA, listB, rules, labelA, labelB) {
   let right = 0
   let wrong = 0
   let none = 0
+  let wrongA = []
+  let wrongB = []
   listA.forEach(str => {
     let res = suffixLoop(str, rules)
-    if (res === 'a') {
+    if (res === labelA) {
       right += 1
-    } else if (res === 'b') {
+    } else if (res === labelB) {
+      wrongA.push(str)
       wrong += 1
     } else {
       none += 1
@@ -37,9 +40,10 @@ const score = function (listA, listB, rules) {
   })
   listB.forEach(str => {
     let res = suffixLoop(str, rules)
-    if (res === 'b') {
+    if (res === labelB) {
       right += 1
-    } else if (res === 'a') {
+    } else if (res === labelA) {
+      wrongB.push(str)
       wrong += 1
     } else {
       none += 1
@@ -49,5 +53,6 @@ const score = function (listA, listB, rules) {
   console.log(right, `right  ${percent(right, total)}%`)
   console.log(wrong, `wrong ${percent(wrong, total)}%`)
   console.log(none, `null ${percent(none, total)}%`)
+  return { wrongA, wrongB }
 }
 export default score

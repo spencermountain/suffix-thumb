@@ -15,7 +15,7 @@ let pairs = [
   ['go', 'went'],
 ]
 let model = fingerprint(pairs.map(a => a[0]), pairs.map(a => a[1]))
-console.log(model)
+// console.log(model)
 // let model = learn(pairs)
 // let out = convert('addressed', uncompress(models.PastTense))
 // console.log(out)
