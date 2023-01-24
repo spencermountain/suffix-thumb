@@ -19,7 +19,7 @@ test('find best rule', function (t) {
     ['endeavouring', 'endeavour']
   ]
   let model = learn(arr)
-  t.equal(model.rules.g.length, 1, 'one-rule')
+  t.equal(model.rules[3].ing, '', 'one-rule')
   t.equal(Object.keys(model.exceptions).length, 0, 'no-exceptions')
   t.end()
 })

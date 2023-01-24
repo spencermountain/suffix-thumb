@@ -12,10 +12,11 @@ const expand = function (key = '', val = '') {
   return full
 }
 
-const unpack = function (str) {
+const unpack = function (str = '') {
   let out = { rules: [], exceptions: {} }
   let [rules, exceptions] = str.split('==')
   // unpack rules
+  rules = rules || ''
   rules.split(',').forEach(txt => {
     let [a, b] = txt.split(':')
     let len = a.length
@@ -30,6 +31,7 @@ const unpack = function (str) {
   }
 
   // unpack exceptions
+  exceptions = exceptions || ''
   exceptions.split(',').forEach(txt => {
     let [a, b] = txt.split(':')
     out.exceptions[a] = expand(a, b)

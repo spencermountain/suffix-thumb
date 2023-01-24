@@ -1,8 +1,8 @@
-import { learn, reverse, test, compress, uncompress, classify, fingerprint, tiny, pack, unpack } from './src/index.js'
-import data from '/Users/spencer/mountain/it-compromise/data/models/verbs/conditional.js'
+import { learn, reverse, test, compress, uncompress } from './src/index.js'
+import data from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
 
 // let pairs = Object.keys(data).map(k => [k, data[k][0]])
-let pairs = Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
+let pairs = data//Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
 // pairs = [
 //   ['sottomettere', 'sottometterei'],
 //   ['teletrasmettere', 'teletrasetterei'],
@@ -10,13 +10,12 @@ let pairs = Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
 //   // ['trasmettere', 'trasmetterei']
 // ]
 
-// console.log(compress(learn(pairs)))
-let res = tiny(pairs)
+let res = learn(pairs)
 console.log(res)
 console.log('\n\n')
-let small = pack(res)
+let small = compress(res)
 console.log(small)
-let again = unpack(small)
+let again = uncompress(small)
 test(pairs, again)
 
 // { ei: 'e' }, 
