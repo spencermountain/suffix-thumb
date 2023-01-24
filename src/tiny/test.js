@@ -10,11 +10,11 @@ const percent = (part, total) => {
 
 
 
-const test = function (pairs, obj) {
+const test = function (pairs, model) {
   let right = 0
   let wrong = []
   pairs.forEach(a => {
-    let have = convert(a[0], obj)
+    let have = convert(a[0], model)
     if (have === null) {
       // console.log(a)
     }

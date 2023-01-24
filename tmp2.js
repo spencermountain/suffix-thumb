@@ -1,0 +1,1 @@
+export default `erei|are,rrei|nire,irei|ire,herei|are,urrei|urre,ccerei|cciare,aderei|adere,ederei|edere,ncerei|nciare,rcerei|rciare,rgerei|rgere,ngerei|ngere,agerei|agiare,lgerei|lgere,ascerei|asciare,orrerei|orrere,escerei|escere,iggerei|iggere,oscerei|osciare,eggerei|eggiare,batterei|battere,oglierei|ogliere,scenderei|scendere,==accenderei|accendere,agerei|agiare`
