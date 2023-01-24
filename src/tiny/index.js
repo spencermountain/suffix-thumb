@@ -1,8 +1,9 @@
 import test from './test.js'
 import prepWork from './00-prepwork/index.js'
 import firstPass from './01-tiny/index.js'
-import align from './00-prepwork/_align.js'
 import secondPass from './02-longer/index.js'
+import thirdPass from './03-reverse/index.js'
+
 
 const addRules = function (found, rules) {
   rules.forEach(a => {
@@ -14,35 +15,39 @@ const addRules = function (found, rules) {
 }
 
 
-const tiny = function (pairs) {
-  let found = { rules: [{}, {}, {}, {}] }
+const learn = function (pairs, opts = {}) {
+  let model = { rules: [] }
   // line-up each pair
   pairs = prepWork(pairs)
 
   // ==== first-pass  - find good rules
   let newDiffs = firstPass(pairs, 0)
-  found = addRules(found, newDiffs)
+  model = addRules(model, newDiffs)
 
   // === second-pass  - add perfectly safe rules
-  let missed = test(pairs, found)
+  let missed = test(pairs, model)
   missed.forEach(arr => {
     let more = secondPass(arr[0], arr[1], pairs)
     if (more) {
-      found = addRules(found, [[more.from, more.to]])
+      model = addRules(model, [[more.from, more.to]])
     }
   })
-  missed = test(pairs, found)
+  missed = test(pairs, model)
 
-  // ==third pass - add exceptions
-  found.exceptions = missed.reduce((h, a) => {
+  // === third pass - add exceptions
+  model.exceptions = missed.reduce((h, a) => {
     h[a[0]] = a[1]
     return h
   }, {})
-  missed = test(pairs, found)
+  missed = test(pairs, model)
   if (missed.length !== 0) {
     console.log('huh - ', missed)
   }
 
-  return found
+  // === third pass - add reverse
+  if (opts.reverse !== false) {
+    model.rev = thirdPass(pairs, model)
+  }
+  return model
 }
-export default tiny
+export default learn

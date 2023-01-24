@@ -1,26 +1,34 @@
 import keyVal from './key-val.js'
 
-const pack = function (model) {
+const packRules = function (rules) {
   let out = ''
-  model.rules.forEach(obj => {
+  rules.forEach(obj => {
     let r = []
     Object.keys(obj).forEach(k => {
       let val = keyVal(k, obj[k])// compress any shared prefix
-      if (!val) {
-        console.log('=-=-=-= here -=-=-=-')
-        console.log(k, obj[k])
-      }
       r.push(k + ':' + val + ',')
     })
     out += r.join('')
   })
+  return out
+}
+
+const pack = function (model) {
+  let out = packRules(model.rules)
   out += '=='
+
   let r = []
   Object.keys(model.exceptions || {}).forEach(k => {
     let val = keyVal(k, model.exceptions[k])// compress any shared prefix
     r.push(k + ':' + val)
   })
   out += r.join(',')
+
+  // pack reversed rules too
+  if (model.rev) {
+    out += '=='
+    out += packRules(model.rev)
+  }
   return out
 }
 export default pack
