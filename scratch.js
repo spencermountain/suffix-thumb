@@ -1,24 +1,17 @@
-import { learn, reverse, test, compress, uncompress } from './src/index.js'
-import data from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
+import { learn, reverse, test, compress, uncompress, validate } from './src/index.js'
+import data from '/Users/spencer/mountain/it-compromise/data/models/verbs/conditional.js'
 
 // let pairs = Object.keys(data).map(k => [k, data[k][0]])
-let pairs = data//Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
-// pairs = [
-//   ['sottomettere', 'sottometterei'],
-//   ['teletrasmettere', 'teletrasetterei'],
-//   // ['tramettere', 'trametterei'],
-//   // ['trasmettere', 'trasmetterei']
-// ]
+let pairs = Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
 
-let res = learn(pairs)
-console.log(res)
-console.log('\n\n')
-let small = compress(res)
-console.log(small)
-let again = uncompress(small)
-test(pairs, again)
+const swap = (a) => [a[1], a[0]]
 
-// { ei: 'e' }, 
-// { rei: 're' }, 
-// { erei: 'are' },
-// 'apprenderei', 'apprendere
+pairs = validate(pairs)
+let model = learn(pairs)
+// test(pairs, model)
+
+let rev = reverse(model)
+console.log(model)
+console.log(rev)
+test(pairs.map(swap), rev)
+// console.log(rev)
