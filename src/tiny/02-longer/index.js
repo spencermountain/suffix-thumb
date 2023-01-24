@@ -1,7 +1,9 @@
 import diff from '../_diff.js'
-import convert from '../convert.js'
 
 const isSafe = function (rule, pairs) {
+  if (!rule.from) {
+    return false
+  }
   return pairs.every(a => {
     let [from, to] = a
     if (from.endsWith(rule.from)) {
@@ -17,7 +19,7 @@ const isSafe = function (rule, pairs) {
 
 // find first completely safe rule
 const firstSafe = function (a, b, pairs) {
-  for (let i = 0; i < 5; i += 1) {
+  for (let i = 0; i < 8; i += 1) {
     let rule = diff(a, b, i)
     let ok = isSafe(rule, pairs)
     if (ok) {

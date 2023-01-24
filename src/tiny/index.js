@@ -22,7 +22,6 @@ const tiny = function (pairs) {
   let newDiffs = firstPass(pairs, 0)
   // console.log('+ ', newDiffs)
   found = addRules(found, newDiffs)
-
   // === second-pass===
   //  - add more safe rules
   let missed = test(pairs, found)
@@ -33,7 +32,8 @@ const tiny = function (pairs) {
     }
   })
   missed = test(pairs, found)
-
+  console.log('missing:')
+  console.log(missed)
   return found
 }
 export default tiny
