@@ -4,18 +4,14 @@ import data from '/Users/spencer/mountain/it-compromise/data/models/verbs/condit
 // let pairs = Object.keys(data).map(k => [k, data[k][0]])
 let pairs = Object.keys(data).map(k => [data[k][0], k])
 
-pairs = [
-  ['apporrei', 'apporre'],
-  ['apporterei', 'apportare'],
-  ['apposterei', 'appostare'],
-  ['apprenderei', 'apprendere'],
-  ['approfitterei', 'approfittare'],
-  ['appunterei', 'appuntare'],
-  ['arderei', 'ardere'],
-]
+// pairs = [
+//   ['apporrei', 'apporre'],
+//   ['apporterei', 'apportare'],
+//   ['apprenderei', 'apprendere'],
+// ]
 
 let res = tiny(pairs)
-// console.log(res)
+console.log(res)
 
 // { ei: 'e' }, 
 // { rei: 're' }, 

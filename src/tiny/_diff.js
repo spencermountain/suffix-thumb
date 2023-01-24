@@ -1,4 +1,3 @@
-import substr from './_substr.js'
 
 const subtract = function (from, to, peekLen = 0) {
   let all = []
@@ -17,24 +16,4 @@ const subtract = function (from, to, peekLen = 0) {
   }
 }
 
-// line-up "abcdfoo" with "zzabcdbar"
-const align = function (a, b) {
-  let res = substr(a, b)
-  // clip left side
-  a = a.substring(res.offset)
-  // clip right side
-  for (let i = 0; i < b.length; i += 1) {
-    if (b.startsWith(res.sequence)) {
-      break
-    }
-    b = b.substring(1)
-  }
-  return { a, b }
-}
-
-const diff = function (a, b, peek) {
-  let res = align(a, b)
-  return subtract(res.a, res.b, peek)
-}
-export default diff
-console.log(diff('ohyeahxxabcfoo', 'nonoabcbar'))
+export default subtract
