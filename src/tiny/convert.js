@@ -1,8 +1,16 @@
 
 //sweep-through all suffixes
-const convert = function (str = '', rules = [], fallback = []) {
+const convert = function (str = '', found = {}) {
+  // check exceptions
+  found.exceptions = found.exceptions || {}
+  if (found.exceptions.hasOwnProperty(str)) {
+    return found.exceptions[str]
+  }
+
+  // check rules
+  let rules = found.rules || []
   const len = str.length
-  let max = len <= 6 ? len - 1 : 6
+  let max = len <= rules.length ? len - 1 : rules.length
   for (let i = max; i >= 1; i -= 1) {
     let suffix = str.substring(len - i, str.length)
     if (rules[suffix.length] && rules[suffix.length].hasOwnProperty(suffix) === true) {
@@ -11,18 +19,7 @@ const convert = function (str = '', rules = [], fallback = []) {
       return pre + post
     }
   }
-  // remove generic tail
-  // if (fallback[0]) {
-  // if (str.endsWith(fallback[0])) {
-  //   console.log(str)
-  // }
-  // return str.replace(fallback[0],'')
-  //   return str
-  // }
-  // add a generic tail
-  // if (fallback[1]) {
-  // return str += fallback[1]
-  // }
+
   return str //unchanged
 }
 export default convert

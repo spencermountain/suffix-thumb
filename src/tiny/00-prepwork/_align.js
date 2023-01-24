@@ -1,4 +1,4 @@
-import substr from './_substr.js'
+import substr from '../_substr.js'
 
 // line-up "abcdfoo" with "zzabcdbar"
 const align = function (arr) {

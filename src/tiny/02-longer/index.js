@@ -19,7 +19,7 @@ const isSafe = function (rule, pairs) {
 
 // find first completely safe rule
 const firstSafe = function (a, b, pairs) {
-  for (let i = 0; i < 8; i += 1) {
+  for (let i = 0; i < a.length; i += 1) {
     let rule = diff(a, b, i)
     let ok = isSafe(rule, pairs)
     if (ok) {

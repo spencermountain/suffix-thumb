@@ -1,6 +1,7 @@
 import test from './test.js'
+import prepWork from './00-prepwork/index.js'
 import firstPass from './01-tiny/index.js'
-import align from './_align.js'
+import align from './00-prepwork/_align.js'
 import secondPass from './02-longer/index.js'
 
 const addRules = function (found, rules) {
@@ -12,18 +13,17 @@ const addRules = function (found, rules) {
   return found
 }
 
+
 const tiny = function (pairs) {
   let found = { rules: [{}, {}, {}, {}] }
   // line-up each pair
-  pairs = pairs.map(align)
+  pairs = prepWork(pairs)
 
-  // ====first-pass===
-  //  - find smallest rules
+  // ==== first-pass  - find good rules
   let newDiffs = firstPass(pairs, 0)
-  // console.log('+ ', newDiffs)
   found = addRules(found, newDiffs)
-  // === second-pass===
-  //  - add more safe rules
+
+  // === second-pass  - add perfectly safe rules
   let missed = test(pairs, found)
   missed.forEach(arr => {
     let more = secondPass(arr[0], arr[1], pairs)
@@ -32,8 +32,17 @@ const tiny = function (pairs) {
     }
   })
   missed = test(pairs, found)
-  console.log('missing:')
-  console.log(missed)
+
+  // ==third pass - add exceptions
+  found.exceptions = missed.reduce((h, a) => {
+    h[a[0]] = a[1]
+    return h
+  }, {})
+  missed = test(pairs, found)
+  if (missed.length !== 0) {
+    console.log('huh - ', missed)
+  }
+
   return found
 }
 export default tiny
