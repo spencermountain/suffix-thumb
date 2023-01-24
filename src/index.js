@@ -7,5 +7,6 @@ import learn from './learn/index.js'
 import validate from './validate/index.js'
 import classify from './classify/index.js'
 import fingerprint from './fingerprint/index.js'
+import tiny from './tiny/index.js'
 
-export { learn, convert, compress, uncompress, reverse, validate, test, classify, fingerprint }
+export { learn, convert, compress, uncompress, reverse, validate, test, classify, fingerprint, tiny }
