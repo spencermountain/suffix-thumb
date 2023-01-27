@@ -8,8 +8,6 @@ const percent = (part, total) => {
   return num + '%';
 };
 
-
-
 const test = function (pairs, model) {
   let right = 0
   let wrong = []
@@ -21,13 +19,12 @@ const test = function (pairs, model) {
     if (have === a[1]) {
       right += 1
     } else {
-      // console.log(have, a[1])
       wrong.push(a)
     }
   })
   // console.log(right.toLocaleString(), 'right, ', wrong.length.toLocaleString(), 'wrong')
-  console.log('  ' + blue(percent(right, pairs.length)))
+  let rev = model.reversed ? '[rev]' : '     '
+  console.log(blue(`${rev} ` + percent(right, pairs.length)))
   return wrong
-  // console.dir(buildTrie(wrong), { depth: 3 })
 }
 export default test

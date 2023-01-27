@@ -22,7 +22,7 @@ const generate = function (pairs, peek = 0) {
       return false
     }
     already.add(a[0])
-    return a[0] && a[1]
+    return true
   })
   // let rules = byLen(diffs)
   return diffs

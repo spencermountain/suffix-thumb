@@ -3,7 +3,13 @@ import data from '/Users/spencer/mountain/it-compromise/data/models/verbs/condit
 
 let pairs = Object.keys(data).map(k => [k, data[k][0]])
 // let pairs = Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
-
+pairs = [
+  ['victorien', 'victorienne'],
+  ['vidé', 'vidée'],
+  ['vietnamien', 'vietnamienne'],
+  ['vil', 'vile'],
+  ['vilain', 'vilaine'],
+]
 const swap = (a) => [a[1], a[0]]
 
 pairs = validate(pairs)

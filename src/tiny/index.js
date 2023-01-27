@@ -1,53 +1,49 @@
 import test from './test.js'
 import prepWork from './00-prepwork/index.js'
-import firstPass from './01-tiny/index.js'
-import secondPass from './02-longer/index.js'
-import thirdPass from './03-reverse/index.js'
+import firstPass from './01-first-pass/index.js'
+import secondPass from './02-second-pass/index.js'
+import thirdPass from './03-third-pass/index.js'
 
-
-const addRules = function (found, rules) {
-  rules.forEach(a => {
-    let len = a[0].length
-    found.rules[len] = found.rules[len] || {}
-    found.rules[len][a[0]] = a[1]
+const addRules = function (rules, suffixes) {
+  rules.forEach(arr => {
+    let [a, b] = arr
+    if (suffixes[a]) {
+      console.log('already', arr)
+      return
+    }
+    suffixes[a] = b
   })
-  return found
+  return suffixes
 }
 
+const findRules = function (pairs) {
 
-const learn = function (pairs, opts = {}) {
-  let model = { rules: [] }
   // line-up each pair
   pairs = prepWork(pairs)
 
-  // ==== first-pass  - find good rules
-  let newDiffs = firstPass(pairs, 0)
-  model = addRules(model, newDiffs)
+  // ## 1st-pass ## 
+  let rules = addRules(firstPass(pairs, 0), {})
 
-  // === second-pass  - add perfectly safe rules
-  let missed = test(pairs, model)
-  missed.forEach(arr => {
-    let more = secondPass(arr[0], arr[1], pairs)
-    if (more) {
-      model = addRules(model, [[more.from, more.to]])
-    }
-  })
-  missed = test(pairs, model)
+  // ## 2nd-pass ## 
+  let missing = test(pairs, { fwd: rules })
+  rules = addRules(secondPass(missing, pairs), rules)
 
-  // === third pass - add exceptions
-  model.exceptions = missed.reduce((h, a) => {
-    h[a[0]] = a[1]
-    return h
-  }, {})
-  missed = test(pairs, model)
-  if (missed.length !== 0) {
-    console.log('huh - ', missed)
-  }
+  return rules
+}
 
-  // === third pass - add reverse
-  if (opts.reverse !== false) {
-    model.rev = thirdPass(pairs, model)
-  }
+const learn = function (pairs, opts = {}) {
+  let model = { fwd: {}, bkwd: {}, both: {}, ex: {} }
+
+  // get forward rules
+  model.fwd = findRules(pairs)
+  // get backward rules
+  let rev = pairs.map(a => [a[1], a[0]])
+  model.bkwd = findRules(rev)
+
+  // ## 3rd-pass ## 
+  model = thirdPass(model)
+  console.log(model)
+
   return model
 }
 export default learn

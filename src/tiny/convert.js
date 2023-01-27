@@ -1,39 +1,35 @@
 // check rules
-const checkRules = function (str, rules = []) {
+const checkRules = function (str, rules = {}) {
   const len = str.length
-  let max = len <= rules.length ? len - 1 : rules.length
+  let max = str.length - 1 //<= rules.length ? len - 1 : rules.length
   for (let i = max; i >= 1; i -= 1) {
     let suffix = str.substring(len - i, str.length)
-    if (rules[suffix.length] && rules[suffix.length].hasOwnProperty(suffix) === true) {
+    if (rules && rules.hasOwnProperty(suffix) === true) {
       let pre = str.slice(0, len - i)
-      let post = rules[suffix.length][suffix]
+      let post = rules[suffix]
       return pre + post
     }
+  }
+  // try a fallback transform
+  if (rules.hasOwnProperty('')) {
+    return str += rules['']
   }
   return null
 }
 
 //sweep-through all suffixes
-const convert = function (str = '', found = {}) {
+const convert = function (str = '', model = {}) {
   // check exceptions
-  found.exceptions = found.exceptions || {}
-  if (found.exceptions.hasOwnProperty(str)) {
-    return found.exceptions[str]
+  model.exceptions = model.exceptions || {}
+  if (model.exceptions.hasOwnProperty(str)) {
+    return model.exceptions[str]
   }
 
-  if (found.reversed) {
-    let out = checkRules(str, found.rev)
-    if (out) {
-      return out
-    }
-  }
+  // check forward-only rules
+  let out = checkRules(str, model.fwd)
+  // check shared rules
+  out = out || checkRules(str, model.both)
 
-  // check normal rules
-  let out = checkRules(str, found.rules)
-  if (out) {
-    return out
-  }
-
-  return str //unchanged
+  return out || str //unchanged
 }
 export default convert
