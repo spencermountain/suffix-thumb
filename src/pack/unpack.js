@@ -12,30 +12,21 @@ const expand = function (key = '', val = '') {
   return full
 }
 
-const unpack = function (str = '') {
-  let out = { rules: [], exceptions: {} }
-  let [rules, exceptions] = str.split('==')
-  // unpack rules
-  rules = rules || ''
-  rules.split(',').forEach(txt => {
+const unpackObj = function (str = '') {
+  let obj = {}
+  str.split(',').forEach(txt => {
     let [a, b] = txt.split(':')
-    let len = a.length
-    if (len) {
-      out.rules[len] = out.rules[len] || {}
-      out.rules[len][a] = expand(a, b)
-    }
+    obj[a] = expand(a, b)
   })
-  // clean empties up a bit
-  for (let i = 0; i < out.rules.length; i += 1) {
-    out.rules[i] = out.rules[i] || {}
-  }
+  return obj
+}
 
-  // unpack exceptions
-  exceptions = exceptions || ''
-  exceptions.split(',').forEach(txt => {
-    let [a, b] = txt.split(':')
-    out.exceptions[a] = expand(a, b)
-  })
-  return out
+const unpack = function (str = '') {
+  let model = JSON.parse(str)
+  model.fwd = unpackObj(model.fwd)
+  model.both = unpackObj(model.both)
+  model.bkwd = unpackObj(model.bkwd)
+  model.ex = unpackObj(model.ex)
+  return model
 }
 export default unpack

@@ -12,12 +12,12 @@ let pairs = Object.keys(data).map(k => [k, data[k][0]])
 // ]
 const swap = (a) => [a[1], a[0]]
 
-pairs = validate(pairs)
 let model = learn(pairs)
+
+let pkd = compress(model)
+console.log(pkd)
+model = uncompress(pkd)
+// console.log(model)
+
 test(pairs, model)
-
-
-// console.log(compress(model))
-
-let rev = reverse(model)
-test(pairs.map(swap), rev)
+test(pairs.map(swap), reverse(model))
