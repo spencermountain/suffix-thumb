@@ -4,12 +4,13 @@ import { again, test, reverse } from './src/index.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
 
 let pairs = [
-  ['croirai', 'croire'],
-  ['cuirai', 'cuire'],
-  ['croulerai', 'crouler'],
-  ['cuisinerai', 'cuisiner'],
-  ['déblayerai', 'déblayer'],
-  ['débouillirai', 'débouillir'],
+  ['acool', 'agood'],
+  ['bcool', 'bgood'],
+  ['ccool', 'cgood'],
+  ['dcool', 'dgood'],
+  ['ecool', 'egood'],
+  ['gcool', 'ggood'],
+  ['ooocool', 'ooocool'],//unchanged
 ]
 
 let model = again(pairs)
