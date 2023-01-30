@@ -1,13 +1,10 @@
-// import getSuffix from './lib/getSuffix.js'
-// import goodEnough from './lib/goodEnough.js'
-// import convert from './lib/convert.js'
 import findRules from './findRules.js'
-
+import shareRules from './shareRules.js'
 
 const learn = function (pairs, opts = {}) {
   let threshold = opts.threshold || 80
-  console.log(pairs.length)
-  let rules = findRules(pairs, threshold)
-  return { fwd: rules }
+  let fwd = findRules(pairs, threshold)
+  let model = shareRules(fwd, pairs, threshold)
+  return model
 }
 export default learn

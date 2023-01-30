@@ -8,10 +8,10 @@ import validate from './validate/index.js'
 // import classify from './classify/index.js'
 // import fingerprint from './fingerprint/index.js'
 
-import learn from './tiny/index.js'
+import learn from './again/index.js'
 import compress from './pack/pack.js'
 import uncompress from './pack/unpack.js'
-import test from './tiny/test.js'
+import test from './test/index.js'
 import again from './again/index.js'
 
 

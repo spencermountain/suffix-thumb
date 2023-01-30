@@ -1,4 +1,4 @@
-import test from './test.js'
+import test from '../test/index.js'
 import prepWork from './00-prepwork/index.js'
 import firstPass from './01-first-pass/index.js'
 import secondPass from './02-second-pass/index.js'

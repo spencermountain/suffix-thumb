@@ -9,7 +9,7 @@ const findRules = function (pairs, threshold) {
   let remain = pairs.slice(0)
   let rules = {}
   // greediest rules first
-  for (let peek = 0; peek < 5; peek += 1) {
+  for (let peek = 0; peek < 6; peek += 1) {
     console.log(`\n--- #${peek} ---`)
     for (let i = 0; i < remain.length; i += 1) {
       let rule = getSuffix(remain[i], peek)

@@ -2,7 +2,7 @@ import test from 'tape'
 import { learn, compress } from '../src/index.js'
 
 test('find best rule', function (t) {
-  let arr = [
+  let pairs = [
     ['neighbouring', 'neighbour'],
     ['colouring', 'colour'],
     ['flavouring', 'flavour'],
@@ -18,8 +18,25 @@ test('find best rule', function (t) {
     ['contouring', 'contour'],
     ['endeavouring', 'endeavour']
   ]
-  let model = learn(arr)
-  t.equal(model.both.ing, '', 'one-rule')
-  t.equal(Object.keys(model.ex).length, 0, 'no-exceptions')
+  let model = learn(pairs)
+  t.equal(model.both.ing, '', 'both-rule')
+  t.equal(Object.keys(model.ex || {}).length, 0, 'no-exceptions')
+  t.end()
+})
+
+
+test('find best rule', function (t) {
+  let pairs = [
+    ['ocool', 'ocool'],
+    ['acool', 'agood'],
+    ['bcool', 'bgood'],
+    ['ccool', 'cgood'],
+    ['dcool', 'dgood'],
+    ['ecool', 'egood'],
+    ['gcool', 'ggood'],
+  ]
+  let model = learn(pairs)
+  t.equal(model.fwd.cool, 'good', 'fwd-rule')
+  t.equal(model.same[0], 'ocool', 'same-rule')
   t.end()
 })
