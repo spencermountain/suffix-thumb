@@ -1,5 +1,5 @@
 
-// full-word exceptions
+// 01- full-word exceptions
 const checkEx = function (str, ex = {}) {
   if (ex.hasOwnProperty(str)) {
     return ex[str]
@@ -7,7 +7,7 @@ const checkEx = function (str, ex = {}) {
   return null
 }
 
-// suffixes that pass our word through
+// 02- suffixes that pass our word through
 const checkSame = function (str, same = []) {
   for (let i = 0; i < same.length; i += 1) {
     if (str.endsWith(same[i])) {
@@ -17,7 +17,7 @@ const checkSame = function (str, same = []) {
   return null
 }
 
-// check rules - longest first
+// 03- check rules - longest first
 const checkRules = function (str, fwd, both = {}) {
   fwd = fwd || {}
   let max = str.length - 1
@@ -37,6 +37,9 @@ const checkRules = function (str, fwd, both = {}) {
   // try a fallback transform
   if (fwd.hasOwnProperty('')) {
     return str += fwd['']
+  }
+  if (both.hasOwnProperty('')) {
+    return str += both['']
   }
   return null
 }

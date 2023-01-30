@@ -1,20 +1,20 @@
-const reverseObj = function (obj) {
+const flipObj = function (obj) {
   return Object.entries(obj).reduce((h, a) => {
     h[a[1]] = a[0]
     return h
   }, {})
 }
 
-const reverse = function (model) {
-  let tmp = model.fwd
+const reverse = function (model = {}) {
   return {
-    reversed: !Boolean(model.reversed),
-    // swap fwd+bkwd
-    fwd: model.bkwd,
-    bkwd: tmp,
-    // reverse these two
-    both: reverseObj(model.both),
-    ex: reverseObj(model.ex),
+    reversed: true,
+    // keep these two
+    both: flipObj(model.both),
+    ex: flipObj(model.both),
+    // this one is fine
+    same: model.same,
+    // swap this one in
+    fwd: model.rev || {}
   }
 }
 export default reverse

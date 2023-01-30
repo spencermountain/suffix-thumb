@@ -5,11 +5,11 @@ import revRules from './03-reverseRules.js'
 const learn = function (pairs, opts = {}) {
   let threshold = opts.threshold || 80
   // get forward-dir rules
-  let fwd = findRules(pairs, threshold)
+  let { fwd, ex } = findRules(pairs, threshold)
   // move some to both
   let model = shareRules(fwd, pairs, threshold)
   // generate remaining reverse-dir rules
-
+  model = revRules(pairs, model, threshold)
   return model
 }
 export default learn

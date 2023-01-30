@@ -14,5 +14,5 @@ import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.
 // ]
 
 let model = again(pairs)
-console.log(model)
+// console.log(model)
 test(pairs, model)
