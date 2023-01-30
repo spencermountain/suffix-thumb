@@ -10,7 +10,7 @@ const reverse = function (model = {}) {
     reversed: true,
     // keep these two
     both: flipObj(model.both),
-    ex: flipObj(model.both),
+    ex: flipObj(model.ex),
     // this one is fine
     same: model.same,
     // swap this one in

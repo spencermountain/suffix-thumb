@@ -15,7 +15,7 @@ const shareRules = function (fwd, pairs, threshold) {
   Object.keys(fwd).forEach(a => {
     let b = fwd[a]
     let rule = { from: b, to: a }//reverse it
-    if (goodEnough(rule, rev, threshold)) {
+    if (rule.to && goodEnough(rule, rev, threshold)) {
       both[a] = b
       delete fwd[a]
     }

@@ -1,4 +1,4 @@
-import { again, test } from './src/index.js'
+import { again, test, reverse } from './src/index.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-words.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
 import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
@@ -14,5 +14,7 @@ import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.
 // ]
 
 let model = again(pairs)
-// console.log(model)
+console.log('----')
+console.log(model)
+console.log(reverse(model))
 test(pairs, model)
