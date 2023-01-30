@@ -1,5 +1,6 @@
 import convert from '../convert/index.js'
 import reverse from '../reverse/index.js'
+import validate from '../validate/index.js'
 
 const cyan = str => '\x1b[36m' + str + '\x1b[0m'
 const blue = str => '\x1b[34m' + str + '\x1b[0m'
@@ -23,6 +24,7 @@ const getNum = function (pairs, model) {
     if (have === a[1]) {
       right += 1
     } else {
+      console.log(a, '→ ' + have)
       wrong.push(a)
     }
   })
@@ -30,6 +32,7 @@ const getNum = function (pairs, model) {
 }
 
 const test = function (pairs, model = {}) {
+  pairs = validate(pairs)
   let fwdScore = getNum(pairs, model)
   let bkwdScore = getNum(pairs.map(swap), reverse(model))
   console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`)

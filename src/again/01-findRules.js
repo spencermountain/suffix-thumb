@@ -13,7 +13,7 @@ const findRules = function (pairs, threshold) {
     // console.log(`\n--- #${peek} ---`)
     for (let i = 0; i < remain.length; i += 1) {
       let rule = getSuffix(remain[i], peek)
-      if (goodEnough(rule, pairs, threshold)) {
+      if (rule !== null && goodEnough(rule, pairs, threshold)) {
         rules[rule.from] = rules[rule.from] || rule.to
         // what's left, now?
         remain = remain.filter(pair => convert(pair[0], rule) !== pair[1])

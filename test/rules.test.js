@@ -25,18 +25,33 @@ test('find best rule', function (t) {
 })
 
 
-test('find best rule', function (t) {
+test('same test', function (t) {
   let pairs = [
-    ['ocool', 'ocool'],
     ['acool', 'agood'],
     ['bcool', 'bgood'],
     ['ccool', 'cgood'],
     ['dcool', 'dgood'],
     ['ecool', 'egood'],
     ['gcool', 'ggood'],
+    ['ooocool', 'ooocool'],//unchanged
   ]
   let model = learn(pairs)
-  t.equal(model.fwd.cool, 'good', 'fwd-rule')
+  t.equal(model.both.cool, 'good', 'both-rule')
   t.equal(model.same[0], 'ocool', 'same-rule')
+  t.end()
+})
+
+
+test('suffix isnt whole word', function (t) {
+  let pairs = [
+    ['croirai', 'croire'],
+    ['cuirai', 'cuire'],
+    ['croulerai', 'crouler'],
+    ['cuisinerai', 'cuisiner'],
+    ['déblayerai', 'déblayer'],
+    ['débouillirai', 'débouillir'],
+  ]
+  let model = learn(pairs)
+  t.equal(model.both.erai, 'er', 'both-rule')
   t.end()
 })

@@ -10,6 +10,10 @@ const getSuffix = function (pair, peekLen = 0) {
     }
   }
   let prefix = all.length - peekLen
+  // is our suffix just the whole word? (not allowed!)
+  if (peekLen >= all.length) {
+    return null
+  }
   return {
     from: from.substring(prefix),
     to: to.substring(prefix)

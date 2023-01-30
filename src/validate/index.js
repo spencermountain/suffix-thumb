@@ -1,29 +1,18 @@
 // make sure inputs are not impossible to square-up
 const validate = function (pairs, opts = {}) {
-  let left = {}
-  let right = {}
+  let left = new Set()
+  let right = new Set()
   pairs = pairs.filter(a => {
-    if (left[a[0]] !== undefined) {
-      if (opts.debug) {
-        console.warn('Duplicate left side:')
-        console.log('  1.', [a[0], left[a[0]]])
-        console.log('  2.', a)
-      }
+    if (left.has(a[0])) {
+      // console.log('dupe', a)
       return false
     }
-    if (right[a[1]] !== undefined) {
-      if (opts.debug) {
-        console.warn('Duplicate right side:')
-        console.log('  1.', [right[a[1]], a[1]])
-        console.log('  2.', a)
-      }
-      if (opts.inverse === false) {
-        return true //allow it
-      }
+    if (right.has(a[1])) {
+      // console.log('dupe', a)
       return false
     }
-    left[a[0]] = a[1]
-    right[a[1]] = a[0]
+    left.add(a[0])
+    right.add(a[1])
     return true
   })
   return pairs
