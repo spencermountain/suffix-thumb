@@ -1,25 +1,18 @@
-import learn from './learn.js'
-import { indexRules } from '../_lib.js'
+import findRules from './01-findRules.js'
+import shareRules from './02-shareRules.js'
+import revRules from './03-reverseRules.js'
+import validate from '../validate/index.js'
 
-const mergeExceptions = function (fwd, bkwd) {
-  Object.entries(bkwd).forEach(b => {
-    fwd[b[1]] = b[0] //reverse
-  })
-  return fwd
+const learn = function (pairs, opts = {}) {
+  let threshold = opts.threshold || 80
+  pairs = validate(pairs)
+  // get forward-dir rules
+  let { fwd, ex } = findRules(pairs, threshold)
+  // move some to both
+  let model = shareRules(fwd, pairs, threshold)
+  model.ex = ex
+  // generate remaining reverse-dir rules
+  model = revRules(pairs, model, threshold)
+  return model
 }
-
-const learnBoth = function (pairs, opts = {}) {
-  let fwd = learn(pairs, opts)
-  // learn backward too?
-  if (opts.reverse !== false) {
-    pairs = pairs.map(a => [a[1], a[0]])
-    let bkwd = learn(pairs, opts)
-    // merge exceptions
-    fwd.exceptions = mergeExceptions(fwd.exceptions, bkwd.exceptions)
-    // add rules
-    fwd.rev = indexRules(bkwd.rules)
-  }
-  fwd.rules = indexRules(fwd.rules)
-  return fwd
-}
-export default learnBoth
+export default learn

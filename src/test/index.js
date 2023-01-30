@@ -1,6 +1,4 @@
-import convert from '../convert/index.js'
-import reverse from '../reverse/index.js'
-import validate from '../validate/index.js'
+import { convert, reverse, validate } from '../index.js'
 
 const cyan = str => '\x1b[36m' + str + '\x1b[0m'
 const blue = str => '\x1b[34m' + str + '\x1b[0m'
@@ -18,9 +16,6 @@ const getNum = function (pairs, model) {
   let wrong = []
   pairs.forEach(a => {
     let have = convert(a[0], model)
-    if (have === null) {
-      have = a[0]
-    }
     if (have === a[1]) {
       right += 1
     } else {
