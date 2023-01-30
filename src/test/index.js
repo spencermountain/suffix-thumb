@@ -16,7 +16,6 @@ const test = function (pairs, model) {
     if (have === null) {
       have = a[0]
     }
-    console.log(have, a[1])
     if (have === a[1]) {
       right += 1
     } else {

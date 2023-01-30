@@ -1,10 +1,15 @@
-import findRules from './findRules.js'
-import shareRules from './shareRules.js'
+import findRules from './01-findRules.js'
+import shareRules from './02-shareRules.js'
+import revRules from './03-reverseRules.js'
 
 const learn = function (pairs, opts = {}) {
   let threshold = opts.threshold || 80
+  // get forward-dir rules
   let fwd = findRules(pairs, threshold)
+  // move some to both
   let model = shareRules(fwd, pairs, threshold)
+  // generate remaining reverse-dir rules
+
   return model
 }
 export default learn
