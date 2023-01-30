@@ -12,6 +12,7 @@ import learn from './tiny/index.js'
 import compress from './pack/pack.js'
 import uncompress from './pack/unpack.js'
 import test from './tiny/test.js'
+import again from './again/index.js'
 
 
-export { learn, convert, compress, uncompress, reverse, validate, test }
+export { learn, convert, compress, uncompress, reverse, validate, test, again }

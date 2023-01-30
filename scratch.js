@@ -1,23 +1,8 @@
-import { learn, reverse, test, compress, uncompress, validate } from './src/index.js'
-import data from '/Users/spencer/mountain/it-compromise/data/models/verbs/conditional.js'
+import { again, test } from './src/index.js'
+// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-words.js'
+// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
+import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
 
-let pairs = Object.keys(data).map(k => [k, data[k][0]])
-// let pairs = Object.keys(data).map(k => [data[k][0], k])//.slice(0, 200)
-// pairs = [
-//   ['victorien', 'victorienne'],
-//   ['vidé', 'vidée'],
-//   ['vietnamien', 'vietnamienne'],
-//   ['vil', 'vile'],
-//   ['vilain', 'vilaine'],
-// ]
-const swap = (a) => [a[1], a[0]]
-
-let model = learn(pairs)
-
-let pkd = compress(model)
-console.log(pkd)
-model = uncompress(pkd)
-// console.log(model)
-
+let model = again(pairs)
+console.log(model)
 test(pairs, model)
-test(pairs.map(swap), reverse(model))
