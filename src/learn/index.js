@@ -12,7 +12,9 @@ const learn = function (pairs, opts = {}) {
   let model = shareRules(fwd, pairs, threshold)
   model.ex = ex
   // generate remaining reverse-dir rules
-  model = revRules(pairs, model, threshold)
+  if (opts.reverse !== false) {
+    model = revRules(pairs, model, threshold)
+  }
   return model
 }
 export default learn

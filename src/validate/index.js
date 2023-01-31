@@ -13,6 +13,12 @@ const validate = function (pairs, opts = {}) {
     }
     left.add(a[0])
     right.add(a[1])
+
+    // ensure pairs are aligned by prefix
+    // if (a[0].substring(0, 1) !== a[1].substring(0, 1)) {
+    //   console.log('pair not aligned at prefix:', a)
+    //   return false
+    // }
     return true
   })
   return pairs
