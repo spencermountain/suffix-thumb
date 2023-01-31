@@ -5,8 +5,7 @@ import convert from './lib/convert.js'
 const magenta = str => '\x1b[35m' + str + '\x1b[0m'
 const yellow = str => '\x1b[33m' + str + '\x1b[0m'
 
-const findRules = function (pairs, threshold) {
-  let remain = pairs.slice(0)
+const findRules = function (remain, pairs, threshold) {
   let rules = {}
   // greediest rules first
   for (let peek = 0; peek < 6; peek += 1) {

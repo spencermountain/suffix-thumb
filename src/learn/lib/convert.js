@@ -1,8 +1,13 @@
 // check a rule
 const convert = function (str, rule) {
+  if (rule.from.length >= str.length) {
+    return null
+  }
   if (str.endsWith(rule.from)) {
     let len = str.length - rule.from.length
     let pre = str.slice(0, len)
+    if (!pre) {
+    }
     return pre + rule.to
   }
   return null

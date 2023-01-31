@@ -7,7 +7,7 @@ const learn = function (pairs, opts = {}) {
   let threshold = opts.threshold || 80
   pairs = validate(pairs)
   // get forward-dir rules
-  let { fwd, ex } = findRules(pairs, threshold)
+  let { fwd, ex } = findRules(pairs.slice(0), pairs, threshold)
   // move some to both
   let model = shareRules(fwd, pairs, threshold)
   model.ex = ex

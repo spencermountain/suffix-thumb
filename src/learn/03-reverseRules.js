@@ -6,10 +6,10 @@ const swap = (a) => [a[1], a[0]]
 
 const revRules = function (pairs, model, threshold) {
   let revModel = reverse(model)
-  let remain = pairs.map(swap).filter(pair => convert(pair[0], revModel) !== pair[1])
-
   // generate additional rules, for remaining reversed pairs
-  let newRules = findRules(remain, threshold)
+  let rev = pairs.map(swap)
+  let remain = rev.filter(pair => convert(pair[0], revModel) !== pair[1])
+  let newRules = findRules(remain, rev, threshold)
   // merge new rules into model
   model.rev = newRules.fwd
   // merge exceptions, too

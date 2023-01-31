@@ -4,8 +4,16 @@ import { learn, test, reverse, convert } from './src/index.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
 
 let pairs = [
-  ['bouffir', 'bouffirai'],
-  ['autosuffire', 'autosuffirai'],
+  ['devoir', 'devrons'],
+  ['émouvoir', 'émouvrons'],
+  ['entrevoir', 'entreverrons'],
+  ['mouvoir', 'mouvrons'],
+  ['pourvoir', 'pourvoirons'],
+  ['pouvoir', 'pourrons'],
+  ['préconcevoir', 'préconcevrons'],
+  ['prévoir', 'prévoirons'],
+  ['redevoir', 'redevrons'],
+  ['revoir', 'reverrons'],
 ]
 
 let model = learn(pairs)
