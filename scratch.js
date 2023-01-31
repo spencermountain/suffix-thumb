@@ -4,17 +4,13 @@ import { learn, test, reverse, convert } from './src/index.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/future-simple.js'
 
 let pairs = [
-  ['acool', 'agood'],
-  ['bcool', 'bgood'],
-  ['ccool', 'cgood'],
-  ['dcool', 'dgood'],
-  ['ecool', 'egood'],
-  ['gcool', 'ggood'],
-  ['ooocool', 'ooocool'],//unchanged
+  ['bouffir', 'bouffirai'],
+  ['autosuffire', 'autosuffirai'],
 ]
 
 let model = learn(pairs)
 console.log(model)
+// console.log(reverse(model))
 // console.log('----')
 // console.log(model)
 // console.log(reverse(model))

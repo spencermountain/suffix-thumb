@@ -16,7 +16,7 @@ const revRules = function (pairs, model, threshold) {
   model.ex = model.ex || {}
   Object.keys(newRules.ex).forEach(from => {
     let to = newRules.ex[from]
-    model.ex[from] = to
+    model.ex[to] = from
   })
   return model
 }
