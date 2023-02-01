@@ -1,4 +1,4 @@
-import filesize from '../test/lib/filesize.js'
+import filesize from '../tests/lib/filesize.js'
 import { compress } from '../src/index.js'
 
 const green = str => '\x1b[32m' + str + '\x1b[0m'

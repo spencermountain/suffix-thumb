@@ -19,8 +19,9 @@
     "url": "git://github.com/spencermountain/suffix-thumb.git"
   },
   "scripts": {
-    "test": "tape \"./test/**/*.test.js\" | tap-dancer  --color always",
-    "testb": "TESTENV=prod tape \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "size": "node scripts/filesizes.js",
     "watch": "amble ./scratch.js",
     "build": "rollup -c --silent"
   },

@@ -60,10 +60,10 @@ const findRules = function (remain, pairs, threshold) {
 export default findRules
 
 
-let rule = { from: 'ler', to: 'llerai' }
-let pairs = [
-  ['agatiser', 'agatiserai'],
-  ['agencer', 'agencerai'],
-  ['agenouiller', 'agenouillerai'],
-]
-console.log(isPerfect(pairs, rule))
+// let rule = { from: 'ler', to: 'llerai' }
+// let pairs = [
+//   ['agatiser', 'agatiserai'],
+//   ['agencer', 'agencerai'],
+//   ['agenouiller', 'agenouillerai'],
+// ]
+// console.log(isPerfect(pairs, rule))
