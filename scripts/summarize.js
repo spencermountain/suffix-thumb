@@ -10,11 +10,15 @@ const yellow = str => '\x1b[33m' + str + '\x1b[0m'
 const black = str => '\x1b[30m' + str + '\x1b[0m'
 const dim = str => '\x1b[2m' + str + '\x1b[0m'
 
-const inspect = function (model) {
+const summarize = function (model = {}) {
+  model.fwd = model.fwd || {}
+  model.rev = model.rev || {}
+  model.both = model.both || {}
+  model.ex = model.ex || {}
   console.log(green(Object.keys(model.fwd).length), 'fwd', magenta(Object.keys(model.both).length), 'both', magenta(Object.keys(model.rev).length), 'rev')
   console.log('  ', cyan(Object.keys(model.ex).length), 'ex')
   let pkd = compress(model)
   console.log(blue(filesize(pkd) + ' total'))
   console.log('\n\n')
 }
-export default inspect
+export default summarize

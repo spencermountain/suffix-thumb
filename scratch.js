@@ -1,5 +1,5 @@
 import { learn, test, reverse, convert, compress } from './src/index.js'
-import summarize from './tmp/index.js'
+import summarize from './scripts/summarize.js'
 
 
 // import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-words.js' //0.3kb
@@ -70,4 +70,4 @@ console.log(summarize(model))
 // console.log('----')
 // console.log(model)
 // console.log(reverse(model))
-test(pairs, model)
+// test(pairs, model)

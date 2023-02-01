@@ -1,4 +1,4 @@
-import goodEnough from './lib/goodEnough.js'
+import goodEnough from './find/goodEnough.js'
 
 const shareRules = function (fwd, pairs, threshold) {
   let same = []

@@ -1,6 +1,6 @@
 import convert from '../convert/index.js'
 import reverse from '../reverse/index.js'
-import findRules from './01-findRules.js'
+import findRules from './find/index.js'
 
 const swap = (a) => [a[1], a[0]]
 

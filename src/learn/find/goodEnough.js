@@ -1,4 +1,4 @@
-import convert from './convert.js'
+import convert from '../lib/convert.js'
 
 const percent = (part, total) => {
   let num = (part / total) * 100;
