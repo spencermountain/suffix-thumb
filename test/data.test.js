@@ -1,5 +1,5 @@
 import test from 'tape'
-import { learn, convert, validate } from '../src/index.js'
+import { learn, convert, validate } from './lib/_lib.js'
 import future from './data/future-simple.js'
 import nous from './data/fr-nous.js'
 import frWords from './data/fr-words.js'

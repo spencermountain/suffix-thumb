@@ -1,5 +1,5 @@
 import test from 'tape'
-import { learn, convert, reverse } from '../src/index.js'
+import { learn, convert, reverse } from './lib/_lib.js'
 
 
 test('use of same', function (t) {

@@ -1,5 +1,5 @@
 import test from 'tape'
-import { learn, compress } from '../src/index.js'
+import { learn, compress } from './lib/_lib.js'
 
 test('find best rule', function (t) {
   let pairs = [
