@@ -8,6 +8,9 @@ const shareBackward = function (fwd, rev, opts) {
   let rules = Object.entries(fwd).reverse()
   rules.forEach(a => {
     let rule = { from: a[1], to: a[0] }
+    if (!rule.to) {
+      return
+    }
     let result = consider(rule, rev, opts)
     // did it do okay?
     if (result.percent > opts.threshold) {

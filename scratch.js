@@ -65,6 +65,7 @@ let opts = {
 // ]
 
 let model = learn(pairs, opts)
+console.log(model)
 console.log(summarize(model))
 // console.log(reverse(model))
 // console.log('----')

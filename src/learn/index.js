@@ -20,17 +20,25 @@ const learn = function (pairs, opts = {}) {
   // generate remaining reverse-dir rules
   let pendingBkwd = []
   if (opts.reverse !== false) {
+    // console.log(revPairs.pending)
     let bkwd = findRules(revPairs.pending, revPairs.finished, opts)
     pendingBkwd = bkwd.pending
     rev = bkwd.rules
   }
   console.log(pending.length, 'pending fwd')
   console.log(pendingBkwd.length, 'pending Bkwd')
-
+  // add anything remaining as an exception
+  pending.forEach(arr => {
+    ex[arr[0]] = arr[1]
+  })
+  pendingBkwd.forEach(arr => {
+    ex[arr[1]] = arr[0]
+  })
   return {
     fwd,
     both,
     rev,
+    ex,
   }
 }
 export default learn
