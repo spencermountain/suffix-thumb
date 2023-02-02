@@ -25,8 +25,8 @@ const learn = function (pairs, opts = {}) {
     pendingBkwd = bkwd.pending
     rev = bkwd.rules
   }
-  console.log(pending.length, 'pending fwd')
-  console.log(pendingBkwd.length, 'pending Bkwd')
+  // console.log(pending.length, 'pending fwd')
+  // console.log(pendingBkwd.length, 'pending Bkwd')
   // add anything remaining as an exception
   pending.forEach(arr => {
     ex[arr[0]] = arr[1]

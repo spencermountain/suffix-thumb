@@ -11,6 +11,12 @@ const findRules = function (pairs, finished, opts) {
       let result = consider(rule, pending, opts)
       // did it do okay?
       if (result.rule && result.percent > opts.threshold && result.count > opts.min) {
+        // ensure it does not interfere with existing pairs
+        let res2 = consider(rule, finished, opts)
+        if (res2.percent < 100) {
+          continue
+        }
+
         // add it to our rules
         rules[rule.from] = rule.to
         // update pending/finished lists

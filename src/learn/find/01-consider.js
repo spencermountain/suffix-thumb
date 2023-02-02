@@ -1,6 +1,9 @@
 import convert from './_convert.js'
 
 const getPercent = (part, total) => {
+  if (total === 0) {
+    return 100
+  }
   let num = (part / total) * 100;
   num = Math.round(num * 10) / 10;
   return num;
@@ -12,6 +15,9 @@ const considerRule = function (rule, pairs) {
   let clear = new Set()
   if (!rule) {
     return { total, percent: 0, rule, clear, count: 0 }
+  }
+  if (pairs.length === 0) {
+    return { total, percent: 100, rule, clear, count: 0 }
   }
   pairs.forEach(pair => {
     let res = convert(pair[0], rule)

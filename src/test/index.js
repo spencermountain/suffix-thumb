@@ -19,7 +19,7 @@ const getNum = function (pairs, model) {
     if (have === a[1]) {
       right += 1
     } else {
-      console.log('❌ ', a, '→ ' + have)
+      // console.log('❌ ', a, '→ ' + have)
       wrong.push(a)
     }
   })
