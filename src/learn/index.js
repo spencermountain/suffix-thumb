@@ -28,12 +28,14 @@ const learn = function (pairs, opts = {}) {
   // console.log(pending.length, 'pending fwd')
   // console.log(pendingBkwd.length, 'pending Bkwd')
   // add anything remaining as an exception
-  pending.forEach(arr => {
-    ex[arr[0]] = arr[1]
-  })
-  pendingBkwd.forEach(arr => {
-    ex[arr[1]] = arr[0]
-  })
+  if (opts.min <= 1) {
+    pending.forEach(arr => {
+      ex[arr[0]] = arr[1]
+    })
+    pendingBkwd.forEach(arr => {
+      ex[arr[1]] = arr[0]
+    })
+  }
   return {
     fwd,
     both,
