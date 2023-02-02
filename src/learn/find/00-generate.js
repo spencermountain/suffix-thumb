@@ -1,5 +1,6 @@
+
 // get the suffix diff between a and b
-const getSuffix = function (pair, peekLen = 0) {
+const generateRule = function (pair, peekLen = 0) {
   let all = []
   let [from, to] = pair
   for (let i = 0; i < from.length; i += 1) {
@@ -20,4 +21,4 @@ const getSuffix = function (pair, peekLen = 0) {
   }
 }
 
-export default getSuffix
+export default generateRule

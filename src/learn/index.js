@@ -1,21 +1,25 @@
 import prepare from './00-prep.js'
-import findRules from './find/index.js'
-import shareRules from './02-shareRules.js'
-import revRules from './03-reverseRules.js'
+import findRules from './01-findRules.js'
+import tryBackward from './02-try-backward.js'
+// import revRules from './03-reverseRules.js'
+
+const swap = (a) => [a[1], a[0]]
 
 const learn = function (pairs, opts = {}) {
-  let threshold = opts.threshold || 80
+  opts.threshold = opts.threshold || 80
   let ex = {}
   pairs = prepare(pairs, ex)
   // get forward-dir rules
-  let fwd = findRules(pairs, threshold, ex)
+  let { rules, pending, finished } = findRules(pairs, [], opts)
   // move some to both
-  let model = shareRules(fwd, pairs, threshold)
-  // model.ex = ex
+  let { fwd, both, revPairs } = tryBackward(rules, pairs.map(swap), opts)
   // generate remaining reverse-dir rules
   if (opts.reverse !== false) {
-    // model = revRules(pairs, model, threshold)
+    // let { rev } = revRules(shared.pending, shared.finished)
   }
-  return model
+  return {
+    fwd,
+    both,
+  }
 }
 export default learn
