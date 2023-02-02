@@ -1,7 +1,7 @@
 import consider from './find/01-consider.js'
 
 // some rules are also good in reverse
-const tryBackward = function (fwd, rev, opts) {
+const shareBackward = function (fwd, rev, opts) {
   let both = {}
   let pending = rev.slice(0)
   let finished = []
@@ -14,7 +14,14 @@ const tryBackward = function (fwd, rev, opts) {
       // move it to 'both' rules
       both[rule.to] = rule.from
       delete fwd[rule.to]
-      // 
+      // update finished/pending lists
+      pending = pending.filter(a => {
+        if (result.clear.has(a[0])) {
+          finished.push(a)
+          return false
+        }
+        return true
+      })
     }
   })
   return {
@@ -26,4 +33,4 @@ const tryBackward = function (fwd, rev, opts) {
     }
   }
 }
-export default tryBackward
+export default shareBackward

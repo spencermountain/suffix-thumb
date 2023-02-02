@@ -2,7 +2,6 @@ import generate from './find/00-generate.js'
 import consider from './find/01-consider.js'
 
 const findRules = function (pairs, finished, opts) {
-  let threshold = opts.threshold || 80
   let pending = pairs.slice(0)
   let rules = {}
   // small rules first
@@ -11,7 +10,7 @@ const findRules = function (pairs, finished, opts) {
       let rule = generate(pending[i], peek)
       let result = consider(rule, pending, opts)
       // did it do okay?
-      if (result.total > 1 && result.percent > threshold) {
+      if (result.rule && result.percent > opts.threshold && result.count > opts.min) {
         // add it to our rules
         rules[rule.from] = rule.to
         // update pending/finished lists

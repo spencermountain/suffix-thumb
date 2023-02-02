@@ -1,4 +1,4 @@
-import convert from './convert.js'
+import convert from './_convert.js'
 
 const getPercent = (part, total) => {
   let num = (part / total) * 100;
@@ -11,7 +11,7 @@ const considerRule = function (rule, pairs) {
   let total = 0
   let clear = new Set()
   if (!rule) {
-    return { total, percent: 0, rule, clear }
+    return { total, percent: 0, rule, clear, count: 0 }
   }
   pairs.forEach(pair => {
     let res = convert(pair[0], rule)
@@ -24,6 +24,7 @@ const considerRule = function (rule, pairs) {
   })
   return {
     total,
+    count: clear.size,
     percent: getPercent(clear.size, total),
     rule,
     clear

@@ -8,8 +8,9 @@ import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-nous.js' /
 
 
 let opts = {
-  threshold: 0.8,
-  reverse: true
+  // threshold: 0.8,
+  // min:2,
+  // reverse: true
 }
 
 // let pairs = [
@@ -63,7 +64,7 @@ let opts = {
 //   ['endeavouring', 'endeavour']
 // ]
 
-let model = learn(pairs)
+let model = learn(pairs, opts)
 console.log(summarize(model))
 // console.log(reverse(model))
 // console.log('----')
