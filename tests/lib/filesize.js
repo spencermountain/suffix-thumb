@@ -10,12 +10,12 @@ const fileSize = (txt) => {
   let unit = 'kb'
   let num = Buffer.byteLength(txt, 'utf8')
   num = num / 1000
-  if (num > 1000) {
-    unit = 'mb'
-    num = num / 1000
-  }
+  // if (num > 1000) {
+  //   unit = 'mb'
+  //   num = num / 1000
+  // }
   num = Math.round(num * 10) / 10//round it
-  return num.toLocaleString() + unit
+  return num.toLocaleString() //+ unit
 }
 
 export default fileSize

@@ -1,34 +1,136 @@
-import { convert, learn, reverse, test, compress, uncompress, classify, fingerprint } from './src/index.js'
-
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBD.js'
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBZ.js'
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/VBG.js'
-// import pairs from '/Users/spencer/mountain/minimum-model/pairs/NNS.js'
-// import pairs from '/Users/spencer/mountain/suffix-thumb/test/data/fr-nous.js'
-// import models from '/Users/spencer/mountain/compromise/src/2-two/preTagger/model/models/_data.js'
+import { learn, test, reverse, convert, compress } from './src/index.js'
+import summarize from './scripts/summarize.js'
+// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-words.js' //0.3kb
+// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/future-simple.js' //1.6kb
+// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-nous.js' //4.5kb
+// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/perfecto.js' //
 
 let pairs = [
-  ['walk', 'walked'],
-  ['talk', 'talked'],
-  ['smoke', 'smoked'],
-  ['bike', 'biked'],
-  ['go', 'went'],
+  ["ubicar", "ubicado"],
+  ["fabricar", "fabricado"],
+  ["dejar", "dejado"],
+  ["tapar", "tapado"],
+  ["aceptar", "aceptado"],
+  ["beber", "bebido"],
+  ["renunciar", "renunciado"],
+  ["consentir", "consentido"],
+  ["declarar", "declarado"],
+  ["gastar", "gastado"],
+  ["investigar", "investigado"],
+  ["yacer", "yacido"],
+  ["componer", "compuesto"],
+  ["moverse", "movido"],
+  ["oponer", "opuesto"],
+  ["oponerse", "opuesto"],
+  ["comenzar", "comenzado"],
+  ["graduar", "graduado"],
+  ["graduarse", "graduado"],
+  ["ir", "ido"],
+  ["irse", "ido"],
+  ["ser", "sido"],
+  ["florecer", "florecido"],
+  ["odiar", "odiado"],
+  ["andar", "andado"],
+  ["mandar", "mandado"],
+  ["divertir", "divertido"],
+  ["divertirse", "divertido"],
+  ["enterarse", "enterado"],
+  ["presentir", "presentido"],
+  ["negar", "negado"],
+  ["negarse", "negado"],
+  ["deprimir", "deprimido"],
+  ["introducir", "introducido"],
+  ["proteger", "protegido"],
+  ["clasificar", "clasificado"],
+  ["pintar", "pintado"],
+  ["regir", "regido"],
+  ["regresar", "regresado"],
+  ["calcular", "calculado"],
+  ["constituir", "constituido"],
+  ["regatear", "regateado"],
+  ["aprender", "aprendido"],
+  ["pensar", "pensado"],
+  ["votar", "votado"],
+  ["cansar", "cansado"],
+  ["cansarse", "cansado"],
+  ["parecer", "parecido"],
+  ["crecer", "crecido"],
+  ["romper", "roto"],
+  ["bailar", "bailado"],
+  ["torcer", "torcido"],
+  ["sonreír", "sonreído"],
+  ["cerrar", "cerrado"],
+  ["cepillar", "cepillía cepillado"],
+  ["reportar", "reportado"],
+  ["barrer", "barrido"],
+  ["empezar", "empezado"],
+  ["costar", "costado"],
+  ["quedarse", "quedado"],
+  ["repasar", "repasado"],
+  ["importar", "importado"],
+  ["establecer", "establecido"],
+  ["dormir", "dormido"],
+  ["disminuir", "disminuido"],
+  ["rezar", "rezado"],
+  ["surgir", "surgido"],
+  ["predecir", "predicho"],
+  ["aguantar", "aguantado"],
+  ["vomit", "vomitado"],
+  ["chocar", "chocado"],
+  ["bañar", "bañado"],
+  ["bañarse", "bañado"],
+  ["gruñir", "gruñido"],
+  ["avanzar", "avanzado"],
+  ["requerir", "requerido"],
+  ["controlar", "controlado"],
+  ["lanzar", "lanzado"],
+  ["construir", "construido"],
+  ["masticar", "masticado"],
+  ["condenar", "condenado"],
+  ["efectuar", "efectuado"],
+  ["guardar", "guardado"],
+  ["elegir", "elegido"],
+  ["desarrollar", "desarrollado"],
+  ["desarrollarse", "desarrollado"],
+  ["sustituir", "sustituido"],
+  ["evitar", "evitado"],
+  ["sobrevivir", "sobrevivido"],
+  ["brillar", "brillado"],
+  ["perseguir", "perseguido"],
+  ["subir", "subido"],
+  ["vender", "vendido"],
+  ["picar", "picado"],
+  ["peinar", "peinado"],
+  ["peinarse", "peinado"],
+  ["curar", "curado"],
+  ["entregar", "entregado"],
+  ["acampar", "acampado"],
+  ["tomar", "tomado"],
+  ["devolver", "devuelto"],
+  ["replicar", "replicado"],
+  ["valer", "valido"],
+  ["llevar", "llevado"],
+  ["aumentar", "aumentado"],
+  ["apreciar", "apreciado"],
+  ["fijar", "fijado"],
+  ["enojar", "enojado"],
+  ["enojarse", "enojado"],
+  ["inventar", "inventado"],
+  ["presentar", "presentado"],
+  ["afeitarse", "afeitado"],
+  ["tirar", "tirado"],
 ]
-let model = fingerprint(pairs.map(a => a[0]), pairs.map(a => a[1]))
+
+let opts = {
+  // threshold: 70,
+  // min: 2,
+  // reverse: true
+}
+
+let model = learn(pairs, opts)
+// model.ex = {}
+// console.log(compress(model))
+// console.log(reverse(model))
 // console.log(model)
-// let model = learn(pairs)
-// let out = convert('addressed', uncompress(models.PastTense))
-// console.log(out)
-// let model = learn(pairs, { debug: true })
-// console.dir(model, { depth: 5 })
-
-// const rev = reverse(model)
-// pairs.forEach(pair => {
-//   let res = convert(pair[0], model)
-//   if (res !== pair[1]) {
-//     console.log(pair[0] + ' - > ', res)
-//   }
-// })
-// console.log(convert('bread', rev, true))
-
-// test(pairs, { debug: false })
+summarize(model)
+test(pairs, model)

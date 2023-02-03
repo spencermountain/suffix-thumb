@@ -1,25 +1,46 @@
-import learn from './learn.js'
-import { indexRules } from '../_lib.js'
+import prepare from './00-prep.js'
+import findRules from './01-findRules.js'
+import shareBackward from './02-share-back.js'
 
-const mergeExceptions = function (fwd, bkwd) {
-  Object.entries(bkwd).forEach(b => {
-    fwd[b[1]] = b[0] //reverse
-  })
-  return fwd
+const defaults = {
+  threshold: 80,
+  min: 0
 }
+const swap = (a) => [a[1], a[0]]
 
-const learnBoth = function (pairs, opts = {}) {
-  let fwd = learn(pairs, opts)
-  // learn backward too?
+const learn = function (pairs, opts = {}) {
+  opts = Object.assign({}, defaults, opts)
+  let ex = {}
+  let rev = {}
+  pairs = prepare(pairs, ex)
+  // get forward-dir rules
+  let { rules, pending, finished } = findRules(pairs, [], opts)
+  // move some to both
+  let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap), opts)
+  // generate remaining reverse-dir rules
+  let pendingBkwd = []
   if (opts.reverse !== false) {
-    pairs = pairs.map(a => [a[1], a[0]])
-    let bkwd = learn(pairs, opts)
-    // merge exceptions
-    fwd.exceptions = mergeExceptions(fwd.exceptions, bkwd.exceptions)
-    // add rules
-    fwd.rev = indexRules(bkwd.rules)
+    // console.log(revPairs.pending)
+    let bkwd = findRules(revPairs.pending, revPairs.finished, opts)
+    pendingBkwd = bkwd.pending
+    rev = bkwd.rules
   }
-  fwd.rules = indexRules(fwd.rules)
-  return fwd
+  // console.log(pending.length, 'pending fwd')
+  // console.log(pendingBkwd.length, 'pending Bkwd')
+  // add anything remaining as an exception
+  if (opts.min <= 1) {
+    pending.forEach(arr => {
+      ex[arr[0]] = arr[1]
+    })
+    pendingBkwd.forEach(arr => {
+      ex[arr[1]] = arr[0]
+    })
+  }
+  return {
+    fwd,
+    both,
+    rev,
+    ex,
+  }
 }
-export default learnBoth
+export default learn

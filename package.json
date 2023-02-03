@@ -1,7 +1,7 @@
 {
   "name": "suffix-thumb",
   "description": "learn transformations between two sets of words",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
   "main": "./src/index.js",
   "unpkg": "./builds/suffix-thumb-client.js",
@@ -19,8 +19,9 @@
     "url": "git://github.com/spencermountain/suffix-thumb.git"
   },
   "scripts": {
-    "test": "tape \"./test/**/*.test.js\" | tap-dancer  --color always",
-    "testb": "TESTENV=prod tape \"./test/**/*.test.js\" | tap-dancer  --color always",
+    "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
+    "size": "node scripts/filesizes.js",
     "watch": "amble ./scratch.js",
     "build": "rollup -c --silent"
   },
@@ -38,7 +39,10 @@
   "eslintIgnore": [
     "builds/*.js"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "efrt": "^2.7.0",
+    "json-diff": "^1.0.0"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "21.0.1",
     "@rollup/plugin-node-resolve": "13.1.3",

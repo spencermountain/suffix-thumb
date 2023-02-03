@@ -1,47 +1,25 @@
 import { terser } from 'rollup-plugin-terser'
 import sizeCheck from 'rollup-plugin-filesize-check'
-const name = 'suffix-thumb'
+import pkg from './package.json' assert { type: "json" };
 
-import { version } from './package.json'
-const banner = `/* ${name} ${version} MIT */`
+const name = 'suffix-thumb'
+const banner = `/* ${name} ${pkg.version} MIT */`
 
 export default [
   {
     input: 'src/index.js',
-    output: [
-      {
-        file: `builds/${name}.mjs`,
-        format: 'esm',
-        banner: banner,
-      },
+    output: [{ file: `builds/${name}.mjs`, format: 'esm', banner: banner },
     ],
     plugins: [sizeCheck()],
   },
   {
     input: 'src/index.js',
-    output: [
-      {
-        file: `builds/${name}.js`,
-        format: 'umd',
-        name: 'suffixThumb',
-        banner: banner,
-      },
-    ],
-    plugins: [
-      sizeCheck(),
-    ],
+    output: [{ file: `builds/${name}.js`, format: 'umd', name: 'suffixThumb', banner: banner }],
+    plugins: [sizeCheck(),],
   },
   {
-    input: 'src/_client-side.js',
-    output: [
-      {
-        file: `builds/${name}-client.js`,
-        format: 'esm',
-      },
-    ],
-    plugins: [
-      terser(),
-      sizeCheck(),
-    ],
-  },
+    input: 'src/index.js',
+    output: [{ file: `builds/${name}.min.js`, format: 'umd', name: 'suffixThumb', banner: banner }],
+    plugins: [terser(), sizeCheck(),],
+  }
 ]

@@ -1,59 +1,59 @@
-const prefix = /^.([0-9]+)/
 
-// handle compressed form of key-value pair
-const getKeyVal = function (word, model) {
-  let val = model.exceptions[word]
-  let m = val.match(prefix)
-  if (m === null) {
-    // return not compressed form
-    return model.exceptions[word]
+// 01- full-word exceptions
+const checkEx = function (str, ex = {}) {
+  if (ex.hasOwnProperty(str)) {
+    return ex[str]
   }
-  // uncompress it
-  let num = Number(m[1]) || 0
-  let pre = word.substr(0, num)
-  return pre + val.replace(prefix, '')
+  return null
 }
 
-// get suffix-rules according to last char of word
-const getRules = function (word, rules = {}) {
-  let char = word[word.length - 1]
-  let list = rules[char] || []
-  // do we have a generic suffix?
-  if (rules['']) {
-    list = list.concat(rules[''])
+// 02- suffixes that pass our word through
+const checkSame = function (str, same = []) {
+  for (let i = 0; i < same.length; i += 1) {
+    if (str.endsWith(same[i])) {
+      return str
+    }
   }
-  return list
+  return null
 }
 
-const convert = function (word, model, debug) {
-  // check list of irregulars
-  if (model.exceptions.hasOwnProperty(word)) {
-    if (debug) {
-      console.log("exception, ", word, model.exceptions[word])
+// 03- check rules - longest first
+const checkRules = function (str, fwd, both = {}) {
+  fwd = fwd || {}
+  let max = str.length - 1
+  // look for a matching suffix
+  for (let i = max; i >= 1; i -= 1) {
+    let size = str.length - i
+    let suff = str.substring(size, str.length)
+    // check fwd rules, first
+    if (fwd.hasOwnProperty(suff) === true) {
+      return str.slice(0, size) + fwd[suff]
     }
-    return getKeyVal(word, model)
-  }
-  // if model is reversed, try rev rules
-  let rules = model.rules
-  if (model.reversed) {
-    rules = model.rev
-  }
-  // try suffix rules
-  rules = getRules(word, rules)
-  for (let i = 0; i < rules.length; i += 1) {
-    let suffix = rules[i][0]
-    if (word.endsWith(suffix)) {
-      if (debug) {
-        console.log("rule, ", rules[i])
-      }
-      let reg = new RegExp(suffix + '$')
-      return word.replace(reg, rules[i][1])
+    // check shared rules
+    if (both.hasOwnProperty(suff) === true) {
+      return str.slice(0, size) + both[suff]
     }
   }
-  if (debug) {
-    console.log(' x - ' + word)
+  // try a fallback transform
+  if (fwd.hasOwnProperty('')) {
+    return str += fwd['']
   }
-  // return the original word unchanged
-  return word
+  if (both.hasOwnProperty('')) {
+    return str += both['']
+  }
+  return null
+}
+
+//sweep-through all suffixes
+const convert = function (str = '', model = {}) {
+  // 01- check exceptions
+  let out = checkEx(str, model.ex)
+  // 02 - check same
+  out = out || checkSame(str, model.same)
+  // check forward and both rules
+  out = out || checkRules(str, model.fwd, model.both)
+  //return unchanged
+  out = out || str
+  return out
 }
 export default convert

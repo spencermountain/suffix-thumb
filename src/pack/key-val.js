@@ -11,13 +11,14 @@ const findOverlap = (from, to) => {
   return all.join('')
 }
 
+// run-length encode any shared prefix
 let compress = function (key, val) {
   let prefix = findOverlap(key, val)
   if (prefix.length < 1) {
-    return [key, val]
+    return val
   }
   let out = prefix.length + val.substr(prefix.length)
-  return [key, out]
+  return out
 }
 
 export default compress
