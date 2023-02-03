@@ -1,9 +1,9 @@
-/* suffix-thumb 5.0.1 MIT */
+/* suffix-thumb 5.0.2 MIT */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('efrt')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'efrt'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}, global.efrt));
-})(this, (function (exports, efrt) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}));
+})(this, (function (exports) { 'use strict';
 
   // 01- full-word exceptions
   const checkEx = function (str, ex = {}) {
@@ -332,13 +332,27 @@
   };
   // console.log(compress('fixture', 'fixturing'))
 
+  const pack = function (obj) {
+    let byVal = {};
+    Object.keys(obj).forEach(k => {
+      let val = obj[k];
+      byVal[val] = byVal[val] || [];
+      byVal[val].push(k);
+    });
+    let out = [];
+    Object.keys(byVal).forEach(val => {
+      out.push(`${val}:${byVal[val].join(',')}`);
+    });
+    return out.join('¦')
+  };
+
   const packObj = function (obj = {}) {
     let tmp = {};
     Object.keys(obj).forEach(k => {
       let val = compress$1(k, obj[k]);// compress any shared prefix
       tmp[k] = val;
     });
-    return efrt.pack(tmp)
+    return pack(tmp)
   };
 
   const compress = function (model) {
@@ -351,14 +365,58 @@
     return out
   };
 
+
+  // let model = {
+  //   fwd: {
+  //     foo: 'food',
+  //     bar: 'bard',
+  //     cool: 'nice'
+  //   }
+  // }
+  // console.log(compress(model))
+
+  const prefix = /^([0-9]+)/;
+
+  const toObject = function (txt) {
+    let obj = {};
+    txt.split('¦').forEach(str => {
+      let [key, vals] = str.split(':');
+      vals = (vals || '').split(',');
+      vals.forEach(val => {
+        obj[val] = key;
+      });
+    });
+    return obj
+  };
+
+  const growObject = function (key = '', val = '') {
+    val = String(val);
+    let m = val.match(prefix);
+    if (m === null) {
+      return val
+    }
+    let num = Number(m[1]) || 0;
+    let pre = key.substring(0, num);
+    let full = pre + val.replace(prefix, '');
+    return full
+  };
+
+  const unpackOne = function (str) {
+    let obj = toObject(str);
+    return Object.keys(obj).reduce((h, k) => {
+      h[k] = growObject(k, obj[k]);
+      return h
+    }, {})
+  };
+
   const uncompress = function (model = {}) {
     if (typeof model === 'string') {
       model = JSON.parse(model);
     }
-    model.fwd = efrt.unpack(model.fwd);
-    model.both = efrt.unpack(model.both);
-    model.bkwd = efrt.unpack(model.bkwd);
-    model.ex = efrt.unpack(model.ex);
+    model.fwd = unpackOne(model.fwd || '');
+    model.both = unpackOne(model.both || '');
+    model.rev = unpackOne(model.rev || '');
+    model.ex = unpackOne(model.ex || '');
     return model
   };
 
