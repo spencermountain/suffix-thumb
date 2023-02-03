@@ -17,6 +17,6 @@ const compress = function (model) {
     rev: packObj(model.rev),
     ex: packObj(model.ex),
   }
-  return JSON.stringify(out)
+  return out
 }
 export default compress
