@@ -137,7 +137,7 @@ let model = learn(pairs, {reverse: false})
 let out = convert('ok', model)
 // 'right'
 ```
-
+<!-- 
 ### Classify
 the model can also be used to classify whether a given word belongs to either Left or Right sides.
 
@@ -155,7 +155,7 @@ out = classify('waited', model)
 // null
 ```
 Unlike convert, the classifier is not guarnteed to return 100% on the training data.
-The classifier will generally hit high-90s on the given dataset, but how-well it generalizes to novel input is up-to the dataset.
+The classifier will generally hit high-90s on the given dataset, but how-well it generalizes to novel input is up-to the dataset. -->
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
