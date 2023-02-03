@@ -23,15 +23,18 @@ let data = [
   { pairs: esPlurals, name: 'esPlurals', size: 7.3 },
 ]
 
+let opts = {
+  threshold: 70
+}
 test('filesizes:', function (t) {
   data.forEach(o => {
     let { pairs, size, name } = o
-    let model = learn(pairs)
+    let model = learn(pairs, opts)
     let pkd = compress(model)
     let max = size * 1.1
     let n = filesize(pkd)
+    console.log(`${name} is ${n}kb - want ${size}kb`)
     t.ok(size < max, `${name} is ${n}kb - want ${size}kb`)
   })
   t.end()
 })
-

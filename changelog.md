@@ -1,4 +1,9 @@
 
+### 5.0.0 [Feb 2023]
+- **[breaking]** - model format change
+- **[change]** - smaller, faster builds
+- **[new]** - support `{min, threshold, reverse}` options
+
 ### 4.0.0 [Jan 2022]
 - **[breaking]** - model format change
 - **[new]** - add classifier, test

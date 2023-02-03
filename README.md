@@ -60,6 +60,16 @@ let model = learn(pairs)
 let out = convert('walk', model)
 // 'walked'
 ```
+
+you can pass-in options:
+```js
+let opts={
+  threshold:80, //how sloppy our initial rules can be
+  min:0, //rule must satisfy # of pairs
+  reverse:true, //compute backward transformation, too
+}
+let model = learn(pairs, opts)
+```
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
