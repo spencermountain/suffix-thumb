@@ -1,7 +1,7 @@
 {
   "name": "suffix-thumb",
   "description": "learn transformations between two sets of words",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
   "main": "./src/index.js",
   "unpkg": "./builds/suffix-thumb-client.js",
@@ -39,10 +39,7 @@
   "eslintIgnore": [
     "builds/*.js"
   ],
-  "dependencies": {
-    "efrt": "^2.7.0",
-    "json-diff": "^1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-commonjs": "21.0.1",
     "@rollup/plugin-node-resolve": "13.1.3",
