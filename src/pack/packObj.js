@@ -10,13 +10,4 @@ const packObj = function (obj = {}) {
   return pack(tmp)
 }
 
-const compress = function (model) {
-  let out = {
-    fwd: packObj(model.fwd),
-    both: packObj(model.both),
-    rev: packObj(model.rev),
-    ex: packObj(model.ex),
-  }
-  return JSON.stringify(out)
-}
-export default compress
+export default packObj
