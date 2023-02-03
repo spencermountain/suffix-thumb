@@ -9,8 +9,8 @@ import validate from './validate/index.js'
 // import fingerprint from './fingerprint/index.js'
 
 import learn from './learn/index.js'
-import compress from './pack/pack.js'
-import uncompress from './pack/unpack.js'
+import compress from './compress/pack.js'
+import uncompress from './compress/unpack.js'
 import test from './test/index.js'
 // import again from './again/index.js'
 

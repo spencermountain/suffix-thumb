@@ -1,6 +1,6 @@
 import { terser } from 'rollup-plugin-terser'
 import sizeCheck from 'rollup-plugin-filesize-check'
-import pkg from './package.json' assert { type: "json" };
+import pkg from './package.json'// assert { type: "json" };
 
 const name = 'suffix-thumb'
 const banner = `/* ${name} ${pkg.version} MIT */`

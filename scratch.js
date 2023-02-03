@@ -129,8 +129,8 @@ let opts = {
 
 let model = learn(pairs, opts)
 // model.ex = {}
-// console.log(compress(model))
+console.log(compress(model))
 // console.log(reverse(model))
 // console.log(model)
-summarize(model)
-test(pairs, model)
+// summarize(model)
+// test(pairs, model)
