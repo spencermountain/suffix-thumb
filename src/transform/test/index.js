@@ -1,4 +1,6 @@
-import { convert, reverse, validate } from '../index.js'
+import convert from '../convert/index.js'
+import reverse from '../reverse/index.js'
+import validate from '../validate/index.js'
 
 const cyan = str => '\x1b[36m' + str + '\x1b[0m'
 const blue = str => '\x1b[34m' + str + '\x1b[0m'

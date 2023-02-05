@@ -1,126 +1,16 @@
-import { learn, test, reverse, convert, compress, uncompress } from './src/index.js'
+import { learn, test, reverse, convert, compress, uncompress, classify, classifyTest, classifier } from './src/index.js'
 import summarize from './scripts/summarize.js'
-import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-words.js' //0.3kb
+// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-words.js' //0.3kb
 // import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/future-simple.js' //1.6kb
 // import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-nous.js' //4.5kb
 // import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/perfecto.js' //
-// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/present-tense.js' //
+import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/present-tense.js' //
 
-// let pairs = [
-//   ["ubicar", "ubicado"],
-//   ["fabricar", "fabricado"],
-//   ["dejar", "dejado"],
-//   ["tapar", "tapado"],
-//   ["aceptar", "aceptado"],
-//   ["beber", "bebido"],
-//   ["renunciar", "renunciado"],
-//   ["consentir", "consentido"],
-//   ["declarar", "declarado"],
-//   ["gastar", "gastado"],
-//   ["investigar", "investigado"],
-//   ["yacer", "yacido"],
-//   ["componer", "compuesto"],
-//   ["moverse", "movido"],
-//   ["oponer", "opuesto"],
-//   ["oponerse", "opuesto"],
-//   ["comenzar", "comenzado"],
-//   ["graduar", "graduado"],
-//   ["graduarse", "graduado"],
-//   ["ir", "ido"],
-//   ["irse", "ido"],
-//   ["ser", "sido"],
-//   ["florecer", "florecido"],
-//   ["odiar", "odiado"],
-//   ["andar", "andado"],
-//   ["mandar", "mandado"],
-//   ["divertir", "divertido"],
-//   ["divertirse", "divertido"],
-//   ["enterarse", "enterado"],
-//   ["presentir", "presentido"],
-//   ["negar", "negado"],
-//   ["negarse", "negado"],
-//   ["deprimir", "deprimido"],
-//   ["introducir", "introducido"],
-//   ["proteger", "protegido"],
-//   ["clasificar", "clasificado"],
-//   ["pintar", "pintado"],
-//   ["regir", "regido"],
-//   ["regresar", "regresado"],
-//   ["calcular", "calculado"],
-//   ["constituir", "constituido"],
-//   ["regatear", "regateado"],
-//   ["aprender", "aprendido"],
-//   ["pensar", "pensado"],
-//   ["votar", "votado"],
-//   ["cansar", "cansado"],
-//   ["cansarse", "cansado"],
-//   ["parecer", "parecido"],
-//   ["crecer", "crecido"],
-//   ["romper", "roto"],
-//   ["bailar", "bailado"],
-//   ["torcer", "torcido"],
-//   ["sonreír", "sonreído"],
-//   ["cerrar", "cerrado"],
-//   ["cepillar", "cepillía cepillado"],
-//   ["reportar", "reportado"],
-//   ["barrer", "barrido"],
-//   ["empezar", "empezado"],
-//   ["costar", "costado"],
-//   ["quedarse", "quedado"],
-//   ["repasar", "repasado"],
-//   ["importar", "importado"],
-//   ["establecer", "establecido"],
-//   ["dormir", "dormido"],
-//   ["disminuir", "disminuido"],
-//   ["rezar", "rezado"],
-//   ["surgir", "surgido"],
-//   ["predecir", "predicho"],
-//   ["aguantar", "aguantado"],
-//   ["vomit", "vomitado"],
-//   ["chocar", "chocado"],
-//   ["bañar", "bañado"],
-//   ["bañarse", "bañado"],
-//   ["gruñir", "gruñido"],
-//   ["avanzar", "avanzado"],
-//   ["requerir", "requerido"],
-//   ["controlar", "controlado"],
-//   ["lanzar", "lanzado"],
-//   ["construir", "construido"],
-//   ["masticar", "masticado"],
-//   ["condenar", "condenado"],
-//   ["efectuar", "efectuado"],
-//   ["guardar", "guardado"],
-//   ["elegir", "elegido"],
-//   ["desarrollar", "desarrollado"],
-//   ["desarrollarse", "desarrollado"],
-//   ["sustituir", "sustituido"],
-//   ["evitar", "evitado"],
-//   ["sobrevivir", "sobrevivido"],
-//   ["brillar", "brillado"],
-//   ["perseguir", "perseguido"],
-//   ["subir", "subido"],
-//   ["vender", "vendido"],
-//   ["picar", "picado"],
-//   ["peinar", "peinado"],
-//   ["peinarse", "peinado"],
-//   ["curar", "curado"],
-//   ["entregar", "entregado"],
-//   ["acampar", "acampado"],
-//   ["tomar", "tomado"],
-//   ["devolver", "devuelto"],
-//   ["replicar", "replicado"],
-//   ["valer", "valido"],
-//   ["llevar", "llevado"],
-//   ["aumentar", "aumentado"],
-//   ["apreciar", "apreciado"],
-//   ["fijar", "fijado"],
-//   ["enojar", "enojado"],
-//   ["enojarse", "enojado"],
-//   ["inventar", "inventado"],
-//   ["presentar", "presentado"],
-//   ["afeitarse", "afeitado"],
-//   ["tirar", "tirado"],
-// ]
+let input = {}
+pairs.forEach(p => {
+  input[p[0]] = 'Left'
+  input[p[1]] = 'Right'
+})
 
 let opts = {
   // threshold: 70,
@@ -128,14 +18,10 @@ let opts = {
   // reverse: true
 }
 
-let model = learn(pairs, opts)
-// console.log(model)
-// model.ex = {}
-// console.log(model)
-let pkd = compress(model)
-model = uncompress(pkd)
-// console.log(uncompress(compress(model)))
-// console.log(reverse(model))
-// console.log(model)
-summarize(model)
-test(pairs, model)
+let model = classifier(input, opts)
+console.log(model)
+classifyTest(input, model)
+// console.log(classify('wordi', model))
+// let model = learn(pairs, opts)
+// summarize(model)
+// test(pairs, model)
