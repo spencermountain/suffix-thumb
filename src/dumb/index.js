@@ -39,10 +39,9 @@ const dumb = function (pairs) {
       if (s.score > score) {
         score = s.score
         res.rules.push(rule)
-        console.log(`${s.score}%   -  ${rule.join(' → ')}`)
+        console.log(`✅ ${s.score}%   -  ${rule.join(' → ')}`)
       } else {
         console.log(`❌ ${s.score}%   -  ${rule.join(' → ')}`)
-
       }
     })
   }
