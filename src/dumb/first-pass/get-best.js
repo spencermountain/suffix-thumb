@@ -12,8 +12,8 @@ const topk = function (arr) {
   return res.sort((a, b) => (a[1] > b[1] ? -1 : 0))
 }
 
-const getFallback = function (pairs) {
+const getBest = function (pairs) {
   let diffs = pairs.map(a => getDiff(a[0], a[1]))
-  return topk(diffs)[0][0]
+  return topk(diffs).map(a => a[0])[0]
 }
-export default getFallback
+export default getBest
