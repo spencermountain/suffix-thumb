@@ -1,4 +1,4 @@
-import { learn, test, reverse, convert, compress, uncompress, classify, classifyTest, classifier } from './src/index.js'
+import { learn, test, reverse, convert, compress, uncompress, classify, classifyTest, classifier, } from './src/index.js'
 import summarize from './scripts/summarize.js'
 // import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-words.js' //0.3kb
 // import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/future-simple.js' //1.6kb
