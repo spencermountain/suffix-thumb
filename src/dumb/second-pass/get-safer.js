@@ -14,7 +14,7 @@ const topk = function (arr) {
 
 const getBest = function (pairs) {
   let diffs = pairs.map(a => getDiff(a[0], a[1]))
-  let tops = topk(diffs).map(a => a[0])
+  let tops = topk(diffs).map(a => a[0])//.slice(0, 20)
   console.log(tops)
   return tops[0]
 }

@@ -12,7 +12,7 @@ const byPattern = function (wrong, size) {
   let suffixes = wrong.map(a => {
     return a[0].substring(a[0].length - size, a[0].length)
   })
-  let ends = topk(suffixes).map(a => a[0])
+  let ends = topk(suffixes).map(a => a[0])//.slice(0, 25)
   return ends.map(suff => {
     return {
       suff,
