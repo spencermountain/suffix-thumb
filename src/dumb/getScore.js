@@ -12,7 +12,7 @@ const convert = function (str, res) {
 
 const percent = (part, total) => {
   let num = (part / total) * 100;
-  num = Math.round(num * 10) / 10;
+  num = Math.round(num * 100) / 100;
   return num;
 };
 

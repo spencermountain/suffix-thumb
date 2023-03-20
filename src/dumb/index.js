@@ -3,7 +3,8 @@ import secondPass from './second-pass/index.js'
 
 const dumb = function (pairs) {
   let res = firstPass(pairs)
-  res = secondPass(pairs, res)
-  console.log(res)
+  // res = secondPass(pairs, res)
+  // console.log(res)
+  return res
 }
 export default dumb

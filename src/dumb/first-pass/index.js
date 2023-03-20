@@ -12,7 +12,6 @@ const firstPass = function (pairs) {
     kinds.forEach(obj => {
       let to = getBest(obj.list)
       let rule = [obj.suff, obj.suff + to]
-      console.log('\n   ', rule)
       let tmp = { fallback: res.fallback, rules: [rule].concat(res.rules) }
       let s = getScore(pairs, tmp)
       if (s.score > score) {
@@ -20,7 +19,7 @@ const firstPass = function (pairs) {
         res.rules.push(rule)
         console.log(`✅ ${s.score}%   -  ${rule.join(' → ')}`)
       } else {
-        console.log(`❌ ${s.score}%   -  ${rule.join(' → ')}`)
+        // console.log(`❌ ${s.score}%   -  ${rule.join(' → ')}`)
       }
     })
   }
