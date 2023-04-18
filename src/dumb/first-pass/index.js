@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import getBest from './get-best.js'
 import getScore from '../getScore.js'
 import byPattern from '../byPattern.js'
@@ -7,7 +8,7 @@ const firstPass = function (pairs) {
   let res = { fallback: getBest(pairs), rules: [] }
   let { score, wrong } = getScore(pairs, res)
   console.log(`${score}%   ${res.rules.length}`)
-  for (let size = 1; size <= 6; size += 1) {
+  for (let size = 1; size <= 5; size += 1) {
     let kinds = byPattern(wrong, size)
     kinds.forEach(obj => {
       let to = getBest(obj.list)
@@ -26,7 +27,7 @@ const firstPass = function (pairs) {
   res.rules = res.rules.reverse()
   let s = getScore(pairs, res)
   // console.log(res)
-  console.log(`${s.score}%   `)
+  // console.log(`${s.score}%   first-pass`)
   // console.log(s.wrong)
   return res
 
