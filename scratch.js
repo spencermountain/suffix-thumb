@@ -8,7 +8,14 @@ import summarize from './scripts/summarize.js'
 
 
 import adj from '/Users/spencer/mountain/de-compromise/data/models/adjectives/adjectives.js'
-// import dumb from './src/dumb/index.js'
+// import adj from '/Users/spencer/mountain/de-compromise/data/models/adjectives/comparatives.js'
+// import adj from '/Users/spencer/mountain/de-compromise/data/models/adjectives/superlatives.js'
+// import adj from '/Users/spencer/mountain/de-compromise/data/models/verbs/past-tense.js'
+// import pairs from '/Users/spencer/mountain/pt-compromise/tests/plurals.test.js'
+// import pairs from '/Users/spencer/mountain/de-compromise/data/models/verbs/past-participle.js'
+
+
+import dumb from './src/dumb/index.js'
 
 let pairs = []
 Object.keys(adj).forEach(k => {
@@ -27,10 +34,10 @@ let opts = {
   // reverse: true
 }
 
-let model = learn(pairs, opts)
-console.log(model.both)
+let model = dumb(pairs, opts)
+console.log(model)
 // classifyTest(input, model)
 // console.log(classify('wordi', model))
 // let model = learn(pairs, opts)
-// summarize(model)
+summarize(model)
 // test(pairs, model)

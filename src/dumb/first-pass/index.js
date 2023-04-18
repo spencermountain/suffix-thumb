@@ -7,7 +7,7 @@ const firstPass = function (pairs) {
   let res = { fallback: getBest(pairs), rules: [] }
   let { score, wrong } = getScore(pairs, res)
   console.log(`${score}%   ${res.rules.length}`)
-  for (let size = 2; size <= 6; size += 1) {
+  for (let size = 1; size <= 6; size += 1) {
     let kinds = byPattern(wrong, size)
     kinds.forEach(obj => {
       let to = getBest(obj.list)
