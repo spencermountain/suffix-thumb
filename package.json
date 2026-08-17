@@ -5,7 +5,7 @@
   "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
   "main": "./src/index.js",
   "unpkg": "./builds/suffix-thumb-client.js",
-  "types": "/builds/types.d.ts",
+  "types": "./builds/types.d.ts",
   "type": "module",
   "sideEffects": false,
   "exports": {
