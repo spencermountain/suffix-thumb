@@ -1,4 +1,8 @@
 
+### 5.0.3 [Feb 2023]
+- **[fix]** - broken package.json path
+- **[update]** - dependencies
+
 ### 5.0.2 [Feb 2023]
 - **[hotfix]** - custom compress/uncompress 
 

@@ -1,4 +1,4 @@
-/* suffix-thumb 5.0.2 MIT */
+/* spencermountain/suffix-thumb 5.0.3 Apache 2.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -278,7 +278,7 @@
     let rev = {};
     pairs = prep(pairs, ex);
     // get forward-dir rules
-    let { rules, pending, finished } = findRules(pairs, [], opts);
+    let { rules, pending} = findRules(pairs, [], opts);
     // move some to both
     let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap$1), opts);
     // generate remaining reverse-dir rules
@@ -458,7 +458,5 @@
   exports.test = test;
   exports.uncompress = uncompress;
   exports.validate = validate;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
