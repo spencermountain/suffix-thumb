@@ -1,3 +1,12 @@
+### 6.0.0 [Sep 2026]
+- **[breaking]** - `learn` is rewritten: rules are chosen by an exact byte-cost search over a suffix-trie, instead of a greedy percent-threshold. Models are ~50% smaller and learning is ~10x faster. The model shape is unchanged.
+- **[breaking]** - the `threshold` option is gone
+- **[change]** - a rule may now match a whole word, in `convert`
+- **[fix]** - repeated right-side words (`poner`/`ponerse` → `puesto`) are no longer dropped
+- **[fix]** - reverse conversions could be wrong when a shared rule out-ranked a reverse rule
+- **[fix]** - the `min` option no longer disables exceptions
+- **[fix]** - stale type definitions
+
 
 ### 5.0.3 [Feb 2023]
 - **[fix]** - broken package.json path

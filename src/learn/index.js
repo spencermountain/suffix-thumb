@@ -1,45 +1,63 @@
-import prepare from './00-prep.js'
-import findRules from './01-findRules.js'
-import shareBackward from './02-share-back.js'
+import solve from './solve.js'
 
 const defaults = {
-  threshold: 80,
-  min: 0
+  min: 0,
+  reverse: true,
 }
-const swap = (a) => [a[1], a[0]]
 
-const learn = function (pairs, opts = {}) {
+const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string'
+
+const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts)
-  let ex = {}
-  let rev = {}
-  pairs = prepare(pairs, ex)
-  // get forward-dir rules
-  let { rules, pending, finished } = findRules(pairs, [], opts)
-  // move some to both
-  let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap), opts)
-  // generate remaining reverse-dir rules
-  let pendingBkwd = []
+  // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
+  // but only the first pair is used when learning the reverse direction.
+  let pairs = []
+  let seen = new Set()
+  let firstFor = {}
+  input.forEach(a => {
+    if (!isPair(a) || seen.has(a[0])) {
+      return
+    }
+    seen.add(a[0])
+    pairs.push(a)
+    if (!firstFor.hasOwnProperty(a[1])) {
+      firstFor[a[1]] = a[0]
+    }
+  })
+  // pairs that are not the reverse-target of their right side can't live in `ex`,
+  // since reverse() flips it. They are stored as whole-word rules in `fwd` instead.
+  let strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]))
+
+  // forward direction
+  let fwd = solve(pairs, opts, undefined, strict)
+  let both = {}
+  let rev = { rules: {}, ex: {} }
   if (opts.reverse !== false) {
-    // console.log(revPairs.pending)
-    let bkwd = findRules(revPairs.pending, revPairs.finished, opts)
-    pendingBkwd = bkwd.pending
-    rev = bkwd.rules
-  }
-  // console.log(pending.length, 'pending fwd')
-  // console.log(pendingBkwd.length, 'pending Bkwd')
-  // add anything remaining as an exception
-  if (opts.min <= 1) {
-    pending.forEach(arr => {
-      ex[arr[0]] = arr[1]
-    })
-    pendingBkwd.forEach(arr => {
-      ex[arr[1]] = arr[0]
+    // backward direction - a rule that is the mirror of a forward rule is free, and shared
+    let revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]])
+    let isFree = (key, add) => fwd.rules[add] === key
+    rev = solve(revPairs, opts, isFree)
+    Object.keys(rev.rules).forEach(key => {
+      let add = rev.rules[key]
+      if (fwd.rules[add] === key) {
+        both[add] = key
+        delete fwd.rules[add]
+        delete rev.rules[key]
+      }
     })
   }
+  // exceptions are keyed by the left side, and work in both directions.
+  // (a backward exception belongs to the first pair for that right-side word)
+  let ex = {}
+  pairs.forEach(([w, w2]) => {
+    if (fwd.ex.hasOwnProperty(w) || (rev.ex.hasOwnProperty(w2) && firstFor[w2] === w)) {
+      ex[w] = w2
+    }
+  })
   return {
-    fwd,
+    fwd: fwd.rules,
     both,
-    rev,
+    rev: rev.rules,
     ex,
   }
 }

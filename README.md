@@ -53,20 +53,30 @@ let pairs = [
 ]
 let model = learn(pairs)
 /* {
-  rules: { k: [ [ 'alk', 'alked' ] ] },
-  exceptions: { go: 'went' },
+  fwd: {},
+  both: { '': 'ed' },
+  rev: {},
+  ex: { go: 'went' },
 }*/
 
 let out = convert('walk', model)
 // 'walked'
 ```
 
+the model has four parts:
+* `fwd` - suffix rules that only work left→right
+* `both` - suffix rules that also work right→left
+* `rev` - suffix rules that only work right→left
+* `ex` - whole-word exceptions
+
+when converting a word, exceptions are checked first, then the **longest matching suffix** wins.
+A rule may match the whole word, and the empty-suffix rule `''` is a fallback that simply appends.
+
 you can pass-in options:
 ```js
 let opts={
-  threshold:80, //how sloppy our initial rules can be
-  min:0, //rule must satisfy # of pairs
-  reverse:true, //compute backward transformation, too
+  min: 0, // a rule must serve at least this many pairs (otherwise, use an exception)
+  reverse: true, // also learn the backward transformation
 }
 let model = learn(pairs, opts)
 ```
@@ -111,8 +121,8 @@ let pairs = [
 ]
 let model = learn(pairs)
 // shrink it
-model = compress(shrink)
-// {rules:'LSKs3H2-LNL.S3DH'}
+model = compress(model)
+// { fwd: '', both: 'ed:', rev: '', ex: 'went:go' }
 // pop it back
 model = uncompress(model)
 let out = convert('walk', model)
@@ -124,9 +134,12 @@ The models must be uncompressed before they are used, or reversed.
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
-### Validation
-sometimes you can accidentally send in an impossible set of transformations. This library quietly ignores duplicates, by default.
-You can use `{verbose:true}` to log warnings about this, or validate your input manually:
+### Duplicates
+a left-side word can only map to one thing, so repeated left-side words are quietly ignored.
+
+Repeated right-side words are fine - `'poner'` and `'ponerse'` can both become `'puesto'`.
+When reversing, the *first* pair wins: `'puesto'` → `'poner'`.
+
 ```js
 import { validate } from 'suffix-thumb'
 let pairs = [
@@ -137,54 +150,26 @@ let pairs = [
 pairs = validate(pairs) //remove dupes (on both sides)
 ```
 
-If you are just doing one-way transformation, and not reverse, you may want to allow duplicates on the right side:
-```js
-let pairs = [
-  ['left', 'right'],
-  ['ok', 'right'],
-]
-let model = learn(pairs, {reverse: false})
-let out = convert('ok', model)
-// 'right'
-```
-<!-- 
-### Classify
-the model can also be used to classify whether a given word belongs to either Left or Right sides.
-
-```js
-import { learn, classify } from 'suffix-thumb'
-let pairs = [
-  ['walk', 'walked'],
-  ['talk', 'talked'],
-  ['go', 'went'],
-]
-let model = learn(pairs)
-let out = classify('stalked', model)
-// 'Right'
-out = classify('waited', model)
-// null
-```
-Unlike convert, the classifier is not guarnteed to return 100% on the training data.
-The classifier will generally hit high-90s on the given dataset, but how-well it generalizes to novel input is up-to the dataset. -->
-
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ## How it works
 
-For each word-pair, it generates all **n-suffixes** of the left-side, and **n-suffixes** of the right-side.
+The left-side words are arranged into a suffix-trie.
+Every pair implies a family of possible rules - `'walk'→'walked'` could be `''→'ed'`, `'k'→'ked'`, `'lk'→'lked'`, and so on - and each of those rules lives at one node in the trie.
 
-any good correlations between the two suffix pairs begins to pop out. Exceptions to these rules are remembered. It then exhaustively reduces any redundancies in these rules.
+Walking the trie bottom-up, each node either inherits the rule of its nearest ancestor, or places its own rule, which then governs every word beneath it - until a deeper node overrides it, or a word that no rule fits becomes an exception.
+Because the lookup is *longest-suffix-wins*, these choices are independent enough that the byte-cheapest combination can be found exactly, in about a second for 15,000 pairs.
 
-There are some compromises, magic-numbers, and opinionated decisions - in-order to allow productive, but imperfect rules.
+The backward direction is then learned the same way, with a discount for any rule that is simply the mirror of a forward rule - those are stored once, in `both`.
 
 * The library is meant optimize for file-size of the model
-* compression is slow, uncompression is fast
-* it should always return a perfect result
+* it always returns a perfect result on its training data - both ways
+* it may be less-clever about words it hasn't seen.
 
 The library drops case-information - and numbers and some characters[1](https://github.com/spencermountain/efrt) will not compress properly.
 
-There may be wordlists with few helpful patterns. Conjugation datasets in English and French tend to get ~85% filesize compression.
+Conjugation datasets in French, Spanish and Italian tend to get ~97% filesize compression.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>

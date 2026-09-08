@@ -12,15 +12,15 @@ import perfecto from '../tests/data/perfecto.js'
 import presentTense from '../tests/data/present-tense.js'
 
 let data = [
-  { pairs: nous, name: 'nous', size: 2.6 },
-  { pairs: frWords, name: 'frWords', size: 0.2 },
-  { pairs: future, name: 'future', size: 0.9 },
-  { pairs: gerund, name: 'gerund', size: 5.9 },
-  { pairs: itGerund, name: 'itGerund', size: 3.3 },
-  { pairs: pastParticiple, name: 'pastParticiple', size: 3.1 },
-  { pairs: perfecto, name: 'perfecto', size: 0.9 },
-  { pairs: presentTense, name: 'presentTense', size: 0.3 },
-  { pairs: esPlurals, name: 'esPlurals', size: 7.3 },
+  { pairs: nous, name: 'nous', size: 1.5 },
+  { pairs: frWords, name: 'frWords', size: 0.1 },
+  { pairs: future, name: 'future', size: 0.7 },
+  { pairs: gerund, name: 'gerund', size: 1.8 },
+  { pairs: itGerund, name: 'itGerund', size: 1.8 },
+  { pairs: pastParticiple, name: 'pastParticiple', size: 1.6 },
+  { pairs: perfecto, name: 'perfecto', size: 0.6 },
+  { pairs: presentTense, name: 'presentTense', size: 0.2 },
+  { pairs: esPlurals, name: 'esPlurals', size: 5.0 },
 ]
 
 const green = str => '\x1b[32m' + str + '\x1b[0m'

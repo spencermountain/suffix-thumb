@@ -40,3 +40,16 @@ test('presentTense:', function (t) {
 })
 
 
+
+test('empty sections:', function (t) {
+  let pairs = [
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+    ['go', 'went'],
+  ]
+  let model = uncompress(compress(learn(pairs)))
+  t.deepEqual(model.fwd, {}, 'empty fwd stays empty')
+  t.equal(convert('walk', model), 'walked', 'fallback rule still applies')
+  t.equal(convert('walked', reverse(model)), 'walk', 'reverse fallback')
+  t.end()
+})

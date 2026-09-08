@@ -2,6 +2,9 @@ const prefix = /^([0-9]+)/
 
 const toObject = function (txt) {
   let obj = {}
+  if (!txt) {
+    return obj
+  }
   txt.split('¦').forEach(str => {
     let [key, vals] = str.split(':')
     vals = (vals || '').split(',')

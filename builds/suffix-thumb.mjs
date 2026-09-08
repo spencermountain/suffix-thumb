@@ -1,77 +1,245 @@
-/* spencermountain/suffix-thumb 5.0.3 Apache 2.0 */
-// 01- full-word exceptions
-const checkEx = function (str, ex = {}) {
+/* spencermountain/suffix-thumb 6.0.0 Apache 2.0 */
+// estimated byte-cost of one `key → val` entry, once packed by ./compress
+// (mirrors the run-length prefix encoding in compress/key-val.js)
+const cost = function (key, val) {
+  let i = 0;
+  while (i < key.length && i < val.length && key[i] === val[i]) {
+    i += 1;
+  }
+  let encoded = i > 0 ? String(i).length + (val.length - i) : val.length;
+  return key.length + encoded + 2 // separator chars
+};
+
+// length of the shared prefix of two strings
+const commonPrefix = function (a, b) {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) {
+    i += 1;
+  }
+  return i
+};
+
+// the replacement this word would need from a rule whose key is its last `k` chars,
+// or null if the change reaches further back than that
+const needs = function (p, k) {
+  if (k < p.w.length - p.c || k > p.w.length) {
+    return null
+  }
+  return p.w2.slice(p.w.length - k)
+};
+
+// does this rule produce the right answer for this word?
+const works = function (p, rule) {
+  return p.w.slice(0, p.w.length - rule.k) + rule.add === p.w2
+};
+
+// Find the byte-cheapest set of suffix rules (plus exceptions) that maps every
+// left-side word to its right-side word, given the longest-suffix-wins lookup in ./convert.
+//
+// The words are arranged in a suffix-trie. Walking it bottom-up, each node either
+// inherits the rule of its nearest ancestor, or places its own rule which then governs
+// every word beneath it (until a deeper node overrides it). Because a rule keyed at
+// node `s` can only be one of the transformations the words under `s` actually need,
+// each node has just a handful of options, and the optimal choice is found exactly.
+//
+//   pairs   - [[from, to], ...]  (left side unique)
+//   opts.min - a rule must serve at least this many pairs
+//   isFree  - (key, add) → true when this rule costs nothing (it is shared with the other direction)
+//   strict  - set of left-side words that may not become exceptions
+const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set()) {
+  let min = opts.min || 0;
+  let words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }));
+  let memo = new Map();
+  let rules = {};
+  let ex = {};
+
+  // returns { cost, apply } for the sub-trie at suffix `suff`, given the rule it inherits
+  const node = function (suff, list, inherited) {
+    // an inherited rule that helps nothing down here is the same as no rule at all
+    if (inherited && !list.some(p => needs(p, inherited.k) === inherited.add)) {
+      inherited = null;
+    }
+    let key = suff + '|' + (inherited ? inherited.k + ':' + inherited.add : '');
+    if (memo.has(key)) {
+      return memo.get(key)
+    }
+    // rules that could be keyed at this suffix, and how many words each would serve
+    let candidates = new Map();
+    // the word that *is* this suffix, and the sub-tries by preceding character
+    let whole = null;
+    let kids = new Map();
+    list.forEach(p => {
+      let add = needs(p, suff.length);
+      if (add !== null) {
+        candidates.set(add, (candidates.get(add) || 0) + 1);
+      }
+      if (p.w.length === suff.length) {
+        whole = p;
+      } else {
+        let char = p.w[p.w.length - suff.length - 1];
+        if (!kids.has(char)) {
+          kids.set(char, []);
+        }
+        kids.get(char).push(p);
+      }
+    });
+
+    // total cost of governing this sub-trie with `rule`
+    const option = function (rule, placed) {
+      let total = placed && !isFree(suff, rule.add) ? cost(suff, rule.add) : 0;
+      let parts = [];
+      let wholeEx = false;
+      if (whole && !(rule && works(whole, rule))) {
+        if (whole.strict) {
+          return { cost: Infinity }
+        }
+        wholeEx = true;
+        total += cost(whole.w, whole.w2);
+      }
+      for (let [char, sub] of kids) {
+        let res = node(char + suff, sub, rule);
+        total += res.cost;
+        parts.push(res);
+      }
+      return { cost: total, rule, placed, wholeEx, parts }
+    };
+
+    let best = option(inherited, false);
+    for (let [add, count] of candidates) {
+      // a whole-word rule is just an exception in disguise; it is always allowed
+      let isWhole = whole !== null && add === whole.w2;
+      if (count < min && !isWhole) {
+        continue
+      }
+      let o = option({ k: suff.length, add }, true);
+      if (o.cost < best.cost) {
+        best = o;
+      }
+    }
+    let out = {
+      cost: best.cost,
+      apply: function () {
+        if (best.placed) {
+          rules[suff] = best.rule.add;
+        }
+        if (best.wholeEx) {
+          ex[whole.w] = whole.w2;
+        }
+        best.parts.forEach(part => part.apply());
+      },
+    };
+    memo.set(key, out);
+    return out
+  };
+
+  if (words.length > 0) {
+    node('', words, null).apply();
+  }
+  return { rules, ex }
+};
+
+const defaults = {
+  min: 0,
+  reverse: true,
+};
+
+const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string';
+
+const learn = function (input = [], opts = {}) {
+  opts = Object.assign({}, defaults, opts);
+  // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
+  // but only the first pair is used when learning the reverse direction.
+  let pairs = [];
+  let seen = new Set();
+  let firstFor = {};
+  input.forEach(a => {
+    if (!isPair(a) || seen.has(a[0])) {
+      return
+    }
+    seen.add(a[0]);
+    pairs.push(a);
+    if (!firstFor.hasOwnProperty(a[1])) {
+      firstFor[a[1]] = a[0];
+    }
+  });
+  // pairs that are not the reverse-target of their right side can't live in `ex`,
+  // since reverse() flips it. They are stored as whole-word rules in `fwd` instead.
+  let strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]));
+
+  // forward direction
+  let fwd = solve(pairs, opts, undefined, strict);
+  let both = {};
+  let rev = { rules: {}, ex: {} };
+  if (opts.reverse !== false) {
+    // backward direction - a rule that is the mirror of a forward rule is free, and shared
+    let revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]]);
+    let isFree = (key, add) => fwd.rules[add] === key;
+    rev = solve(revPairs, opts, isFree);
+    Object.keys(rev.rules).forEach(key => {
+      let add = rev.rules[key];
+      if (fwd.rules[add] === key) {
+        both[add] = key;
+        delete fwd.rules[add];
+        delete rev.rules[key];
+      }
+    });
+  }
+  // exceptions are keyed by the left side, and work in both directions.
+  // (a backward exception belongs to the first pair for that right-side word)
+  let ex = {};
+  pairs.forEach(([w, w2]) => {
+    if (fwd.ex.hasOwnProperty(w) || (rev.ex.hasOwnProperty(w2) && firstFor[w2] === w)) {
+      ex[w] = w2;
+    }
+  });
+  return {
+    fwd: fwd.rules,
+    both,
+    rev: rev.rules,
+    ex,
+  }
+};
+
+// apply a model to one word:
+//   1. whole-word exceptions
+//   2. the longest suffix with a rule (a rule may match the entire word)
+//   3. the '' rule, if any, as a fallback (a plain append)
+//   4. otherwise, the word is returned unchanged
+const convert = function (str = '', model = {}) {
+  let { ex = {}, fwd = {}, both = {} } = model;
   if (ex.hasOwnProperty(str)) {
     return ex[str]
   }
-  return null
-};
-
-// 02- suffixes that pass our word through
-const checkSame = function (str, same = []) {
-  for (let i = 0; i < same.length; i += 1) {
-    if (str.endsWith(same[i])) {
-      return str
+  for (let len = str.length; len >= 0; len -= 1) {
+    let suff = str.slice(str.length - len);
+    let stem = str.slice(0, str.length - len);
+    if (fwd.hasOwnProperty(suff)) {
+      return stem + fwd[suff]
+    }
+    if (both.hasOwnProperty(suff)) {
+      return stem + both[suff]
     }
   }
-  return null
+  return str
 };
 
-// 03- check rules - longest first
-const checkRules = function (str, fwd, both = {}) {
-  fwd = fwd || {};
-  let max = str.length - 1;
-  // look for a matching suffix
-  for (let i = max; i >= 1; i -= 1) {
-    let size = str.length - i;
-    let suff = str.substring(size, str.length);
-    // check fwd rules, first
-    if (fwd.hasOwnProperty(suff) === true) {
-      return str.slice(0, size) + fwd[suff]
-    }
-    // check shared rules
-    if (both.hasOwnProperty(suff) === true) {
-      return str.slice(0, size) + both[suff]
-    }
-  }
-  // try a fallback transform
-  if (fwd.hasOwnProperty('')) {
-    return str += fwd['']
-  }
-  if (both.hasOwnProperty('')) {
-    return str += both['']
-  }
-  return null
-};
-
-//sweep-through all suffixes
-const convert$1 = function (str = '', model = {}) {
-  // 01- check exceptions
-  let out = checkEx(str, model.ex);
-  // 02 - check same
-  out = out || checkSame(str, model.same);
-  // check forward and both rules
-  out = out || checkRules(str, model.fwd, model.both);
-  //return unchanged
-  out = out || str;
-  return out
-};
-
-const flipObj = function (obj) {
+const flipObj = function (obj = {}) {
   return Object.entries(obj).reduce((h, a) => {
     h[a[1]] = a[0];
     return h
   }, {})
 };
 
+// swap the direction of a model
 const reverse = function (model = {}) {
   return {
     reversed: true,
-    // keep these two
+    // these two work both ways
     both: flipObj(model.both),
     ex: flipObj(model.ex),
-    // swap this one in
-    fwd: model.rev || {}
+    // and the one-way rules trade places
+    fwd: model.rev || {},
+    rev: model.fwd || {},
   }
 };
 
@@ -99,207 +267,6 @@ const validate = function (pairs, opts = {}) {
     return true
   });
   return pairs
-};
-
-const prep = function (pairs, ex) {
-  // remove dupes
-  pairs = validate(pairs);
-  // ensure pairs are prefix aligned, in the first-place
-  return pairs.filter(arr => {
-    let [a, b] = arr;
-    if (a.substring(0, 1) !== b.substring(0, 1)) {
-      ex[a] = b;
-      return false
-    }
-    return true
-  })
-};
-
-// get the suffix diff between a and b
-const generateRule = function (pair, peekLen = 0) {
-  let all = [];
-  let [from, to] = pair;
-  for (let i = 0; i < from.length; i += 1) {
-    if (from[i] === to[i]) {
-      all.push(from[i]);
-    } else {
-      break
-    }
-  }
-  let prefix = all.length - peekLen;
-  // is our suffix just the whole word? (not allowed!)
-  if (peekLen >= all.length) {
-    return null
-  }
-  return {
-    from: from.substring(prefix),
-    to: to.substring(prefix)
-  }
-};
-
-// check a rule
-const convert = function (str, rule) {
-  if (rule.from.length >= str.length) {
-    return null
-  }
-  if (str.endsWith(rule.from)) {
-    let len = str.length - rule.from.length;
-    let pre = str.slice(0, len);
-    // if (str === 'agenouiller') {
-    //   console.log(str, rule, pre + rule.to)
-    // }
-    return pre + rule.to
-  }
-  return null
-};
-// console.log(convert('asdfoo', { from: 'foo', to: 'dog' }))
-
-const getPercent = (part, total) => {
-  if (total === 0) {
-    return 100
-  }
-  let num = (part / total) * 100;
-  num = Math.round(num * 10) / 10;
-  return num;
-};
-
-// decide whether this rule performs well or not
-const considerRule = function (rule, pairs) {
-  let total = 0;
-  let clear = new Set();
-  if (!rule) {
-    return { total, percent: 0, rule, clear, count: 0 }
-  }
-  if (pairs.length === 0) {
-    return { total, percent: 100, rule, clear, count: 0 }
-  }
-  pairs.forEach(pair => {
-    let res = convert(pair[0], rule);
-    if (res !== null) {
-      total += 1;
-      if (res === pair[1]) {
-        clear.add(pair[0]);
-      }
-    }
-  });
-  return {
-    total,
-    count: clear.size,
-    percent: getPercent(clear.size, total),
-    rule,
-    clear
-  }
-};
-
-const findRules = function (pairs, finished, opts) {
-  let pending = pairs.slice(0);
-  let rules = {};
-  // small rules first
-  for (let peek = 0; peek < 6; peek += 1) {
-    for (let i = 0; i < pending.length; i += 1) {
-      let rule = generateRule(pending[i], peek);
-      let result = considerRule(rule, pending);
-      // did it do okay?
-      if (result.rule && result.percent > opts.threshold && result.count > opts.min) {
-        // ensure it does not interfere with existing pairs
-        let res2 = considerRule(rule, finished);
-        if (res2.percent < 100) {
-          continue
-        }
-
-        // add it to our rules
-        rules[rule.from] = rule.to;
-        // update pending/finished lists
-        pending = pending.filter(p => {
-          if (result.clear.has(p[0])) {
-            finished.push(p);
-            return false
-          }
-          return true
-        });
-      }
-    }
-  }
-  return { rules, pending, finished }
-};
-
-// some rules are also good in reverse
-const shareBackward = function (fwd, rev, opts) {
-  let both = {};
-  let pending = rev.slice(0);
-  let finished = [];
-  let rules = Object.entries(fwd).reverse();
-  rules.forEach(a => {
-    let rule = { from: a[1], to: a[0] };
-    if (!rule.to) {
-      return
-    }
-    let result = considerRule(rule, rev);
-    // did it do okay?
-    if (result.percent > opts.threshold) {
-      // move it to 'both' rules
-      both[rule.to] = rule.from;
-      delete fwd[rule.to];
-      // update finished/pending lists
-      pending = pending.filter(a => {
-        if (result.clear.has(a[0])) {
-          finished.push(a);
-          return false
-        }
-        return true
-      });
-    }
-  });
-  return {
-    fwd,
-    both,
-    revPairs: {
-      pending,
-      finished
-    }
-  }
-};
-
-const defaults = {
-  threshold: 80,
-  min: 0
-};
-const swap$1 = (a) => [a[1], a[0]];
-
-const learn = function (pairs, opts = {}) {
-  opts = Object.assign({}, defaults, opts);
-  let ex = {};
-  let rev = {};
-  pairs = prep(pairs, ex);
-  // get forward-dir rules
-  let { rules, pending} = findRules(pairs, [], opts);
-  // move some to both
-  let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap$1), opts);
-  // generate remaining reverse-dir rules
-  let pendingBkwd = [];
-  if (opts.reverse !== false) {
-    // console.log(revPairs.pending)
-    let bkwd = findRules(revPairs.pending, revPairs.finished, opts);
-    pendingBkwd = bkwd.pending;
-    rev = bkwd.rules;
-  }
-  // console.log(pending.length, 'pending fwd')
-  // console.log(pendingBkwd.length, 'pending Bkwd')
-  // add anything remaining as an exception
-  if (opts.min <= 1) {
-    pending.forEach(arr => {
-      ex[arr[0]] = arr[1];
-    });
-    pendingBkwd.forEach(arr => {
-      ex[arr[1]] = arr[0];
-    });
-  }
-  return {
-    fwd,
-    both,
-    rev,
-    ex,
-  }
 };
 
 // longest common prefix
@@ -373,6 +340,9 @@ const prefix = /^([0-9]+)/;
 
 const toObject = function (txt) {
   let obj = {};
+  if (!txt) {
+    return obj
+  }
   txt.split('¦').forEach(str => {
     let [key, vals] = str.split(':');
     vals = (vals || '').split(',');
@@ -428,7 +398,7 @@ const swap = (a) => [a[1], a[0]];
 const getNum = function (pairs, model) {
   let right = 0;
   pairs.forEach(a => {
-    let have = convert$1(a[0], model);
+    let have = convert(a[0], model);
     if (have === a[1]) {
       right += 1;
     } else {
@@ -445,4 +415,4 @@ const test = function (pairs, model = {}) {
   console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`);
 };
 
-export { compress, convert$1 as convert, learn, reverse, test, uncompress, validate };
+export { compress, convert, learn, reverse, test, uncompress, validate };

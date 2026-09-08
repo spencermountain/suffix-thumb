@@ -12,29 +12,25 @@ import perfecto from './data/perfecto.js'
 import presentTense from './data/present-tense.js'
 
 let data = [
-  { pairs: nous, name: 'nous', size: 2.6 },
-  { pairs: frWords, name: 'frWords', size: 0.2 },
-  { pairs: future, name: 'future', size: 0.9 },
-  { pairs: gerund, name: 'gerund', size: 5.9 },
-  { pairs: itGerund, name: 'itGerund', size: 3.3 },
-  { pairs: pastParticiple, name: 'pastParticiple', size: 3.1 },
-  { pairs: perfecto, name: 'perfecto', size: 0.9 },
-  { pairs: presentTense, name: 'presentTense', size: 0.3 },
-  { pairs: esPlurals, name: 'esPlurals', size: 7.3 },
+  { pairs: nous, name: 'nous', size: 1.5 },
+  { pairs: frWords, name: 'frWords', size: 0.1 },
+  { pairs: future, name: 'future', size: 0.7 },
+  { pairs: gerund, name: 'gerund', size: 1.8 },
+  { pairs: itGerund, name: 'itGerund', size: 1.8 },
+  { pairs: pastParticiple, name: 'pastParticiple', size: 1.6 },
+  { pairs: perfecto, name: 'perfecto', size: 0.6 },
+  { pairs: presentTense, name: 'presentTense', size: 0.2 },
+  { pairs: esPlurals, name: 'esPlurals', size: 5.0 },
 ]
 
-let opts = {
-  threshold: 70
-}
 test('filesizes:', function (t) {
   data.forEach(o => {
     let { pairs, size, name } = o
-    let model = learn(pairs, opts)
+    let model = learn(pairs)
     let pkd = compress(model)
+    let n = Number(filesize(pkd))
     let max = size * 1.1
-    let n = filesize(pkd)
-    // console.log(`${name} is ${n}kb - want ${size}kb`)
-    t.ok(size < max, `${name} is ${n}kb - want ${size}kb`)
+    t.ok(n <= max, `${name} is ${n}kb - want ${size}kb`)
   })
   t.end()
 })
