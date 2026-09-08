@@ -54,9 +54,9 @@ let pairs = [
 let model = learn(pairs)
 /* {
   fwd: {},
-  both: { '': 'ed' },
+  both: { '': 'ed', go: 'went' },
   rev: {},
-  ex: { go: 'went' },
+  ex: {},
 }*/
 
 let out = convert('walk', model)
@@ -77,6 +77,7 @@ you can pass-in options:
 let opts={
   min: 0, // a rule must serve at least this many pairs (otherwise, use an exception)
   reverse: true, // also learn the backward transformation
+  verbose: false, // warn about skipped pairs
 }
 let model = learn(pairs, opts)
 ```
@@ -109,7 +110,7 @@ you can expect the model to be 5% smaller or so - not much.
 
 ### Compress
 by default, the model is small, but remains human-readable (and human-editable).
-We can compress it further, turning it into a snowball inscrutible characters:
+We can pack it further, into one string:
 
 ```js
 import { learn, compress, uncompress, convert } from 'suffix-thumb'
@@ -121,15 +122,25 @@ let pairs = [
 ]
 let model = learn(pairs)
 // shrink it
-model = compress(model)
-// { fwd: '', both: 'ed:', rev: '', ex: 'went:go' }
+let str = compress(model)
+// '~0ed:|2went:go~~'
 // pop it back
-model = uncompress(model)
+model = uncompress(str)
 let out = convert('walk', model)
 // 'walked'
-
 ```
 The models must be uncompressed before they are used, or reversed.
+
+The packed string is still legible, with some squinting:
+* the four sections (`fwd`, `both`, `rev`, `ex`) are separated by `~`
+* each section is a list of `value:keys` groups, separated by `|`
+* a value is *drop this many characters, then add this*  - so `1as` turns `chico` into `chicas`
+* the keys are a suffix-trie: `ador{lt,nz,ep}` is `ltador`, `nzador` and `epador`. An empty entry, like `ero{,nton}`, means `ero` is a key too.
+
+```js
+'4èlerons:eler{en,c,t{man,r},g,od,i,k}|4èterons:eter{h,qu{c,écli,a{r,p}}}'
+```
+This means the characters `~ | : , { }` and digits are reserved - pairs containing them are skipped.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
@@ -147,7 +158,8 @@ let pairs = [
   ['left', 'right-two'],
   ['ok', 'right'],
 ]
-pairs = validate(pairs) //remove dupes (on both sides)
+pairs = validate(pairs) // remove dupes (on both sides), and unencodable pairs
+pairs = validate(pairs, { reverse: false }) // keep right-side dupes, for a one-way model
 ```
 
 <!-- spacer -->
@@ -169,7 +181,7 @@ The backward direction is then learned the same way, with a discount for any rul
 
 The library drops case-information - and numbers and some characters[1](https://github.com/spencermountain/efrt) will not compress properly.
 
-Conjugation datasets in French, Spanish and Italian tend to get ~97% filesize compression.
+Conjugation datasets in French, Spanish and Italian tend to get ~98% filesize compression.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>

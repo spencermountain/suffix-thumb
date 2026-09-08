@@ -77,6 +77,7 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
     // total cost of governing this sub-trie with `rule`
     const option = function (rule, placed) {
       let total = placed && !isFree(suff, rule.add) ? cost(suff, rule.add) : 0
+      let exceptions = 0
       let parts = []
       let wholeEx = false
       if (whole && !(rule && works(whole, rule))) {
@@ -85,13 +86,15 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
         }
         wholeEx = true
         total += cost(whole.w, whole.w2)
+        exceptions += 1
       }
       for (let [char, sub] of kids) {
         let res = node(char + suff, sub, rule)
         total += res.cost
+        exceptions += res.exceptions
         parts.push(res)
       }
-      return { cost: total, rule, placed, wholeEx, parts }
+      return { cost: total, exceptions, rule, placed, wholeEx, parts }
     }
 
     let best = option(inherited, false)
@@ -102,12 +105,16 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
         continue
       }
       let o = option({ k: suff.length, add }, true)
-      if (o.cost < best.cost) {
+      // on a tie in bytes, prefer fewer exceptions - a rule packs better, and generalizes
+      // (unless the rule only got in under the whole-word exemption)
+      let tie = o.cost === best.cost && o.exceptions < best.exceptions && count >= min
+      if (o.cost < best.cost || tie) {
         best = o
       }
     }
     let out = {
       cost: best.cost,
+      exceptions: best.exceptions,
       apply: function () {
         if (best.placed) {
           rules[suff] = best.rule.add

@@ -4,7 +4,7 @@ import future from './data/future-simple.js'
 import nous from './data/fr-nous.js'
 
 test('future tense:', function (t) {
-  let pairs = validate(future, { inverse: true })
+  let pairs = validate(future)
   let model = learn(pairs)
   let rev = reverse(model)
   // test them all
@@ -16,7 +16,7 @@ test('future tense:', function (t) {
 })
 
 test('french-nous:', function (t) {
-  let pairs = validate(nous, { inverse: true })
+  let pairs = validate(nous)
   let model = learn(pairs)
   let rev = reverse(model)
   // test them all

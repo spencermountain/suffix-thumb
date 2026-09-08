@@ -1,25 +1,22 @@
 import solve from './solve.js'
+import validate from '../validate/index.js'
 
 const defaults = {
   min: 0,
   reverse: true,
+  verbose: false,
 }
-
-const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string'
 
 const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts)
   // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
   // but only the first pair is used when learning the reverse direction.
-  let pairs = []
-  let seen = new Set()
+  let pairs = validate(input, { reverse: false })
+  if (opts.verbose && pairs.length < input.length) {
+    console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`) // eslint-disable-line
+  }
   let firstFor = {}
-  input.forEach(a => {
-    if (!isPair(a) || seen.has(a[0])) {
-      return
-    }
-    seen.add(a[0])
-    pairs.push(a)
+  pairs.forEach(a => {
     if (!firstFor.hasOwnProperty(a[1])) {
       firstFor[a[1]] = a[0]
     }

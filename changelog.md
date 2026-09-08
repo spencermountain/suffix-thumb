@@ -1,6 +1,10 @@
 ### 6.0.0 [Sep 2026]
 - **[breaking]** - `learn` is rewritten: rules are chosen by an exact byte-cost search over a suffix-trie, instead of a greedy percent-threshold. Models are ~50% smaller and learning is ~10x faster. The model shape is unchanged.
 - **[breaking]** - the `threshold` option is gone
+- **[breaking]** - `compress` now returns one string, ~35% smaller than the old object: strip-count values, and keys stored as a suffix-trie. `uncompress` refuses models packed by v5 - learn them again.
+- **[change]** - `validate` also drops pairs with reserved characters (`~ | : , { }` and digits), and keeps right-side duplicates with `{reverse:false}`
+- **[change]** - on a tie, a whole-word rule is preferred over an exception
+- **[new]** - `verbose` option warns about skipped pairs
 - **[change]** - a rule may now match a whole word, in `convert`
 - **[fix]** - repeated right-side words (`poner`/`ponerse` → `puesto`) are no longer dropped
 - **[fix]** - reverse conversions could be wrong when a shared rule out-ranked a reverse rule

@@ -1,13 +1,31 @@
 /* spencermountain/suffix-thumb 6.0.0 Apache 2.0 */
-// estimated byte-cost of one `key → val` entry, once packed by ./compress
-// (mirrors the run-length prefix encoding in compress/key-val.js)
-const cost = function (key, val) {
+// the four parts of a model, in the order they are packed
+const sections = ['fwd', 'both', 'rev', 'ex'];
+
+// characters with a meaning in the packed format - words containing these cannot be learned
+const reserved = /[~|:,{}0-9]/;
+
+// a value is stored relative to its key:
+//   'chico' → 'chicas'  is  '1as'  (drop one char, add 'as')
+//   'er' → 'é'          is  '2é'
+const encodeVal = function (key, val) {
   let i = 0;
   while (i < key.length && i < val.length && key[i] === val[i]) {
     i += 1;
   }
-  let encoded = i > 0 ? String(i).length + (val.length - i) : val.length;
-  return key.length + encoded + 2 // separator chars
+  return String(key.length - i) + val.slice(i)
+};
+
+const decodeVal = function (key, str) {
+  let m = str.match(/^[0-9]+/);
+  let n = m ? Number(m[0]) : 0;
+  let tail = m ? str.slice(m[0].length) : str;
+  return key.slice(0, key.length - n) + tail
+};
+
+// estimated byte-cost of one `key → val` entry, once packed
+const cost = function (key, val) {
+  return key.length + encodeVal(key, val).length + 2 // separators
 };
 
 // length of the shared prefix of two strings
@@ -87,6 +105,7 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
     // total cost of governing this sub-trie with `rule`
     const option = function (rule, placed) {
       let total = placed && !isFree(suff, rule.add) ? cost(suff, rule.add) : 0;
+      let exceptions = 0;
       let parts = [];
       let wholeEx = false;
       if (whole && !(rule && works(whole, rule))) {
@@ -95,13 +114,15 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
         }
         wholeEx = true;
         total += cost(whole.w, whole.w2);
+        exceptions += 1;
       }
       for (let [char, sub] of kids) {
         let res = node(char + suff, sub, rule);
         total += res.cost;
+        exceptions += res.exceptions;
         parts.push(res);
       }
-      return { cost: total, rule, placed, wholeEx, parts }
+      return { cost: total, exceptions, rule, placed, wholeEx, parts }
     };
 
     let best = option(inherited, false);
@@ -112,12 +133,16 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
         continue
       }
       let o = option({ k: suff.length, add }, true);
-      if (o.cost < best.cost) {
+      // on a tie in bytes, prefer fewer exceptions - a rule packs better, and generalizes
+      // (unless the rule only got in under the whole-word exemption)
+      let tie = o.cost === best.cost && o.exceptions < best.exceptions && count >= min;
+      if (o.cost < best.cost || tie) {
         best = o;
       }
     }
     let out = {
       cost: best.cost,
+      exceptions: best.exceptions,
       apply: function () {
         if (best.placed) {
           rules[suff] = best.rule.add;
@@ -138,26 +163,44 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
   return { rules, ex }
 };
 
+const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string';
+
+// drop pairs that can't be learned:
+//  - non-strings, or words with characters the packed format reserves
+//  - repeated left-side words (a word can only become one thing)
+//  - repeated right-side words, unless {reverse:false} (one-way models can have them)
+const validate = function (pairs = [], opts = {}) {
+  let left = new Set();
+  let right = new Set();
+  return pairs.filter(a => {
+    if (!isPair(a) || reserved.test(a[0]) || reserved.test(a[1])) {
+      return false
+    }
+    if (left.has(a[0]) || (opts.reverse !== false && right.has(a[1]))) {
+      return false
+    }
+    left.add(a[0]);
+    right.add(a[1]);
+    return true
+  })
+};
+
 const defaults = {
   min: 0,
   reverse: true,
+  verbose: false,
 };
-
-const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string';
 
 const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts);
   // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
   // but only the first pair is used when learning the reverse direction.
-  let pairs = [];
-  let seen = new Set();
+  let pairs = validate(input, { reverse: false });
+  if (opts.verbose && pairs.length < input.length) {
+    console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`); // eslint-disable-line
+  }
   let firstFor = {};
-  input.forEach(a => {
-    if (!isPair(a) || seen.has(a[0])) {
-      return
-    }
-    seen.add(a[0]);
-    pairs.push(a);
+  pairs.forEach(a => {
     if (!firstFor.hasOwnProperty(a[1])) {
       firstFor[a[1]] = a[0];
     }
@@ -243,144 +286,121 @@ const reverse = function (model = {}) {
   }
 };
 
-// make sure inputs are not impossible to square-up
-const validate = function (pairs, opts = {}) {
-  let left = new Set();
-  let right = new Set();
-  pairs = pairs.filter(a => {
-    if (left.has(a[0])) {
-      // console.log('dupe', a)
-      return false
+// write a list of keys as a suffix-trie:
+//    ltador, nzador, epador   →   ador{lt,nz,ep}
+//    ero, ntonero             →   ero{,nton}      (an empty entry means the shared suffix is itself a key)
+// a suffix is only factored-out when the braces pay for themselves.
+const packKeys = function (keys) {
+  let root = { kids: new Map(), end: false };
+  keys.forEach(k => {
+    let n = root;
+    for (let i = k.length - 1; i >= 0; i -= 1) {
+      if (!n.kids.has(k[i])) {
+        n.kids.set(k[i], { kids: new Map(), end: false });
+      }
+      n = n.kids.get(k[i]);
     }
-    if (right.has(a[1])) {
-      // console.log('dupe', a)
-      return false
-    }
-    left.add(a[0]);
-    right.add(a[1]);
-
-    // ensure pairs are aligned by prefix
-    // if (a[0].substring(0, 1) !== a[1].substring(0, 1)) {
-    //   console.log('pair not aligned at prefix:', a)
-    //   return false
-    // }
-    return true
+    n.end = true;
   });
-  return pairs
-};
-
-// longest common prefix
-const findOverlap = (from, to) => {
-  let all = [];
-  for (let i = 0; i < from.length; i += 1) {
-    if (from[i] === to[i]) {
-      all.push(from[i]);
-    } else {
-      break
-    }
-  }
-  return all.join('')
-};
-
-// run-length encode any shared prefix
-let compress$1 = function (key, val) {
-  let prefix = findOverlap(key, val);
-  if (prefix.length < 1) {
-    return val
-  }
-  let out = prefix.length + val.substr(prefix.length);
-  return out
-};
-// console.log(compress('fixture', 'fixturing'))
-
-const pack = function (obj) {
-  let byVal = {};
-  Object.keys(obj).forEach(k => {
-    let val = obj[k];
-    byVal[val] = byVal[val] || [];
-    byVal[val].push(k);
-  });
-  let out = [];
-  Object.keys(byVal).forEach(val => {
-    out.push(`${val}:${byVal[val].join(',')}`);
-  });
-  return out.join('¦')
-};
-
-const packObj = function (obj = {}) {
-  let tmp = {};
-  Object.keys(obj).forEach(k => {
-    let val = compress$1(k, obj[k]);// compress any shared prefix
-    tmp[k] = val;
-  });
-  return pack(tmp)
-};
-
-const compress = function (model) {
-  let out = {
-    fwd: packObj(model.fwd),
-    both: packObj(model.both),
-    rev: packObj(model.rev),
-    ex: packObj(model.ex),
+  // every key beneath a node, written out in full
+  const flat = function (n, suff) {
+    let out = n.end ? [suff] : [];
+    n.kids.forEach((kid, char) => out.push(...flat(kid, char + suff)));
+    return out
   };
+  const pack = function (n) {
+    let parts = n.end && n.kids.size > 0 ? [''] : [];
+    n.kids.forEach((kid, char) => {
+      // collapse single-child chains into one string
+      let chain = char;
+      while (!kid.end && kid.kids.size === 1) {
+        let [[c, k]] = kid.kids;
+        chain = c + chain;
+        kid = k;
+      }
+      let nested = chain + (kid.kids.size > 0 ? '{' + pack(kid) + '}' : '');
+      let plain = flat(kid, chain).join(',');
+      parts.push(plain.length <= nested.length ? plain : nested);
+    });
+    return parts.join(',')
+  };
+  return pack(root)
+};
+
+// group keys by their encoded value:   1as:chico,chino|2es:ton,ger
+const packSection = function (obj = {}) {
+  let byVal = new Map();
+  Object.keys(obj).forEach(k => {
+    let val = encodeVal(k, obj[k]);
+    if (!byVal.has(val)) {
+      byVal.set(val, []);
+    }
+    byVal.get(val).push(k);
+  });
+  return [...byVal].map(([val, keys]) => val + ':' + packKeys(keys)).join('|')
+};
+
+// model → one string
+const compress = function (model = {}) {
+  return sections.map(s => packSection(model[s])).join('~')
+};
+
+// suffix-trie → list of keys
+const unpackKeys = function (str, suff = '', out = []) {
+  let i = 0;
+  do {
+    let chain = '';
+    while (i < str.length && str[i] !== ',' && str[i] !== '{') {
+      chain += str[i];
+      i += 1;
+    }
+    if (str[i] === '{') {
+      // find the matching brace
+      let depth = 1;
+      let j = i + 1;
+      while (depth > 0) {
+        if (str[j] === '{') {
+          depth += 1;
+        } else if (str[j] === '}') {
+          depth -= 1;
+        }
+        j += 1;
+      }
+      unpackKeys(str.slice(i + 1, j - 1), chain + suff, out);
+      i = j;
+    } else {
+      out.push(chain + suff);
+    }
+    i += 1; // step over the comma
+  } while (i <= str.length)
   return out
 };
 
-
-// let model = {
-//   fwd: {
-//     foo: 'food',
-//     bar: 'bard',
-//     cool: 'nice'
-//   }
-// }
-// console.log(compress(model))
-
-const prefix = /^([0-9]+)/;
-
-const toObject = function (txt) {
+const unpackSection = function (str = '') {
   let obj = {};
-  if (!txt) {
+  if (!str) {
     return obj
   }
-  txt.split('¦').forEach(str => {
-    let [key, vals] = str.split(':');
-    vals = (vals || '').split(',');
-    vals.forEach(val => {
-      obj[val] = key;
+  str.split('|').forEach(group => {
+    let i = group.indexOf(':');
+    let val = group.slice(0, i);
+    unpackKeys(group.slice(i + 1)).forEach(k => {
+      obj[k] = decodeVal(k, val);
     });
   });
   return obj
 };
 
-const growObject = function (key = '', val = '') {
-  val = String(val);
-  let m = val.match(prefix);
-  if (m === null) {
-    return val
+// one string → model
+const uncompress = function (str = '') {
+  if (typeof str !== 'string' || str[0] === '{') {
+    throw new Error('suffix-thumb: uncompress expects a packed string. Models made before v6 must be learned again.')
   }
-  let num = Number(m[1]) || 0;
-  let pre = key.substring(0, num);
-  let full = pre + val.replace(prefix, '');
-  return full
-};
-
-const unpackOne = function (str) {
-  let obj = toObject(str);
-  return Object.keys(obj).reduce((h, k) => {
-    h[k] = growObject(k, obj[k]);
-    return h
-  }, {})
-};
-
-const uncompress = function (model = {}) {
-  if (typeof model === 'string') {
-    model = JSON.parse(model);
-  }
-  model.fwd = unpackOne(model.fwd || '');
-  model.both = unpackOne(model.both || '');
-  model.rev = unpackOne(model.rev || '');
-  model.ex = unpackOne(model.ex || '');
+  let parts = str.split('~');
+  let model = {};
+  sections.forEach((s, i) => {
+    model[s] = unpackSection(parts[i]);
+  });
   return model
 };
 

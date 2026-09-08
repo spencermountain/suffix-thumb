@@ -1,5 +1,5 @@
 import test from 'tape'
-import { learn, convert, reverse, compress, uncompress } from './lib/_lib.js'
+import { learn, convert, reverse, compress, uncompress, validate } from './lib/_lib.js'
 import perfecto from './data/perfecto.js'
 import pastParticiple from './data/past-participle.js'
 import itGerund from './data/it-gerund.js'
@@ -69,7 +69,7 @@ test('exception when prefix differs', function (t) {
     ['walk', 'walked'],
     ['talk', 'talked'],
   ])
-  t.equal(model.ex.go, 'went', 'go is an exception')
+  t.equal(model.both.go || model.ex.go, 'went', 'go is a whole-word rule, or an exception')
   t.equal(convert('go', model), 'went', 'go')
   t.equal(convert('went', reverse(model)), 'go', 'went')
   t.end()
@@ -108,5 +108,24 @@ test('empty and junk input', function (t) {
   t.equal(convert('walk', model), 'walked', 'junk ignored')
   t.equal(convert('nope', {}), 'nope', 'empty model passes through')
   t.equal(convert('', {}), '', 'empty string, empty model')
+  t.end()
+})
+
+test('validate', function (t) {
+  let pairs = [
+    ['walk', 'walked'],
+    ['walk', 'walking'], // repeated left
+    ['poner', 'puesto'],
+    ['ponerse', 'puesto'], // repeated right
+    ['a,b', 'ab'], // reserved char
+    ['mp3', 'mp3s'], // digit
+    ['ok', 42],
+    null,
+  ]
+  t.deepEqual(validate(pairs), [['walk', 'walked'], ['poner', 'puesto']], 'two-way')
+  t.deepEqual(validate(pairs, { reverse: false }), [['walk', 'walked'], ['poner', 'puesto'], ['ponerse', 'puesto']], 'one-way keeps right dupes')
+  let model = learn(pairs)
+  t.equal(convert('ponerse', model), 'puesto', 'learn keeps right dupes')
+  t.notOk(JSON.stringify(model).includes('a,b'), 'unencodable pair skipped')
   t.end()
 })

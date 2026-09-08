@@ -12,15 +12,15 @@ import perfecto from './data/perfecto.js'
 import presentTense from './data/present-tense.js'
 
 let data = [
-  { pairs: nous, name: 'nous', size: 1.5 },
+  { pairs: nous, name: 'nous', size: 0.9 },
   { pairs: frWords, name: 'frWords', size: 0.1 },
-  { pairs: future, name: 'future', size: 0.7 },
-  { pairs: gerund, name: 'gerund', size: 1.8 },
-  { pairs: itGerund, name: 'itGerund', size: 1.8 },
-  { pairs: pastParticiple, name: 'pastParticiple', size: 1.6 },
-  { pairs: perfecto, name: 'perfecto', size: 0.6 },
-  { pairs: presentTense, name: 'presentTense', size: 0.2 },
-  { pairs: esPlurals, name: 'esPlurals', size: 5.0 },
+  { pairs: future, name: 'future', size: 0.5 },
+  { pairs: gerund, name: 'gerund', size: 1.0 },
+  { pairs: itGerund, name: 'itGerund', size: 1.1 },
+  { pairs: pastParticiple, name: 'pastParticiple', size: 1.2 },
+  { pairs: perfecto, name: 'perfecto', size: 0.4 },
+  { pairs: presentTense, name: 'presentTense', size: 0.1 },
+  { pairs: esPlurals, name: 'esPlurals', size: 3.6 },
 ]
 
 test('filesizes:', function (t) {
