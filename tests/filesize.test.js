@@ -11,7 +11,7 @@ import pastParticiple from './data/past-participle.js'
 import perfecto from './data/perfecto.js'
 import presentTense from './data/present-tense.js'
 
-let data = [
+const data = [
   { pairs: nous, name: 'nous', size: 0.9 },
   { pairs: frWords, name: 'frWords', size: 0.1 },
   { pairs: future, name: 'future', size: 0.5 },
@@ -24,12 +24,12 @@ let data = [
 ]
 
 test('filesizes:', function (t) {
-  data.forEach(o => {
-    let { pairs, size, name } = o
-    let model = learn(pairs)
-    let pkd = compress(model)
-    let n = Number(filesize(pkd))
-    let max = size * 1.1
+  data.forEach((o) => {
+    const { pairs, size, name } = o
+    const model = learn(pairs)
+    const pkd = compress(model)
+    const n = Number(filesize(pkd))
+    const max = size * 1.1
     t.ok(n <= max, `${name} is ${n}kb - want ${size}kb`)
   })
   t.end()

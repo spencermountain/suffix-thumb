@@ -7,7 +7,7 @@ import esPlurals from './data/es-plurals.js'
 
 // the reverse of a repeated right-side word is the first pair that produced it
 const firstPairs = function (pairs) {
-  let first = {}
+  const first = {}
   pairs.forEach(a => {
     if (!first.hasOwnProperty(a[1])) {
       first[a[1]] = a[0]
@@ -17,16 +17,16 @@ const firstPairs = function (pairs) {
 }
 
 test('right-side duplicates', function (t) {
-  let pairs = [
+  const pairs = [
     ['poner', 'puesto'],
     ['ponerse', 'puesto'],
     ['componer', 'compuesto'],
     ['walk', 'walked'],
     ['talk', 'talked'],
   ]
-  let model = learn(pairs)
+  const model = learn(pairs)
   pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[fwd] ${a[0]}`))
-  let rev = reverse(model)
+  const rev = reverse(model)
   t.equal(convert('puesto', rev), 'poner', '[rev] first pair wins')
   t.equal(convert('compuesto', rev), 'componer', '[rev] compuesto')
   t.equal(convert('walked', rev), 'walk', '[rev] walked')
@@ -36,11 +36,11 @@ test('right-side duplicates', function (t) {
 const datasets = { perfecto, pastParticiple, itGerund, esPlurals }
 Object.keys(datasets).forEach(name => {
   test(`both directions: ${name}`, function (t) {
-    let pairs = datasets[name]
-    let model = uncompress(compress(learn(pairs)))
-    let rev = reverse(model)
-    let fwdBad = pairs.filter(a => convert(a[0], model) !== a[1])
-    let revBad = firstPairs(pairs).filter(a => convert(a[0], rev) !== a[1])
+    const pairs = datasets[name]
+    const model = uncompress(compress(learn(pairs)))
+    const rev = reverse(model)
+    const fwdBad = pairs.filter(a => convert(a[0], model) !== a[1])
+    const revBad = firstPairs(pairs).filter(a => convert(a[0], rev) !== a[1])
     t.deepEqual(fwdBad, [], `[${name}] forward`)
     t.deepEqual(revBad, [], `[${name}] backward`)
     t.end()
@@ -48,7 +48,7 @@ Object.keys(datasets).forEach(name => {
 })
 
 test('rule may match the whole word', function (t) {
-  let pairs = [
+  const pairs = [
     ['jeter', 'jetterons'],
     ['rejeter', 'rejetterons'],
     ['projeter', 'projetterons'],
@@ -56,7 +56,7 @@ test('rule may match the whole word', function (t) {
     ['manger', 'mangerons'],
     ['donner', 'donnerons'],
   ]
-  let model = learn(pairs)
+  const model = learn(pairs)
   t.equal(Object.keys(model.ex).length, 0, 'no exceptions needed')
   t.equal(convert('jeter', model), 'jetterons', 'jeter')
   t.equal(convert('jeter', reverse(learn(pairs.map(a => [a[1], a[0]])))), 'jetterons', 'jeter (learned backwards)')
@@ -64,7 +64,7 @@ test('rule may match the whole word', function (t) {
 })
 
 test('exception when prefix differs', function (t) {
-  let model = learn([
+  const model = learn([
     ['go', 'went'],
     ['walk', 'walked'],
     ['talk', 'talked'],
@@ -76,13 +76,13 @@ test('exception when prefix differs', function (t) {
 })
 
 test('min option', function (t) {
-  let pairs = [
+  const pairs = [
     ['walk', 'walked'],
     ['talk', 'talked'],
     ['bake', 'baked'],
     ['sit', 'sat'],
   ]
-  let model = learn(pairs, { min: 2 })
+  const model = learn(pairs, { min: 2 })
   // 'sit' can only be an exception, not a one-off rule
   t.equal(model.ex.sit, 'sat', 'sit is an exception')
   pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[min] ${a[0]}`))
@@ -90,12 +90,12 @@ test('min option', function (t) {
 })
 
 test('one-way model', function (t) {
-  let pairs = [
+  const pairs = [
     ['walk', 'walked'],
     ['talk', 'talked'],
     ['go', 'went'],
   ]
-  let model = learn(pairs, { reverse: false })
+  const model = learn(pairs, { reverse: false })
   t.deepEqual(model.both, {}, 'no shared rules')
   t.deepEqual(model.rev, {}, 'no reverse rules')
   pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[one-way] ${a[0]}`))
@@ -104,7 +104,7 @@ test('one-way model', function (t) {
 
 test('empty and junk input', function (t) {
   t.deepEqual(learn([]), { fwd: {}, both: {}, rev: {}, ex: {} }, 'empty')
-  let model = learn([['walk', 'walked'], null, ['x'], [1, 2], ['talk', 'talked']])
+  const model = learn([['walk', 'walked'], null, ['x'], [1, 2], ['talk', 'talked']])
   t.equal(convert('walk', model), 'walked', 'junk ignored')
   t.equal(convert('nope', {}), 'nope', 'empty model passes through')
   t.equal(convert('', {}), '', 'empty string, empty model')
@@ -112,7 +112,7 @@ test('empty and junk input', function (t) {
 })
 
 test('validate', function (t) {
-  let pairs = [
+  const pairs = [
     ['walk', 'walked'],
     ['walk', 'walking'], // repeated left
     ['poner', 'puesto'],
@@ -124,7 +124,7 @@ test('validate', function (t) {
   ]
   t.deepEqual(validate(pairs), [['walk', 'walked'], ['poner', 'puesto']], 'two-way')
   t.deepEqual(validate(pairs, { reverse: false }), [['walk', 'walked'], ['poner', 'puesto'], ['ponerse', 'puesto']], 'one-way keeps right dupes')
-  let model = learn(pairs)
+  const model = learn(pairs)
   t.equal(convert('ponerse', model), 'puesto', 'learn keeps right dupes')
   t.notOk(JSON.stringify(model).includes('a,b'), 'unencodable pair skipped')
   t.end()

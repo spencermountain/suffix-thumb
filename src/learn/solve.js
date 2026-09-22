@@ -37,11 +37,11 @@ const works = function (p, rule) {
 //   isFree  - (key, add) → true when this rule costs nothing (it is shared with the other direction)
 //   strict  - set of left-side words that may not become exceptions
 const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set()) {
-  let min = opts.min || 0
-  let words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }))
-  let memo = new Map()
-  let rules = {}
-  let ex = {}
+  const min = opts.min || 0
+  const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }))
+  const memo = new Map()
+  const rules = {}
+  const ex = {}
 
   // returns { cost, apply } for the sub-trie at suffix `suff`, given the rule it inherits
   const node = function (suff, list, inherited) {
@@ -49,24 +49,24 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
     if (inherited && !list.some(p => needs(p, inherited.k) === inherited.add)) {
       inherited = null
     }
-    let key = suff + '|' + (inherited ? inherited.k + ':' + inherited.add : '')
+    const key = suff + '|' + (inherited ? inherited.k + ':' + inherited.add : '')
     if (memo.has(key)) {
       return memo.get(key)
     }
     // rules that could be keyed at this suffix, and how many words each would serve
-    let candidates = new Map()
+    const candidates = new Map()
     // the word that *is* this suffix, and the sub-tries by preceding character
     let whole = null
-    let kids = new Map()
+    const kids = new Map()
     list.forEach(p => {
-      let add = needs(p, suff.length)
+      const add = needs(p, suff.length)
       if (add !== null) {
         candidates.set(add, (candidates.get(add) || 0) + 1)
       }
       if (p.w.length === suff.length) {
         whole = p
       } else {
-        let char = p.w[p.w.length - suff.length - 1]
+        const char = p.w[p.w.length - suff.length - 1]
         if (!kids.has(char)) {
           kids.set(char, [])
         }
@@ -78,7 +78,7 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
     const option = function (rule, placed) {
       let total = placed && !isFree(suff, rule.add) ? cost(suff, rule.add) : 0
       let exceptions = 0
-      let parts = []
+      const parts = []
       let wholeEx = false
       if (whole && !(rule && works(whole, rule))) {
         if (whole.strict) {
@@ -88,8 +88,8 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
         total += cost(whole.w, whole.w2)
         exceptions += 1
       }
-      for (let [char, sub] of kids) {
-        let res = node(char + suff, sub, rule)
+      for (const [char, sub] of kids) {
+        const res = node(char + suff, sub, rule)
         total += res.cost
         exceptions += res.exceptions
         parts.push(res)
@@ -98,21 +98,21 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
     }
 
     let best = option(inherited, false)
-    for (let [add, count] of candidates) {
+    for (const [add, count] of candidates) {
       // a whole-word rule is just an exception in disguise; it is always allowed
-      let isWhole = whole !== null && add === whole.w2
+      const isWhole = whole !== null && add === whole.w2
       if (count < min && !isWhole) {
         continue
       }
-      let o = option({ k: suff.length, add }, true)
+      const o = option({ k: suff.length, add }, true)
       // on a tie in bytes, prefer fewer exceptions - a rule packs better, and generalizes
       // (unless the rule only got in under the whole-word exemption)
-      let tie = o.cost === best.cost && o.exceptions < best.exceptions && count >= min
+      const tie = o.cost === best.cost && o.exceptions < best.exceptions && count >= min
       if (o.cost < best.cost || tie) {
         best = o
       }
     }
-    let out = {
+    const out = {
       cost: best.cost,
       exceptions: best.exceptions,
       apply: function () {

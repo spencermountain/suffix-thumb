@@ -2,7 +2,7 @@ import test from 'tape'
 import { learn } from './lib/_lib.js'
 
 test('find best rule', function (t) {
-  let pairs = [
+  const pairs = [
     ['neighbouring', 'neighbour'],
     ['colouring', 'colour'],
     ['flavouring', 'flavour'],
@@ -18,7 +18,7 @@ test('find best rule', function (t) {
     ['contouring', 'contour'],
     ['endeavouring', 'endeavour']
   ]
-  let model = learn(pairs)
+  const model = learn(pairs)
   t.equal(model.both.ing, '', 'both-rule')
   t.equal(Object.keys(model.ex || {}).length, 0, 'no-exceptions')
   t.end()
@@ -26,7 +26,7 @@ test('find best rule', function (t) {
 
 
 test('same test', function (t) {
-  let pairs = [
+  const pairs = [
     ['acool', 'agood'],
     ['bcool', 'bgood'],
     ['ccool', 'cgood'],
@@ -35,7 +35,7 @@ test('same test', function (t) {
     ['gcool', 'ggood'],
     ['ooocool', 'ooocool'],//unchanged
   ]
-  let model = learn(pairs)
+  const model = learn(pairs)
   t.equal(model.both.cool, 'good', 'both-rule')
   // t.equal(model.same[0], 'ooocool', 'same-rule')
   t.end()
@@ -43,7 +43,7 @@ test('same test', function (t) {
 
 
 test('suffix isnt whole word', function (t) {
-  let pairs = [
+  const pairs = [
     ['croirai', 'croire'],
     ['cuirai', 'cuire'],
     ['croulerai', 'crouler'],
@@ -51,7 +51,7 @@ test('suffix isnt whole word', function (t) {
     ['déblayerai', 'déblayer'],
     ['débouillirai', 'débouillir'],
   ]
-  let model = learn(pairs)
+  const model = learn(pairs)
   t.equal(model.both.erai, 'er', 'both-rule')
   t.end()
 })

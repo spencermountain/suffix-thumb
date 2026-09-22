@@ -16,9 +16,9 @@ const encodeVal = function (key, val) {
 }
 
 const decodeVal = function (key, str) {
-  let m = str.match(/^[0-9]+/)
-  let n = m ? Number(m[0]) : 0
-  let tail = m ? str.slice(m[0].length) : str
+  const m = str.match(/^[0-9]+/)
+  const n = m ? Number(m[0]) : 0
+  const tail = m ? str.slice(m[0].length) : str
   return key.slice(0, key.length - n) + tail
 }
 

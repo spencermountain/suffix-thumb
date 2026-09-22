@@ -14,9 +14,9 @@ const swap = (a) => [a[1], a[0]]
 
 const getNum = function (pairs, model) {
   let right = 0
-  let wrong = []
+  const wrong = []
   pairs.forEach(a => {
-    let have = convert(a[0], model)
+    const have = convert(a[0], model)
     if (have === a[1]) {
       right += 1
     } else {
@@ -29,8 +29,8 @@ const getNum = function (pairs, model) {
 
 const test = function (pairs, model = {}) {
   pairs = validate(pairs)
-  let fwdScore = getNum(pairs, model)
-  let bkwdScore = getNum(pairs.map(swap), reverse(model))
+  const fwdScore = getNum(pairs, model)
+  const bkwdScore = getNum(pairs.map(swap), reverse(model))
   console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`)
 }
 export default test

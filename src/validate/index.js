@@ -7,8 +7,8 @@ const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] 
 //  - repeated left-side words (a word can only become one thing)
 //  - repeated right-side words, unless {reverse:false} (one-way models can have them)
 const validate = function (pairs = [], opts = {}) {
-  let left = new Set()
-  let right = new Set()
+  const left = new Set()
+  const right = new Set()
   return pairs.filter(a => {
     if (!isPair(a) || reserved.test(a[0]) || reserved.test(a[1])) {
       return false

@@ -4,13 +4,13 @@
 //   3. the '' rule, if any, as a fallback (a plain append)
 //   4. otherwise, the word is returned unchanged
 const convert = function (str = '', model = {}) {
-  let { ex = {}, fwd = {}, both = {} } = model
+  const { ex = {}, fwd = {}, both = {} } = model
   if (ex.hasOwnProperty(str)) {
     return ex[str]
   }
   for (let len = str.length; len >= 0; len -= 1) {
-    let suff = str.slice(str.length - len)
-    let stem = str.slice(0, str.length - len)
+    const suff = str.slice(str.length - len)
+    const stem = str.slice(0, str.length - len)
     if (fwd.hasOwnProperty(suff)) {
       return stem + fwd[suff]
     }

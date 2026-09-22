@@ -32,13 +32,13 @@ const unpackKeys = function (str, suff = '', out = []) {
 }
 
 const unpackSection = function (str = '') {
-  let obj = {}
+  const obj = {}
   if (!str) {
     return obj
   }
   str.split('|').forEach(group => {
-    let i = group.indexOf(':')
-    let val = group.slice(0, i)
+    const i = group.indexOf(':')
+    const val = group.slice(0, i)
     unpackKeys(group.slice(i + 1)).forEach(k => {
       obj[k] = decodeVal(k, val)
     })
@@ -51,8 +51,8 @@ const uncompress = function (str = '') {
   if (typeof str !== 'string' || str[0] === '{') {
     throw new Error('suffix-thumb: uncompress expects a packed string. Models made before v6 must be learned again.')
   }
-  let parts = str.split('~')
-  let model = {}
+  const parts = str.split('~')
+  const model = {}
   sections.forEach((s, i) => {
     model[s] = unpackSection(parts[i])
   })

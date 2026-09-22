@@ -11,7 +11,7 @@ import pastParticiple from '../tests/data/past-participle.js'
 import perfecto from '../tests/data/perfecto.js'
 import presentTense from '../tests/data/present-tense.js'
 
-let data = [
+const data = [
   { pairs: nous, name: 'nous', size: 0.9 },
   { pairs: frWords, name: 'frWords', size: 0.1 },
   { pairs: future, name: 'future', size: 0.5 },
@@ -26,10 +26,10 @@ let data = [
 const green = str => '\x1b[32m' + str + '\x1b[0m'
 const red = str => '\x1b[31m' + str + '\x1b[0m'
 data.forEach(o => {
-  let { pairs, size, name } = o
-  let model = learn(pairs)
-  let pkd = compress(model)
-  let n = filesize(pkd)
+  const { pairs, size, name } = o
+  const model = learn(pairs)
+  const pkd = compress(model)
+  const n = filesize(pkd)
   if (n <= size) {
     console.log(`✅ ${name} is ${green(n + 'kb')}`)
   } else {

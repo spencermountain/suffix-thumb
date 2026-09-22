@@ -1,20 +1,34 @@
 {
   "name": "suffix-thumb",
-  "description": "learn transformations between two sets of words",
   "version": "6.0.0",
+  "description": "learn transformations between two sets of words",
+  "license": "MIT",
+  "repository": "github:spencermountain/suffix-thumb",
   "author": "Spencer Kelly <spencermountain@gmail.com> (https://spencermountain.dev)",
-  "main": "./src/index.js",
-  "unpkg": "./builds/suffix-thumb-client.js",
-  "types": "./builds/types.d.ts",
   "type": "module",
-  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "suffix",
+    "prefix",
+    "compression"
+  ],
   "exports": {
     ".": {
-      "import": "./src/index.js",
-      "require": "./builds/suffix-thumb.js"
+      "import": {
+        "types": "./builds/types.d.ts",
+        "default": "./src/index.js"
+      },
+      "require": {
+        "types": "./builds/types.d.cts",
+        "default": "./builds/suffix-thumb.cjs"
+      }
     }
   },
-  "repository": "github:spencermountain/suffix-thumb",
+  "main": "./builds/suffix-thumb.cjs",
+  "types": "./builds/types.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
@@ -23,15 +37,9 @@
     "build": "rollup -c --silent",
     "lint": "eslint ."
   },
-  "prettier": {
-    "trailingComma": "es5",
-    "semi": false,
-    "singleQuote": true,
-    "printWidth": 100
-  },
   "files": [
-    "src/",
-    "builds/"
+    "builds/",
+    "src/"
   ],
   "devDependencies": {
     "@rollup/plugin-terser": "^1.0.0",
@@ -39,5 +47,11 @@
     "tap-dancer": "0.4.0",
     "tape": "5.10.2"
   },
-  "license": "MIT"
+  "unpkg": "./builds/suffix-thumb-client.js",
+  "prettier": {
+    "trailingComma": "es5",
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 100
+  }
 }

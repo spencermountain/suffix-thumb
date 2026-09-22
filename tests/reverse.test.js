@@ -4,24 +4,24 @@ import future from './data/future-simple.js'
 import nous from './data/fr-nous.js'
 
 test('future tense:', function (t) {
-  let pairs = validate(future)
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const pairs = validate(future)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[1], rev)
+    const created = convert(a[1], rev)
     t.equal(created, a[0], `[future-rev] '${a[0]}' -> '${created}'`)
   })
   t.end()
 })
 
 test('french-nous:', function (t) {
-  let pairs = validate(nous)
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const pairs = validate(nous)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[1], rev)
+    const created = convert(a[1], rev)
     t.equal(created, a[0], `[nous-rev] '${a[0]}' -> '${created}'`)
   })
   t.end()

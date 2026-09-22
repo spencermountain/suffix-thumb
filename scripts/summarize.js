@@ -14,7 +14,7 @@ const summarize = function (model = {}) {
   model.ex = model.ex || {}
   console.log(green(Object.keys(model.fwd).length), 'fwd', magenta(Object.keys(model.both).length), 'both', magenta(Object.keys(model.rev).length), 'rev')
   console.log('  ', cyan(Object.keys(model.ex).length), 'ex')
-  let pkd = compress(model)
+  const pkd = compress(model)
   console.log(blue(filesize(pkd) + 'kb total'))
   console.log('\n\n')
 }

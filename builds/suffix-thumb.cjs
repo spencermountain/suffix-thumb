@@ -1,4 +1,6 @@
 /* spencermountain/suffix-thumb 6.0.0 Apache 2.0 */
+'use strict';
+
 // the four parts of a model, in the order they are packed
 const sections = ['fwd', 'both', 'rev', 'ex'];
 
@@ -437,4 +439,10 @@ const test = function (pairs, model = {}) {
   console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`);
 };
 
-export { compress, convert, learn, reverse, test, uncompress, validate };
+exports.compress = compress;
+exports.convert = convert;
+exports.learn = learn;
+exports.reverse = reverse;
+exports.test = test;
+exports.uncompress = uncompress;
+exports.validate = validate;

@@ -3,7 +3,7 @@ import { learn, convert, reverse } from './lib/_lib.js'
 
 
 test('use of same', function (t) {
-  let pairs = [
+  const pairs = [
     ['acool', 'agood'],
     ['bcool', 'bgood'],
     ['ccool', 'cgood'],
@@ -12,21 +12,21 @@ test('use of same', function (t) {
     ['gcool', 'ggood'],
     ['ooocool', 'ooocool'],//unchanged
   ]
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[0], model)
+    const created = convert(a[0], model)
     t.equal(created, a[1], `[same] '${a[0]}' -> '${created}'`)
 
-    let back = convert(a[1], rev)
+    const back = convert(a[1], rev)
     t.equal(back, a[0], `[same back] '${a[0]}' -> '${created}'`)
   })
   t.end()
 })
 
 test('suffix not whole word', function (t) {
-  let pairs = [
+  const pairs = [
     ['croirai', 'croire'],
     ['cuirai', 'cuire'],
     ['croulerai', 'crouler'],
@@ -34,21 +34,21 @@ test('suffix not whole word', function (t) {
     ['déblayerai', 'déblayer'],
     ['débouillirai', 'débouillir'],
   ]
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[0], model)
+    const created = convert(a[0], model)
     t.equal(created, a[1], `[whole-word] '${a[0]}' -> '${created}'`)
 
-    let back = convert(a[1], rev)
+    const back = convert(a[1], rev)
     t.equal(back, a[0], `[whole-word back] '${a[0]}' -> '${created}'`)
   })
   t.end()
 })
 
 test('misc', function (t) {
-  let pairs = [
+  const pairs = [
     ['bouffer', 'boufferai'],
     ['bouffir', 'bouffirai'],
     ['confiner', 'confinerai'],
@@ -58,21 +58,21 @@ test('misc', function (t) {
     ['autostimuler', 'autostimulerai'],
     ['autosuffire', 'autosuffirai'],
   ]
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[0], model)
+    const created = convert(a[0], model)
     t.equal(created, a[1], `[misc] '${a[0]}' -> '${created}'`)
 
-    let back = convert(a[1], rev)
+    const back = convert(a[1], rev)
     t.equal(back, a[0], `[misc back] '${a[0]}' -> '${created}'`)
   })
   t.end()
 })
 
 test('rev', function (t) {
-  let pairs = [
+  const pairs = [
     ['autoconstruire', 'autoconstruirons'],
     ['réjouir', 'réjouirons'],
     ['reluire', 'reluirons'],
@@ -82,21 +82,21 @@ test('rev', function (t) {
     ['surproduire', 'surproduirons'],
     ['traduire', 'traduirons'],
   ]
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[0], model)
+    const created = convert(a[0], model)
     t.equal(created, a[1], `[rev] '${a[0]}' -> '${created}'`)
 
-    let back = convert(a[1], rev)
+    const back = convert(a[1], rev)
     t.equal(back, a[0], `[rev back] '${a[0]}' -> '${created}'`)
   })
   t.end()
 })
 
 test('fwd', function (t) {
-  let pairs = [
+  const pairs = [
     ['devoir', 'devrons'],
     ['émouvoir', 'émouvrons'],
     ['entrevoir', 'entreverrons'],
@@ -108,14 +108,14 @@ test('fwd', function (t) {
     ['redevoir', 'redevrons'],
     ['revoir', 'reverrons'],
   ]
-  let model = learn(pairs)
-  let rev = reverse(model)
+  const model = learn(pairs)
+  const rev = reverse(model)
   // test them all
   pairs.forEach((a) => {
-    let created = convert(a[0], model)
+    const created = convert(a[0], model)
     t.equal(created, a[1], `[fwd] '${a[0]}' -> '${created}'`)
 
-    let back = convert(a[1], rev)
+    const back = convert(a[1], rev)
     t.equal(back, a[0], `[fwd back] '${a[0]}' -> '${created}'`)
   })
   t.end()
