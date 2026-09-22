@@ -6,7 +6,7 @@ import { sections, encodeVal } from './_lib.js'
 // a suffix is only factored-out when the braces pay for themselves.
 const packKeys = function (keys) {
   const root = { kids: new Map(), end: false }
-  keys.forEach(k => {
+  keys.forEach((k) => {
     let n = root
     for (let i = k.length - 1; i >= 0; i -= 1) {
       if (!n.kids.has(k[i])) {
@@ -19,7 +19,9 @@ const packKeys = function (keys) {
   // every key beneath a node, written out in full
   const flat = function (n, suff) {
     const out = n.end ? [suff] : []
-    n.kids.forEach((kid, char) => out.push(...flat(kid, char + suff)))
+    n.kids.forEach((kid, char) => {
+      out.push(...flat(kid, char + suff))
+    })
     return out
   }
   const pack = function (n) {
@@ -44,7 +46,7 @@ const packKeys = function (keys) {
 // group keys by their encoded value:   1as:chico,chino|2es:ton,ger
 const packSection = function (obj = {}) {
   const byVal = new Map()
-  Object.keys(obj).forEach(k => {
+  Object.keys(obj).forEach((k) => {
     const val = encodeVal(k, obj[k])
     if (!byVal.has(val)) {
       byVal.set(val, [])
@@ -56,6 +58,6 @@ const packSection = function (obj = {}) {
 
 // model → one string
 const compress = function (model = {}) {
-  return sections.map(s => packSection(model[s])).join('~')
+  return sections.map((s) => packSection(model[s])).join('~')
 }
 export default compress
