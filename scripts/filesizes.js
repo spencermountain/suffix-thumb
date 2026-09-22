@@ -1,4 +1,4 @@
-import test from 'tape'
+/* eslint-disable no-console */
 import { learn, compress } from '../src/index.js'
 import filesize from '../tests/lib/filesize.js'
 import esPlurals from '../tests/data/es-plurals.js'

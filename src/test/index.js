@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { convert, reverse, validate } from '../index.js'
 
 const cyan = str => '\x1b[36m' + str + '\x1b[0m'

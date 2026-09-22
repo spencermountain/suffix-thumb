@@ -1,5 +1,5 @@
 import test from 'tape'
-import { learn, convert, compress, uncompress, reverse, validate } from './lib/_lib.js'
+import { learn, convert, compress, uncompress, reverse } from './lib/_lib.js'
 import frWords from './data/fr-words.js'
 import gerund from './data/gerund.js'
 import presentTense from './data/present-tense.js'
