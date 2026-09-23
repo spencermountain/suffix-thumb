@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import fs from 'node:fs'
 import terser from '@rollup/plugin-terser'
+import sizeCheck from 'rollup-plugin-filesize-check'
+
 
 const pkg = JSON.parse(fs.readFileSync('./package.json').toString())
 const version = pkg.version
@@ -37,6 +39,13 @@ export default [
   {
     input: 'src/index.js',
     output: [{ file: `builds/${name}.min.js`, format: 'umd', name: 'suffixThumb', banner: banner }],
-    plugins: [terser()],
-  }
+    plugins: [
+      terser(),
+      sizeCheck({
+        expect: 5, // sizes in kb
+        warn: 3, // acceptable change (+/-)
+        throw: 8, // unacceptable change (+/-)
+      }),
+    ],
+  },
 ]

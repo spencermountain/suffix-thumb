@@ -14,7 +14,7 @@
   
   <!-- file size -->
   <a href="https://unpkg.com/suffix-thumb/builds/suffix-thumb.min.js">
-    <img src="https://badge-size.herokuapp.com/spencermountain/suffix-thumb/master/builds/suffix-thumb.min.js" />
+    <img src="https://img.shields.io/bundlephobia/min/suffix-thumb" />
   </a>
 
    <div align="center">

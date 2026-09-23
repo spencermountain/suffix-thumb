@@ -6,14 +6,6 @@
   "repository": "github:spencermountain/suffix-thumb",
   "author": "Spencer Kelly <spencermountain@gmail.com> (https://spencermountain.dev)",
   "type": "module",
-  "engines": {
-    "node": ">=18"
-  },
-  "keywords": [
-    "suffix",
-    "prefix",
-    "compression"
-  ],
   "exports": {
     ".": {
       "import": {
@@ -29,6 +21,9 @@
   "main": "./builds/suffix-thumb.cjs",
   "types": "./builds/types.d.ts",
   "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
@@ -41,10 +36,16 @@
     "builds/",
     "src/"
   ],
+  "keywords": [
+    "suffix",
+    "prefix",
+    "compression"
+  ],
   "devDependencies": {
     "@rollup/plugin-terser": "^1.0.0",
     "rollup": "4.63.4",
-    "tap-dancer": "0.4.0",
+    "rollup-plugin-filesize-check": "^2.0.1",
+    "tap-dancer": "0.4.2",
     "tape": "5.10.2"
   },
   "unpkg": "./builds/suffix-thumb-client.js",
