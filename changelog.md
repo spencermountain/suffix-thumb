@@ -1,8 +1,11 @@
 ### 6.0.0 [Sep 2026]
-- **[breaking]** - `learn` is rewritten: rules are chosen by an exact byte-cost search over a suffix-trie, instead of a greedy percent-threshold. Models are ~50% smaller and learning is ~10x faster. The model shape is unchanged.
+Models are ~50% smaller and learning is ~10x faster.
+v6 `uncompress` refuses models packed by v5
+
+- **[breaking]** - `learn` rules are chosen by an exact byte-cost search over a suffix-trie, instead of a percent-threshold
 - **[breaking]** - the `threshold` option is gone
-- **[breaking]** - `compress` now returns one string, ~35% smaller than the old object: strip-count values, and keys stored as a suffix-trie. `uncompress` refuses models packed by v5 - learn them again.
-- **[change]** - `validate` also drops pairs with reserved characters (`~ | : , { }` and digits), and keeps right-side duplicates with `{reverse:false}`
+- **[breaking]** - `compress` now returns one string
+- **[change]** - `validate` drops pairs with reserved characters (`~ | : , { }` and digits)
 - **[change]** - on a tie, a whole-word rule is preferred over an exception
 - **[new]** - `verbose` option warns about skipped pairs
 - **[change]** - a rule may now match a whole word, in `convert`
@@ -10,6 +13,9 @@
 - **[fix]** - reverse conversions could be wrong when a shared rule out-ranked a reverse rule
 - **[fix]** - the `min` option no longer disables exceptions
 - **[fix]** - stale type definitions
+- **[fix]** - better-support special string inputs
+- **[fix]** - unsafe regex fixes
+- **[update]** - dependencies
 
 
 ### 5.0.3 [Feb 2023]
