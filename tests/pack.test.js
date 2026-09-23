@@ -40,3 +40,76 @@ test('presentTense:', function (t) {
 })
 
 
+
+test('empty sections:', function (t) {
+  const pairs = [
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+    ['go', 'went'],
+  ]
+  const model = uncompress(compress(learn(pairs)))
+  t.deepEqual(model.fwd, {}, 'empty fwd stays empty')
+  t.equal(convert('walk', model), 'walked', 'fallback rule still applies')
+  t.equal(convert('walked', reverse(model)), 'walk', 'reverse fallback')
+  t.end()
+})
+
+test('packed format:', function (t) {
+  const model = {
+    fwd: { ltador: 'ltadoras', nzador: 'nzadoras', epador: 'epadoras', ero: 'eras', ntonero: 'ntoneras' },
+    both: { '': 'ed', er: 'é' },
+    rev: {},
+    ex: { go: 'went' },
+  }
+  const str = compress(model)
+  t.equal(typeof str, 'string', 'is a string')
+  t.equal(str, '0as:ador{lt,nz,ep}|1as:ero{,nton}~0ed:|2é:er~~2went:go', 'expected layout')
+  t.deepEqual(uncompress(str), model, 'round-trips')
+  t.end()
+})
+
+test('packed format: nesting', function (t) {
+  const fwd = {}
+  ;['abcdxyz', 'bbcdxyz', 'cdxyz', 'pqxyz', 'rqxyz', 'xyz', 'z'].forEach(k => (fwd[k] = k + 's'))
+  const model = { fwd, both: {}, rev: {}, ex: {} }
+  const str = compress(model)
+  t.ok(str.startsWith('0s:'), 'one group')
+  t.deepEqual(uncompress(str).fwd, fwd, 'round-trips nested braces')
+  t.end()
+})
+
+test('packed format: every dataset round-trips', function (t) {
+  ;[frWords, gerund, presentTense].forEach(pairs => {
+    const model = learn(pairs)
+    const back = uncompress(compress(model))
+    t.deepEqual(back, model, 'round-trip')
+  })
+  t.end()
+})
+
+test('old models are refused', function (t) {
+  t.throws(() => uncompress({ fwd: '', both: 'ed:', rev: '', ex: 'went:go' }), /v6/, 'object')
+  t.throws(() => uncompress('{"fwd":""}'), /v6/, 'json string')
+  t.end()
+})
+
+test('malformed packed models are refused', function (t) {
+  const invalid = [
+    '0s:a{~~~', // missing closing brace
+    '0s:a{b{c}~~~', // unclosed outer group
+    '0s:a}~~~', // unexpected closing brace
+    '0s:a{b}c~~~', // missing comma after a group
+    '0s:a~~', // missing section
+    '0s:a~~~~', // extra section
+    '0sa~~~', // missing colon
+    's:a~~~', // missing strip count
+    '0s:a:b~~~', // extra colon
+    '0s:a|~~~', // empty value group
+    '2s:a~~~', // strip count exceeds key length
+    '0s:a1~~~', // reserved character in key
+  ]
+  invalid.forEach(str => t.throws(() => uncompress(str), /invalid packed model/, str))
+  t.deepEqual(uncompress('~~~'), { fwd: {}, both: {}, rev: {}, ex: {} }, 'empty packed model')
+  t.deepEqual(uncompress(), uncompress('~~~'), 'default input remains supported')
+  t.end()
+})

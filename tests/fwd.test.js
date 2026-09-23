@@ -11,7 +11,7 @@ import perfecto from './data/perfecto.js'
 import presentTense from './data/present-tense.js'
 
 test('esPlurals:', function (t) {
-  let model = learn(esPlurals)
+  const model = learn(esPlurals)
   esPlurals.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[esPlurals] '${a[0]}'`)
   })
@@ -19,7 +19,7 @@ test('esPlurals:', function (t) {
 })
 
 test('nous:', function (t) {
-  let model = learn(nous)
+  const model = learn(nous)
   nous.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[nous] '${a[0]}'`)
   })
@@ -27,7 +27,7 @@ test('nous:', function (t) {
 })
 
 test('frWords:', function (t) {
-  let model = learn(frWords)
+  const model = learn(frWords)
   frWords.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[frWords] '${a[0]}'`)
   })
@@ -35,7 +35,7 @@ test('frWords:', function (t) {
 })
 
 test('future:', function (t) {
-  let model = learn(future)
+  const model = learn(future)
   future.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[future] '${a[0]}'`)
   })
@@ -43,7 +43,7 @@ test('future:', function (t) {
 })
 
 test('gerund:', function (t) {
-  let model = learn(gerund)
+  const model = learn(gerund)
   gerund.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[gerund] '${a[0]}'`)
   })
@@ -51,7 +51,7 @@ test('gerund:', function (t) {
 })
 
 test('itGerund:', function (t) {
-  let model = learn(itGerund)
+  const model = learn(itGerund)
   itGerund.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[itGerund] '${a[0]}'`)
   })
@@ -59,7 +59,7 @@ test('itGerund:', function (t) {
 })
 
 test('pastParticiple:', function (t) {
-  let model = learn(pastParticiple)
+  const model = learn(pastParticiple)
   pastParticiple.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[pastParticiple] '${a[0]}'`)
   })
@@ -67,7 +67,7 @@ test('pastParticiple:', function (t) {
 })
 
 test('perfecto:', function (t) {
-  let model = learn(perfecto)
+  const model = learn(perfecto)
   perfecto.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[perfecto] '${a[0]}'`)
   })
@@ -75,7 +75,7 @@ test('perfecto:', function (t) {
 })
 
 test('presentTense:', function (t) {
-  let model = learn(presentTense)
+  const model = learn(presentTense)
   presentTense.forEach((a) => {
     t.equal(convert(a[0], model), a[1], `[presentTense] '${a[0]}'`)
   })

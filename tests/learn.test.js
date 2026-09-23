@@ -1,0 +1,131 @@
+import test from 'tape'
+import { learn, convert, reverse, compress, uncompress, validate } from './lib/_lib.js'
+import perfecto from './data/perfecto.js'
+import pastParticiple from './data/past-participle.js'
+import itGerund from './data/it-gerund.js'
+import esPlurals from './data/es-plurals.js'
+
+// the reverse of a repeated right-side word is the first pair that produced it
+const firstPairs = function (pairs) {
+  const first = {}
+  pairs.forEach(a => {
+    if (!first.hasOwnProperty(a[1])) {
+      first[a[1]] = a[0]
+    }
+  })
+  return Object.keys(first).map(k => [k, first[k]])
+}
+
+test('right-side duplicates', function (t) {
+  const pairs = [
+    ['poner', 'puesto'],
+    ['ponerse', 'puesto'],
+    ['componer', 'compuesto'],
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+  ]
+  const model = learn(pairs)
+  pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[fwd] ${a[0]}`))
+  const rev = reverse(model)
+  t.equal(convert('puesto', rev), 'poner', '[rev] first pair wins')
+  t.equal(convert('compuesto', rev), 'componer', '[rev] compuesto')
+  t.equal(convert('walked', rev), 'walk', '[rev] walked')
+  t.end()
+})
+
+const datasets = { perfecto, pastParticiple, itGerund, esPlurals }
+Object.keys(datasets).forEach(name => {
+  test(`both directions: ${name}`, function (t) {
+    const pairs = datasets[name]
+    const model = uncompress(compress(learn(pairs)))
+    const rev = reverse(model)
+    const fwdBad = pairs.filter(a => convert(a[0], model) !== a[1])
+    const revBad = firstPairs(pairs).filter(a => convert(a[0], rev) !== a[1])
+    t.deepEqual(fwdBad, [], `[${name}] forward`)
+    t.deepEqual(revBad, [], `[${name}] backward`)
+    t.end()
+  })
+})
+
+test('rule may match the whole word', function (t) {
+  const pairs = [
+    ['jeter', 'jetterons'],
+    ['rejeter', 'rejetterons'],
+    ['projeter', 'projetterons'],
+    ['parler', 'parlerons'],
+    ['manger', 'mangerons'],
+    ['donner', 'donnerons'],
+  ]
+  const model = learn(pairs)
+  t.equal(Object.keys(model.ex).length, 0, 'no exceptions needed')
+  t.equal(convert('jeter', model), 'jetterons', 'jeter')
+  t.equal(convert('jeter', reverse(learn(pairs.map(a => [a[1], a[0]])))), 'jetterons', 'jeter (learned backwards)')
+  t.end()
+})
+
+test('exception when prefix differs', function (t) {
+  const model = learn([
+    ['go', 'went'],
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+  ])
+  t.equal(model.both.go || model.ex.go, 'went', 'go is a whole-word rule, or an exception')
+  t.equal(convert('go', model), 'went', 'go')
+  t.equal(convert('went', reverse(model)), 'go', 'went')
+  t.end()
+})
+
+test('min option', function (t) {
+  const pairs = [
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+    ['bake', 'baked'],
+    ['sit', 'sat'],
+  ]
+  const model = learn(pairs, { min: 2 })
+  // 'sit' can only be an exception, not a one-off rule
+  t.equal(model.ex.sit, 'sat', 'sit is an exception')
+  pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[min] ${a[0]}`))
+  t.end()
+})
+
+test('one-way model', function (t) {
+  const pairs = [
+    ['walk', 'walked'],
+    ['talk', 'talked'],
+    ['go', 'went'],
+  ]
+  const model = learn(pairs, { reverse: false })
+  t.deepEqual(model.both, {}, 'no shared rules')
+  t.deepEqual(model.rev, {}, 'no reverse rules')
+  pairs.forEach(a => t.equal(convert(a[0], model), a[1], `[one-way] ${a[0]}`))
+  t.end()
+})
+
+test('empty and junk input', function (t) {
+  t.deepEqual(learn([]), { fwd: {}, both: {}, rev: {}, ex: {} }, 'empty')
+  const model = learn([['walk', 'walked'], null, ['x'], [1, 2], ['talk', 'talked']])
+  t.equal(convert('walk', model), 'walked', 'junk ignored')
+  t.equal(convert('nope', {}), 'nope', 'empty model passes through')
+  t.equal(convert('', {}), '', 'empty string, empty model')
+  t.end()
+})
+
+test('validate', function (t) {
+  const pairs = [
+    ['walk', 'walked'],
+    ['walk', 'walking'], // repeated left
+    ['poner', 'puesto'],
+    ['ponerse', 'puesto'], // repeated right
+    ['a,b', 'ab'], // reserved char
+    ['mp3', 'mp3s'], // digit
+    ['ok', 42],
+    null,
+  ]
+  t.deepEqual(validate(pairs), [['walk', 'walked'], ['poner', 'puesto']], 'two-way')
+  t.deepEqual(validate(pairs, { reverse: false }), [['walk', 'walked'], ['poner', 'puesto'], ['ponerse', 'puesto']], 'one-way keeps right dupes')
+  const model = learn(pairs)
+  t.equal(convert('ponerse', model), 'puesto', 'learn keeps right dupes')
+  t.notOk(JSON.stringify(model).includes('a,b'), 'unencodable pair skipped')
+  t.end()
+})

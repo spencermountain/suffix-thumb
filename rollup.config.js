@@ -1,19 +1,35 @@
-import fs from 'fs'
+/* eslint-disable no-console */
+import fs from 'node:fs'
 import terser from '@rollup/plugin-terser'
+import sizeCheck from 'rollup-plugin-filesize-check'
+
 
 const pkg = JSON.parse(fs.readFileSync('./package.json').toString())
 const version = pkg.version
 console.log('\n 📦  - running rollup..\n')
 
 const name = 'suffix-thumb'
-const banner = '/* spencermountain/suffix-thumb ' + version + ' Apache 2.0 */'
+const banner = '/*! spencermountain/suffix-thumb ' + version + ' ' + pkg.license + ' */'
 
 export default [
   {
     input: 'src/index.js',
-    output: [{ file: `builds/${name}.mjs`, format: 'esm', banner: banner },
+    output: [
+      { file: `builds/${name}.mjs`, format: 'esm', banner: banner },
+      { file: `builds/${name}.cjs`, format: 'cjs', banner: banner },
     ],
-    plugins: [],
+    plugins: [{
+      name: 'commonjs-types',
+      generateBundle(output) {
+        if (output.format === 'cjs') {
+          this.emitFile({
+            type: 'asset',
+            fileName: 'types.d.cts',
+            source: fs.readFileSync('./builds/types.d.ts', 'utf8'),
+          })
+        }
+      },
+    }],
   },
   {
     input: 'src/index.js',
@@ -23,6 +39,13 @@ export default [
   {
     input: 'src/index.js',
     output: [{ file: `builds/${name}.min.js`, format: 'umd', name: 'suffixThumb', banner: banner }],
-    plugins: [terser()],
-  }
+    plugins: [
+      terser(),
+      sizeCheck({
+        expect: 5, // sizes in kb
+        warn: 3, // acceptable change (+/-)
+        throw: 8, // unacceptable change (+/-)
+      }),
+    ],
+  },
 ]

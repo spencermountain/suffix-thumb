@@ -1,46 +1,62 @@
-import prepare from './00-prep.js'
-import findRules from './01-findRules.js'
-import shareBackward from './02-share-back.js'
+import solve from './solve.js'
+import validate from '../validate/index.js'
 
 const defaults = {
-  threshold: 80,
-  min: 0
+  min: 0,
+  reverse: true,
+  verbose: false,
 }
-const swap = (a) => [a[1], a[0]]
 
-const learn = function (pairs, opts = {}) {
+const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts)
-  let ex = {}
-  let rev = {}
-  pairs = prepare(pairs, ex)
-  // get forward-dir rules
-  let { rules, pending, finished } = findRules(pairs, [], opts)
-  // move some to both
-  let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap), opts)
-  // generate remaining reverse-dir rules
-  let pendingBkwd = []
+  // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
+  // but only the first pair is used when learning the reverse direction.
+  const pairs = validate(input, { reverse: false })
+  if (opts.verbose && pairs.length < input.length) {
+    console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`) // eslint-disable-line
+  }
+  const firstFor = Object.create(null)
+  pairs.forEach(a => {
+    if (!Object.hasOwn(firstFor, a[1])) {
+      firstFor[a[1]] = a[0]
+    }
+  })
+  // pairs that are not the reverse-target of their right side can't live in `ex`,
+  // since reverse() flips it. They are stored as whole-word rules in `fwd` instead.
+  const strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]))
+
+  // forward direction
+  const fwd = solve(pairs, opts, undefined, strict)
+  const both = Object.create(null)
+  let rev = { rules: {}, ex: {} }
   if (opts.reverse !== false) {
-    // console.log(revPairs.pending)
-    let bkwd = findRules(revPairs.pending, revPairs.finished, opts)
-    pendingBkwd = bkwd.pending
-    rev = bkwd.rules
-  }
-  // console.log(pending.length, 'pending fwd')
-  // console.log(pendingBkwd.length, 'pending Bkwd')
-  // add anything remaining as an exception
-  if (opts.min <= 1) {
-    pending.forEach(arr => {
-      ex[arr[0]] = arr[1]
-    })
-    pendingBkwd.forEach(arr => {
-      ex[arr[1]] = arr[0]
+    // backward direction - a rule that is the mirror of a forward rule is free, and shared
+    const revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]])
+    const isFree = (key, add) => fwd.rules[add] === key
+    rev = solve(revPairs, opts, isFree)
+    Object.keys(rev.rules).forEach(key => {
+      const add = rev.rules[key]
+      if (fwd.rules[add] === key) {
+        both[add] = key
+        delete fwd.rules[add]
+        delete rev.rules[key]
+      }
     })
   }
+  // exceptions are keyed by the left side, and work in both directions.
+  // (a backward exception belongs to the first pair for that right-side word)
+  const ex = Object.create(null)
+  pairs.forEach(([w, w2]) => {
+    if (Object.hasOwn(fwd.ex, w) || (Object.hasOwn(rev.ex, w2) && firstFor[w2] === w)) {
+      ex[w] = w2
+    }
+  })
   return {
-    fwd,
-    both,
-    rev,
-    ex,
+    // Spreading safely preserves special keys while keeping the public objects plain.
+    fwd: { ...fwd.rules },
+    both: { ...both },
+    rev: { ...rev.rules },
+    ex: { ...ex },
   }
 }
 export default learn

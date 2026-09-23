@@ -1,18 +1,17 @@
-const flipObj = function (obj) {
-  return Object.entries(obj).reduce((h, a) => {
-    h[a[1]] = a[0]
-    return h
-  }, {})
+const flipObj = function (obj = {}) {
+  return Object.fromEntries(Object.entries(obj).map(([key, val]) => [val, key]))
 }
 
+// swap the direction of a model
 const reverse = function (model = {}) {
   return {
     reversed: true,
-    // keep these two
+    // these two work both ways
     both: flipObj(model.both),
     ex: flipObj(model.ex),
-    // swap this one in
-    fwd: model.rev || {}
+    // and the one-way rules trade places
+    fwd: model.rev || {},
+    rev: model.fwd || {},
   }
 }
 export default reverse

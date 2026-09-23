@@ -1,422 +1,433 @@
-/* spencermountain/suffix-thumb 5.0.3 Apache 2.0 */
+/*! spencermountain/suffix-thumb 6.0.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.suffixThumb = {}));
 })(this, (function (exports) { 'use strict';
 
-  // 01- full-word exceptions
-  const checkEx = function (str, ex = {}) {
-    if (ex.hasOwnProperty(str)) {
-      return ex[str]
+  // the four parts of a model, in the order they are packed
+  const sections = ['fwd', 'both', 'rev', 'ex'];
+
+  // characters with a meaning in the packed format - words containing these cannot be learned
+  const reserved = /[~|:,{}0-9]/;
+
+  // a value is stored relative to its key:
+  //   'chico' → 'chicas'  is  '1as'  (drop one char, add 'as')
+  //   'er' → 'é'          is  '2é'
+  const encodeVal = function (key, val) {
+    let i = 0;
+    while (i < key.length && i < val.length && key[i] === val[i]) {
+      i += 1;
     }
-    return null
+    return String(key.length - i) + val.slice(i)
   };
 
-  // 02- suffixes that pass our word through
-  const checkSame = function (str, same = []) {
-    for (let i = 0; i < same.length; i += 1) {
-      if (str.endsWith(same[i])) {
-        return str
+  const decodeVal = function (key, str) {
+    const m = str.match(/^[0-9]+/);
+    const n = m ? Number(m[0]) : 0;
+    const tail = m ? str.slice(m[0].length) : str;
+    return key.slice(0, key.length - n) + tail
+  };
+
+  // estimated byte-cost of one `key → val` entry, once packed
+  const cost = function (key, val) {
+    return key.length + encodeVal(key, val).length + 2 // separators
+  };
+
+  // length of the shared prefix of two strings
+  const commonPrefix = function (a, b) {
+    let i = 0;
+    while (i < a.length && i < b.length && a[i] === b[i]) {
+      i += 1;
+    }
+    return i
+  };
+
+  // the replacement this word would need from a rule whose key is its last `k` chars,
+  // or null if the change reaches further back than that
+  const needs = function (p, k) {
+    if (k < p.w.length - p.c || k > p.w.length) {
+      return null
+    }
+    return p.w2.slice(p.w.length - k)
+  };
+
+  // does this rule produce the right answer for this word?
+  const works = function (p, rule) {
+    return p.w.slice(0, p.w.length - rule.k) + rule.add === p.w2
+  };
+
+  // Find the byte-cheapest set of suffix rules (plus exceptions) that maps every
+  // left-side word to its right-side word, given the longest-suffix-wins lookup in ./convert.
+  //
+  // The words are arranged in a suffix-trie. Walking it bottom-up, each node either
+  // inherits the rule of its nearest ancestor, or places its own rule which then governs
+  // every word beneath it (until a deeper node overrides it). Because a rule keyed at
+  // node `s` can only be one of the transformations the words under `s` actually need,
+  // each node has just a handful of options, and the optimal choice is found exactly.
+  //
+  //   pairs   - [[from, to], ...]  (left side unique)
+  //   opts.min - a rule must serve at least this many pairs
+  //   isFree  - (key, add) → true when this rule costs nothing (it is shared with the other direction)
+  //   strict  - set of left-side words that may not become exceptions
+  const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set()) {
+    const min = opts.min || 0;
+    const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }));
+    const memo = new Map();
+    const rules = Object.create(null);
+    const ex = Object.create(null);
+
+    // returns { cost, apply } for the sub-trie at suffix `suff`, given the rule it inherits
+    const node = function (suff, list, inherited) {
+      // an inherited rule that helps nothing down here is the same as no rule at all
+      if (inherited && !list.some(p => needs(p, inherited.k) === inherited.add)) {
+        inherited = null;
       }
-    }
-    return null
-  };
-
-  // 03- check rules - longest first
-  const checkRules = function (str, fwd, both = {}) {
-    fwd = fwd || {};
-    let max = str.length - 1;
-    // look for a matching suffix
-    for (let i = max; i >= 1; i -= 1) {
-      let size = str.length - i;
-      let suff = str.substring(size, str.length);
-      // check fwd rules, first
-      if (fwd.hasOwnProperty(suff) === true) {
-        return str.slice(0, size) + fwd[suff]
+      const key = suff + '|' + (inherited ? inherited.k + ':' + inherited.add : '');
+      if (memo.has(key)) {
+        return memo.get(key)
       }
-      // check shared rules
-      if (both.hasOwnProperty(suff) === true) {
-        return str.slice(0, size) + both[suff]
+      // rules that could be keyed at this suffix, and how many words each would serve
+      const candidates = new Map();
+      // the word that *is* this suffix, and the sub-tries by preceding character
+      let whole = null;
+      const kids = new Map();
+      list.forEach(p => {
+        const add = needs(p, suff.length);
+        if (add !== null) {
+          candidates.set(add, (candidates.get(add) || 0) + 1);
+        }
+        if (p.w.length === suff.length) {
+          whole = p;
+        } else {
+          const char = p.w[p.w.length - suff.length - 1];
+          if (!kids.has(char)) {
+            kids.set(char, []);
+          }
+          kids.get(char).push(p);
+        }
+      });
+
+      // total cost of governing this sub-trie with `rule`
+      const option = function (rule, placed) {
+        let total = placed && !isFree(suff, rule.add) ? cost(suff, rule.add) : 0;
+        let exceptions = 0;
+        const parts = [];
+        let wholeEx = false;
+        if (whole && !(rule && works(whole, rule))) {
+          if (whole.strict) {
+            return { cost: Infinity }
+          }
+          wholeEx = true;
+          total += cost(whole.w, whole.w2);
+          exceptions += 1;
+        }
+        for (const [char, sub] of kids) {
+          const res = node(char + suff, sub, rule);
+          total += res.cost;
+          exceptions += res.exceptions;
+          parts.push(res);
+        }
+        return { cost: total, exceptions, rule, placed, wholeEx, parts }
+      };
+
+      let best = option(inherited, false);
+      for (const [add, count] of candidates) {
+        // a whole-word rule is just an exception in disguise; it is always allowed
+        const isWhole = whole !== null && add === whole.w2;
+        if (count < min && !isWhole) {
+          continue
+        }
+        const o = option({ k: suff.length, add }, true);
+        // on a tie in bytes, prefer fewer exceptions - a rule packs better, and generalizes
+        // (unless the rule only got in under the whole-word exemption)
+        const tie = o.cost === best.cost && o.exceptions < best.exceptions && count >= min;
+        if (o.cost < best.cost || tie) {
+          best = o;
+        }
       }
+      const out = {
+        cost: best.cost,
+        exceptions: best.exceptions,
+        apply: function () {
+          if (best.placed) {
+            rules[suff] = best.rule.add;
+          }
+          if (best.wholeEx) {
+            ex[whole.w] = whole.w2;
+          }
+          best.parts.forEach(part => part.apply());
+        },
+      };
+      memo.set(key, out);
+      return out
+    };
+
+    if (words.length > 0) {
+      node('', words, null).apply();
     }
-    // try a fallback transform
-    if (fwd.hasOwnProperty('')) {
-      return str += fwd['']
-    }
-    if (both.hasOwnProperty('')) {
-      return str += both['']
-    }
-    return null
+    return { rules, ex }
   };
 
-  //sweep-through all suffixes
-  const convert$1 = function (str = '', model = {}) {
-    // 01- check exceptions
-    let out = checkEx(str, model.ex);
-    // 02 - check same
-    out = out || checkSame(str, model.same);
-    // check forward and both rules
-    out = out || checkRules(str, model.fwd, model.both);
-    //return unchanged
-    out = out || str;
-    return out
-  };
+  const isPair = a => Array.isArray(a) && typeof a[0] === 'string' && typeof a[1] === 'string';
 
-  const flipObj = function (obj) {
-    return Object.entries(obj).reduce((h, a) => {
-      h[a[1]] = a[0];
-      return h
-    }, {})
-  };
-
-  const reverse = function (model = {}) {
-    return {
-      reversed: true,
-      // keep these two
-      both: flipObj(model.both),
-      ex: flipObj(model.ex),
-      // swap this one in
-      fwd: model.rev || {}
-    }
-  };
-
-  // make sure inputs are not impossible to square-up
-  const validate = function (pairs, opts = {}) {
-    let left = new Set();
-    let right = new Set();
-    pairs = pairs.filter(a => {
-      if (left.has(a[0])) {
-        // console.log('dupe', a)
+  // drop pairs that can't be learned:
+  //  - non-strings, or words with characters the packed format reserves
+  //  - repeated left-side words (a word can only become one thing)
+  //  - repeated right-side words, unless {reverse:false} (one-way models can have them)
+  const validate = function (pairs = [], opts = {}) {
+    const left = new Set();
+    const right = new Set();
+    return pairs.filter(a => {
+      if (!isPair(a) || reserved.test(a[0]) || reserved.test(a[1])) {
         return false
       }
-      if (right.has(a[1])) {
-        // console.log('dupe', a)
+      if (left.has(a[0]) || (opts.reverse !== false && right.has(a[1]))) {
         return false
       }
       left.add(a[0]);
       right.add(a[1]);
-
-      // ensure pairs are aligned by prefix
-      // if (a[0].substring(0, 1) !== a[1].substring(0, 1)) {
-      //   console.log('pair not aligned at prefix:', a)
-      //   return false
-      // }
-      return true
-    });
-    return pairs
-  };
-
-  const prep = function (pairs, ex) {
-    // remove dupes
-    pairs = validate(pairs);
-    // ensure pairs are prefix aligned, in the first-place
-    return pairs.filter(arr => {
-      let [a, b] = arr;
-      if (a.substring(0, 1) !== b.substring(0, 1)) {
-        ex[a] = b;
-        return false
-      }
       return true
     })
   };
 
-  // get the suffix diff between a and b
-  const generateRule = function (pair, peekLen = 0) {
-    let all = [];
-    let [from, to] = pair;
-    for (let i = 0; i < from.length; i += 1) {
-      if (from[i] === to[i]) {
-        all.push(from[i]);
-      } else {
-        break
-      }
-    }
-    let prefix = all.length - peekLen;
-    // is our suffix just the whole word? (not allowed!)
-    if (peekLen >= all.length) {
-      return null
-    }
-    return {
-      from: from.substring(prefix),
-      to: to.substring(prefix)
-    }
-  };
-
-  // check a rule
-  const convert = function (str, rule) {
-    if (rule.from.length >= str.length) {
-      return null
-    }
-    if (str.endsWith(rule.from)) {
-      let len = str.length - rule.from.length;
-      let pre = str.slice(0, len);
-      // if (str === 'agenouiller') {
-      //   console.log(str, rule, pre + rule.to)
-      // }
-      return pre + rule.to
-    }
-    return null
-  };
-  // console.log(convert('asdfoo', { from: 'foo', to: 'dog' }))
-
-  const getPercent = (part, total) => {
-    if (total === 0) {
-      return 100
-    }
-    let num = (part / total) * 100;
-    num = Math.round(num * 10) / 10;
-    return num;
-  };
-
-  // decide whether this rule performs well or not
-  const considerRule = function (rule, pairs) {
-    let total = 0;
-    let clear = new Set();
-    if (!rule) {
-      return { total, percent: 0, rule, clear, count: 0 }
-    }
-    if (pairs.length === 0) {
-      return { total, percent: 100, rule, clear, count: 0 }
-    }
-    pairs.forEach(pair => {
-      let res = convert(pair[0], rule);
-      if (res !== null) {
-        total += 1;
-        if (res === pair[1]) {
-          clear.add(pair[0]);
-        }
-      }
-    });
-    return {
-      total,
-      count: clear.size,
-      percent: getPercent(clear.size, total),
-      rule,
-      clear
-    }
-  };
-
-  const findRules = function (pairs, finished, opts) {
-    let pending = pairs.slice(0);
-    let rules = {};
-    // small rules first
-    for (let peek = 0; peek < 6; peek += 1) {
-      for (let i = 0; i < pending.length; i += 1) {
-        let rule = generateRule(pending[i], peek);
-        let result = considerRule(rule, pending);
-        // did it do okay?
-        if (result.rule && result.percent > opts.threshold && result.count > opts.min) {
-          // ensure it does not interfere with existing pairs
-          let res2 = considerRule(rule, finished);
-          if (res2.percent < 100) {
-            continue
-          }
-
-          // add it to our rules
-          rules[rule.from] = rule.to;
-          // update pending/finished lists
-          pending = pending.filter(p => {
-            if (result.clear.has(p[0])) {
-              finished.push(p);
-              return false
-            }
-            return true
-          });
-        }
-      }
-    }
-    return { rules, pending, finished }
-  };
-
-  // some rules are also good in reverse
-  const shareBackward = function (fwd, rev, opts) {
-    let both = {};
-    let pending = rev.slice(0);
-    let finished = [];
-    let rules = Object.entries(fwd).reverse();
-    rules.forEach(a => {
-      let rule = { from: a[1], to: a[0] };
-      if (!rule.to) {
-        return
-      }
-      let result = considerRule(rule, rev);
-      // did it do okay?
-      if (result.percent > opts.threshold) {
-        // move it to 'both' rules
-        both[rule.to] = rule.from;
-        delete fwd[rule.to];
-        // update finished/pending lists
-        pending = pending.filter(a => {
-          if (result.clear.has(a[0])) {
-            finished.push(a);
-            return false
-          }
-          return true
-        });
-      }
-    });
-    return {
-      fwd,
-      both,
-      revPairs: {
-        pending,
-        finished
-      }
-    }
-  };
-
   const defaults = {
-    threshold: 80,
-    min: 0
+    min: 0,
+    reverse: true,
+    verbose: false,
   };
-  const swap$1 = (a) => [a[1], a[0]];
 
-  const learn = function (pairs, opts = {}) {
+  const learn = function (input = [], opts = {}) {
     opts = Object.assign({}, defaults, opts);
-    let ex = {};
-    let rev = {};
-    pairs = prep(pairs, ex);
-    // get forward-dir rules
-    let { rules, pending} = findRules(pairs, [], opts);
-    // move some to both
-    let { fwd, both, revPairs } = shareBackward(rules, pairs.map(swap$1), opts);
-    // generate remaining reverse-dir rules
-    let pendingBkwd = [];
+    // left side must be unique. The right side may repeat ('poner'/'ponerse' → 'puesto'),
+    // but only the first pair is used when learning the reverse direction.
+    const pairs = validate(input, { reverse: false });
+    if (opts.verbose && pairs.length < input.length) {
+      console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`); // eslint-disable-line
+    }
+    const firstFor = Object.create(null);
+    pairs.forEach(a => {
+      if (!Object.hasOwn(firstFor, a[1])) {
+        firstFor[a[1]] = a[0];
+      }
+    });
+    // pairs that are not the reverse-target of their right side can't live in `ex`,
+    // since reverse() flips it. They are stored as whole-word rules in `fwd` instead.
+    const strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]));
+
+    // forward direction
+    const fwd = solve(pairs, opts, undefined, strict);
+    const both = Object.create(null);
+    let rev = { rules: {}, ex: {} };
     if (opts.reverse !== false) {
-      // console.log(revPairs.pending)
-      let bkwd = findRules(revPairs.pending, revPairs.finished, opts);
-      pendingBkwd = bkwd.pending;
-      rev = bkwd.rules;
-    }
-    // console.log(pending.length, 'pending fwd')
-    // console.log(pendingBkwd.length, 'pending Bkwd')
-    // add anything remaining as an exception
-    if (opts.min <= 1) {
-      pending.forEach(arr => {
-        ex[arr[0]] = arr[1];
-      });
-      pendingBkwd.forEach(arr => {
-        ex[arr[1]] = arr[0];
+      // backward direction - a rule that is the mirror of a forward rule is free, and shared
+      const revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]]);
+      const isFree = (key, add) => fwd.rules[add] === key;
+      rev = solve(revPairs, opts, isFree);
+      Object.keys(rev.rules).forEach(key => {
+        const add = rev.rules[key];
+        if (fwd.rules[add] === key) {
+          both[add] = key;
+          delete fwd.rules[add];
+          delete rev.rules[key];
+        }
       });
     }
+    // exceptions are keyed by the left side, and work in both directions.
+    // (a backward exception belongs to the first pair for that right-side word)
+    const ex = Object.create(null);
+    pairs.forEach(([w, w2]) => {
+      if (Object.hasOwn(fwd.ex, w) || (Object.hasOwn(rev.ex, w2) && firstFor[w2] === w)) {
+        ex[w] = w2;
+      }
+    });
     return {
-      fwd,
-      both,
-      rev,
-      ex,
+      // Spreading safely preserves special keys while keeping the public objects plain.
+      fwd: { ...fwd.rules },
+      both: { ...both },
+      rev: { ...rev.rules },
+      ex: { ...ex },
     }
   };
 
-  // longest common prefix
-  const findOverlap = (from, to) => {
-    let all = [];
-    for (let i = 0; i < from.length; i += 1) {
-      if (from[i] === to[i]) {
-        all.push(from[i]);
-      } else {
-        break
+  // apply a model to one word:
+  //   1. whole-word exceptions
+  //   2. the longest suffix with a rule (a rule may match the entire word)
+  //   3. the '' rule, if any, as a fallback (a plain append)
+  //   4. otherwise, the word is returned unchanged
+  const convert = function (str = '', model = {}) {
+    const { ex = {}, fwd = {}, both = {} } = model;
+    if (Object.hasOwn(ex, str)) {
+      return ex[str]
+    }
+    for (let len = str.length; len >= 0; len -= 1) {
+      const suff = str.slice(str.length - len);
+      const stem = str.slice(0, str.length - len);
+      if (Object.hasOwn(fwd, suff)) {
+        return stem + fwd[suff]
+      }
+      if (Object.hasOwn(both, suff)) {
+        return stem + both[suff]
       }
     }
-    return all.join('')
+    return str
   };
 
-  // run-length encode any shared prefix
-  let compress$1 = function (key, val) {
-    let prefix = findOverlap(key, val);
-    if (prefix.length < 1) {
-      return val
+  const flipObj = function (obj = {}) {
+    return Object.fromEntries(Object.entries(obj).map(([key, val]) => [val, key]))
+  };
+
+  // swap the direction of a model
+  const reverse = function (model = {}) {
+    return {
+      reversed: true,
+      // these two work both ways
+      both: flipObj(model.both),
+      ex: flipObj(model.ex),
+      // and the one-way rules trade places
+      fwd: model.rev || {},
+      rev: model.fwd || {},
     }
-    let out = prefix.length + val.substr(prefix.length);
-    return out
-  };
-  // console.log(compress('fixture', 'fixturing'))
-
-  const pack = function (obj) {
-    let byVal = {};
-    Object.keys(obj).forEach(k => {
-      let val = obj[k];
-      byVal[val] = byVal[val] || [];
-      byVal[val].push(k);
-    });
-    let out = [];
-    Object.keys(byVal).forEach(val => {
-      out.push(`${val}:${byVal[val].join(',')}`);
-    });
-    return out.join('¦')
   };
 
-  const packObj = function (obj = {}) {
-    let tmp = {};
-    Object.keys(obj).forEach(k => {
-      let val = compress$1(k, obj[k]);// compress any shared prefix
-      tmp[k] = val;
+  // write a list of keys as a suffix-trie:
+  //    ltador, nzador, epador   →   ador{lt,nz,ep}
+  //    ero, ntonero             →   ero{,nton}      (an empty entry means the shared suffix is itself a key)
+  // a suffix is only factored-out when the braces pay for themselves.
+  const packKeys = function (keys) {
+    const root = { kids: new Map(), end: false };
+    keys.forEach((k) => {
+      let n = root;
+      for (let i = k.length - 1; i >= 0; i -= 1) {
+        if (!n.kids.has(k[i])) {
+          n.kids.set(k[i], { kids: new Map(), end: false });
+        }
+        n = n.kids.get(k[i]);
+      }
+      n.end = true;
     });
-    return pack(tmp)
-  };
-
-  const compress = function (model) {
-    let out = {
-      fwd: packObj(model.fwd),
-      both: packObj(model.both),
-      rev: packObj(model.rev),
-      ex: packObj(model.ex),
+    // every key beneath a node, written out in full
+    const flat = function (n, suff) {
+      const out = n.end ? [suff] : [];
+      n.kids.forEach((kid, char) => {
+        out.push(...flat(kid, char + suff));
+      });
+      return out
     };
+    const pack = function (n) {
+      const parts = n.end && n.kids.size > 0 ? [''] : [];
+      n.kids.forEach((kid, char) => {
+        // collapse single-child chains into one string
+        let chain = char;
+        while (!kid.end && kid.kids.size === 1) {
+          const [[c, k]] = kid.kids;
+          chain = c + chain;
+          kid = k;
+        }
+        const nested = chain + (kid.kids.size > 0 ? '{' + pack(kid) + '}' : '');
+        const plain = flat(kid, chain).join(',');
+        parts.push(plain.length <= nested.length ? plain : nested);
+      });
+      return parts.join(',')
+    };
+    return pack(root)
+  };
+
+  // group keys by their encoded value:   1as:chico,chino|2es:ton,ger
+  const packSection = function (obj = {}) {
+    const byVal = new Map();
+    Object.keys(obj).forEach((k) => {
+      const val = encodeVal(k, obj[k]);
+      if (!byVal.has(val)) {
+        byVal.set(val, []);
+      }
+      byVal.get(val).push(k);
+    });
+    return [...byVal].map(([val, keys]) => val + ':' + packKeys(keys)).join('|')
+  };
+
+  // model → one string
+  const compress = function (model = {}) {
+    return sections.map((s) => packSection(model[s])).join('~')
+  };
+
+  const invalid = function () {
+    throw new Error('suffix-thumb: invalid packed model')
+  };
+
+  // suffix-trie → list of keys
+  const unpackKeys = function (str, suff = '', out = []) {
+    let i = 0;
+    do {
+      let chain = '';
+      while (i < str.length && str[i] !== ',' && str[i] !== '{') {
+        chain += str[i];
+        i += 1;
+      }
+      if (reserved.test(chain)) {
+        invalid();
+      }
+      if (str[i] === '{') {
+        // find the matching brace
+        let depth = 1;
+        let j = i + 1;
+        while (depth > 0 && j < str.length) {
+          if (str[j] === '{') {
+            depth += 1;
+          } else if (str[j] === '}') {
+            depth -= 1;
+          }
+          j += 1;
+        }
+        if (depth !== 0 || (j < str.length && str[j] !== ',')) {
+          invalid();
+        }
+        unpackKeys(str.slice(i + 1, j - 1), chain + suff, out);
+        i = j;
+      } else {
+        out.push(chain + suff);
+      }
+      i += 1; // step over the comma
+    } while (i <= str.length)
     return out
   };
 
-
-  // let model = {
-  //   fwd: {
-  //     foo: 'food',
-  //     bar: 'bard',
-  //     cool: 'nice'
-  //   }
-  // }
-  // console.log(compress(model))
-
-  const prefix = /^([0-9]+)/;
-
-  const toObject = function (txt) {
-    let obj = {};
-    txt.split('¦').forEach(str => {
-      let [key, vals] = str.split(':');
-      vals = (vals || '').split(',');
-      vals.forEach(val => {
-        obj[val] = key;
+  const unpackSection = function (str = '') {
+    const obj = Object.create(null);
+    if (!str) {
+      return { ...obj }
+    }
+    str.split('|').forEach(group => {
+      const i = group.indexOf(':');
+      const val = group.slice(0, i);
+      const count = val.match(/^[0-9]+/);
+      if (i < 0 || !count || reserved.test(val.slice(count[0].length))) {
+        invalid();
+      }
+      unpackKeys(group.slice(i + 1)).forEach(k => {
+        if (Number(count[0]) > k.length) {
+          invalid();
+        }
+        obj[k] = decodeVal(k, val);
       });
     });
-    return obj
+    return { ...obj }
   };
 
-  const growObject = function (key = '', val = '') {
-    val = String(val);
-    let m = val.match(prefix);
-    if (m === null) {
-      return val
+  // one string → model
+  const uncompress = function (str = '') {
+    if (typeof str !== 'string' || str[0] === '{') {
+      throw new Error('suffix-thumb: uncompress expects a packed string. Models made before v6 must be learned again.')
     }
-    let num = Number(m[1]) || 0;
-    let pre = key.substring(0, num);
-    let full = pre + val.replace(prefix, '');
-    return full
-  };
-
-  const unpackOne = function (str) {
-    let obj = toObject(str);
-    return Object.keys(obj).reduce((h, k) => {
-      h[k] = growObject(k, obj[k]);
-      return h
-    }, {})
-  };
-
-  const uncompress = function (model = {}) {
-    if (typeof model === 'string') {
-      model = JSON.parse(model);
+    const parts = str.split('~');
+    // Preserve the empty/default input shorthand for an empty model.
+    if (str !== '' && parts.length !== sections.length) {
+      invalid();
     }
-    model.fwd = unpackOne(model.fwd || '');
-    model.both = unpackOne(model.both || '');
-    model.rev = unpackOne(model.rev || '');
-    model.ex = unpackOne(model.ex || '');
+    const model = {};
+    sections.forEach((s, i) => {
+      model[s] = unpackSection(parts[i]);
+    });
     return model
   };
 
@@ -424,6 +435,9 @@
   const blue = str => '\x1b[34m' + str + '\x1b[0m';
 
   const percent = (part, total) => {
+    if (total === 0) {
+      return 'N/A (no pairs)'
+    }
     let num = (part / total) * 100;
     num = Math.round(num * 10) / 10;
     return num + '%'
@@ -434,25 +448,26 @@
   const getNum = function (pairs, model) {
     let right = 0;
     pairs.forEach(a => {
-      let have = convert$1(a[0], model);
+      const have = convert(a[0], model);
       if (have === a[1]) {
         right += 1;
       } else {
-        console.log('❌ ', a, '→ ' + have);
+        console.log('❌ ', a, '→ ' + have); // eslint-disable-line no-console
       }
     });
     return percent(right, pairs.length)
   };
 
   const test = function (pairs, model = {}) {
-    pairs = validate(pairs);
-    let fwdScore = getNum(pairs, model);
-    let bkwdScore = getNum(pairs.map(swap), reverse(model));
-    console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`);
+    // Keep every accepted forward pair, matching learn()'s duplicate handling.
+    pairs = validate(pairs, { reverse: false });
+    const fwdScore = getNum(pairs, model);
+    const bkwdScore = getNum(validate(pairs).map(swap), reverse(model));
+    console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`); // eslint-disable-line no-console
   };
 
   exports.compress = compress;
-  exports.convert = convert$1;
+  exports.convert = convert;
   exports.learn = learn;
   exports.reverse = reverse;
   exports.test = test;

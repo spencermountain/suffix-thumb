@@ -1,4 +1,4 @@
-import test from 'tape'
+/* eslint-disable no-console */
 import { learn, compress } from '../src/index.js'
 import filesize from '../tests/lib/filesize.js'
 import esPlurals from '../tests/data/es-plurals.js'
@@ -11,25 +11,25 @@ import pastParticiple from '../tests/data/past-participle.js'
 import perfecto from '../tests/data/perfecto.js'
 import presentTense from '../tests/data/present-tense.js'
 
-let data = [
-  { pairs: nous, name: 'nous', size: 2.6 },
-  { pairs: frWords, name: 'frWords', size: 0.2 },
-  { pairs: future, name: 'future', size: 0.9 },
-  { pairs: gerund, name: 'gerund', size: 5.9 },
-  { pairs: itGerund, name: 'itGerund', size: 3.3 },
-  { pairs: pastParticiple, name: 'pastParticiple', size: 3.1 },
-  { pairs: perfecto, name: 'perfecto', size: 0.9 },
-  { pairs: presentTense, name: 'presentTense', size: 0.3 },
-  { pairs: esPlurals, name: 'esPlurals', size: 7.3 },
+const data = [
+  { pairs: nous, name: 'nous', size: 0.9 },
+  { pairs: frWords, name: 'frWords', size: 0.1 },
+  { pairs: future, name: 'future', size: 0.5 },
+  { pairs: gerund, name: 'gerund', size: 1.0 },
+  { pairs: itGerund, name: 'itGerund', size: 1.1 },
+  { pairs: pastParticiple, name: 'pastParticiple', size: 1.2 },
+  { pairs: perfecto, name: 'perfecto', size: 0.4 },
+  { pairs: presentTense, name: 'presentTense', size: 0.1 },
+  { pairs: esPlurals, name: 'esPlurals', size: 3.6 },
 ]
 
 const green = str => '\x1b[32m' + str + '\x1b[0m'
 const red = str => '\x1b[31m' + str + '\x1b[0m'
 data.forEach(o => {
-  let { pairs, size, name } = o
-  let model = learn(pairs)
-  let pkd = compress(model)
-  let n = filesize(pkd)
+  const { pairs, size, name } = o
+  const model = learn(pairs)
+  const pkd = compress(model)
+  const n = filesize(pkd)
   if (n <= size) {
     console.log(`✅ ${name} is ${green(n + 'kb')}`)
   } else {
