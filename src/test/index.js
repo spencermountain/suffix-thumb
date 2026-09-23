@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { convert, reverse, validate } from '../index.js'
 
 const cyan = str => '\x1b[36m' + str + '\x1b[0m'
@@ -20,7 +19,7 @@ const getNum = function (pairs, model) {
     if (have === a[1]) {
       right += 1
     } else {
-      console.log('❌ ', a, '→ ' + have)
+      console.log('❌ ', a, '→ ' + have) //eslint-disable-next-line no-console
       wrong.push(a)
     }
   })
@@ -31,6 +30,6 @@ const test = function (pairs, model = {}) {
   pairs = validate(pairs)
   const fwdScore = getNum(pairs, model)
   const bkwdScore = getNum(pairs.map(swap), reverse(model))
-  console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`)
+  console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`) //eslint-disable-next-line no-console
 }
 export default test
