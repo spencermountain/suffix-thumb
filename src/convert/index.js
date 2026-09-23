@@ -5,16 +5,16 @@
 //   4. otherwise, the word is returned unchanged
 const convert = function (str = '', model = {}) {
   const { ex = {}, fwd = {}, both = {} } = model
-  if (ex.hasOwnProperty(str)) {
+  if (Object.hasOwn(ex, str)) {
     return ex[str]
   }
   for (let len = str.length; len >= 0; len -= 1) {
     const suff = str.slice(str.length - len)
     const stem = str.slice(0, str.length - len)
-    if (fwd.hasOwnProperty(suff)) {
+    if (Object.hasOwn(fwd, suff)) {
       return stem + fwd[suff]
     }
-    if (both.hasOwnProperty(suff)) {
+    if (Object.hasOwn(both, suff)) {
       return stem + both[suff]
     }
   }

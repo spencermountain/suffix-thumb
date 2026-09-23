@@ -92,3 +92,24 @@ test('old models are refused', function (t) {
   t.throws(() => uncompress('{"fwd":""}'), /v6/, 'json string')
   t.end()
 })
+
+test('malformed packed models are refused', function (t) {
+  const invalid = [
+    '0s:a{~~~', // missing closing brace
+    '0s:a{b{c}~~~', // unclosed outer group
+    '0s:a}~~~', // unexpected closing brace
+    '0s:a{b}c~~~', // missing comma after a group
+    '0s:a~~', // missing section
+    '0s:a~~~~', // extra section
+    '0sa~~~', // missing colon
+    's:a~~~', // missing strip count
+    '0s:a:b~~~', // extra colon
+    '0s:a|~~~', // empty value group
+    '2s:a~~~', // strip count exceeds key length
+    '0s:a1~~~', // reserved character in key
+  ]
+  invalid.forEach(str => t.throws(() => uncompress(str), /invalid packed model/, str))
+  t.deepEqual(uncompress('~~~'), { fwd: {}, both: {}, rev: {}, ex: {} }, 'empty packed model')
+  t.deepEqual(uncompress(), uncompress('~~~'), 'default input remains supported')
+  t.end()
+})

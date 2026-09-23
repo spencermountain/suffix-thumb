@@ -40,8 +40,8 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
   const min = opts.min || 0
   const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }))
   const memo = new Map()
-  const rules = {}
-  const ex = {}
+  const rules = Object.create(null)
+  const ex = Object.create(null)
 
   // returns { cost, apply } for the sub-trie at suffix `suff`, given the rule it inherits
   const node = function (suff, list, inherited) {

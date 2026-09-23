@@ -15,9 +15,9 @@ const learn = function (input = [], opts = {}) {
   if (opts.verbose && pairs.length < input.length) {
     console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`) // eslint-disable-line
   }
-  const firstFor = {}
+  const firstFor = Object.create(null)
   pairs.forEach(a => {
-    if (!firstFor.hasOwnProperty(a[1])) {
+    if (!Object.hasOwn(firstFor, a[1])) {
       firstFor[a[1]] = a[0]
     }
   })
@@ -27,7 +27,7 @@ const learn = function (input = [], opts = {}) {
 
   // forward direction
   const fwd = solve(pairs, opts, undefined, strict)
-  const both = {}
+  const both = Object.create(null)
   let rev = { rules: {}, ex: {} }
   if (opts.reverse !== false) {
     // backward direction - a rule that is the mirror of a forward rule is free, and shared
@@ -45,17 +45,18 @@ const learn = function (input = [], opts = {}) {
   }
   // exceptions are keyed by the left side, and work in both directions.
   // (a backward exception belongs to the first pair for that right-side word)
-  const ex = {}
+  const ex = Object.create(null)
   pairs.forEach(([w, w2]) => {
-    if (fwd.ex.hasOwnProperty(w) || (rev.ex.hasOwnProperty(w2) && firstFor[w2] === w)) {
+    if (Object.hasOwn(fwd.ex, w) || (Object.hasOwn(rev.ex, w2) && firstFor[w2] === w)) {
       ex[w] = w2
     }
   })
   return {
-    fwd: fwd.rules,
-    both,
-    rev: rev.rules,
-    ex,
+    // Spreading safely preserves special keys while keeping the public objects plain.
+    fwd: { ...fwd.rules },
+    both: { ...both },
+    rev: { ...rev.rules },
+    ex: { ...ex },
   }
 }
 export default learn

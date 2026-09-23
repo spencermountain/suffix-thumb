@@ -1,8 +1,5 @@
 const flipObj = function (obj = {}) {
-  return Object.entries(obj).reduce((h, a) => {
-    h[a[1]] = a[0]
-    return h
-  }, {})
+  return Object.fromEntries(Object.entries(obj).map(([key, val]) => [val, key]))
 }
 
 // swap the direction of a model

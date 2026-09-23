@@ -1,4 +1,4 @@
-/* spencermountain/suffix-thumb 6.0.0 Apache 2.0 */
+/*! spencermountain/suffix-thumb 6.0.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -74,8 +74,8 @@
     const min = opts.min || 0;
     const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }));
     const memo = new Map();
-    const rules = {};
-    const ex = {};
+    const rules = Object.create(null);
+    const ex = Object.create(null);
 
     // returns { cost, apply } for the sub-trie at suffix `suff`, given the rule it inherits
     const node = function (suff, list, inherited) {
@@ -205,9 +205,9 @@
     if (opts.verbose && pairs.length < input.length) {
       console.warn(`suffix-thumb: skipped ${input.length - pairs.length} pairs (repeated, or unencodable)`); // eslint-disable-line
     }
-    const firstFor = {};
+    const firstFor = Object.create(null);
     pairs.forEach(a => {
-      if (!firstFor.hasOwnProperty(a[1])) {
+      if (!Object.hasOwn(firstFor, a[1])) {
         firstFor[a[1]] = a[0];
       }
     });
@@ -217,7 +217,7 @@
 
     // forward direction
     const fwd = solve(pairs, opts, undefined, strict);
-    const both = {};
+    const both = Object.create(null);
     let rev = { rules: {}, ex: {} };
     if (opts.reverse !== false) {
       // backward direction - a rule that is the mirror of a forward rule is free, and shared
@@ -235,17 +235,18 @@
     }
     // exceptions are keyed by the left side, and work in both directions.
     // (a backward exception belongs to the first pair for that right-side word)
-    const ex = {};
+    const ex = Object.create(null);
     pairs.forEach(([w, w2]) => {
-      if (fwd.ex.hasOwnProperty(w) || (rev.ex.hasOwnProperty(w2) && firstFor[w2] === w)) {
+      if (Object.hasOwn(fwd.ex, w) || (Object.hasOwn(rev.ex, w2) && firstFor[w2] === w)) {
         ex[w] = w2;
       }
     });
     return {
-      fwd: fwd.rules,
-      both,
-      rev: rev.rules,
-      ex,
+      // Spreading safely preserves special keys while keeping the public objects plain.
+      fwd: { ...fwd.rules },
+      both: { ...both },
+      rev: { ...rev.rules },
+      ex: { ...ex },
     }
   };
 
@@ -256,16 +257,16 @@
   //   4. otherwise, the word is returned unchanged
   const convert = function (str = '', model = {}) {
     const { ex = {}, fwd = {}, both = {} } = model;
-    if (ex.hasOwnProperty(str)) {
+    if (Object.hasOwn(ex, str)) {
       return ex[str]
     }
     for (let len = str.length; len >= 0; len -= 1) {
       const suff = str.slice(str.length - len);
       const stem = str.slice(0, str.length - len);
-      if (fwd.hasOwnProperty(suff)) {
+      if (Object.hasOwn(fwd, suff)) {
         return stem + fwd[suff]
       }
-      if (both.hasOwnProperty(suff)) {
+      if (Object.hasOwn(both, suff)) {
         return stem + both[suff]
       }
     }
@@ -273,10 +274,7 @@
   };
 
   const flipObj = function (obj = {}) {
-    return Object.entries(obj).reduce((h, a) => {
-      h[a[1]] = a[0];
-      return h
-    }, {})
+    return Object.fromEntries(Object.entries(obj).map(([key, val]) => [val, key]))
   };
 
   // swap the direction of a model
@@ -353,6 +351,10 @@
     return sections.map((s) => packSection(model[s])).join('~')
   };
 
+  const invalid = function () {
+    throw new Error('suffix-thumb: invalid packed model')
+  };
+
   // suffix-trie → list of keys
   const unpackKeys = function (str, suff = '', out = []) {
     let i = 0;
@@ -362,17 +364,23 @@
         chain += str[i];
         i += 1;
       }
+      if (reserved.test(chain)) {
+        invalid();
+      }
       if (str[i] === '{') {
         // find the matching brace
         let depth = 1;
         let j = i + 1;
-        while (depth > 0) {
+        while (depth > 0 && j < str.length) {
           if (str[j] === '{') {
             depth += 1;
           } else if (str[j] === '}') {
             depth -= 1;
           }
           j += 1;
+        }
+        if (depth !== 0 || (j < str.length && str[j] !== ',')) {
+          invalid();
         }
         unpackKeys(str.slice(i + 1, j - 1), chain + suff, out);
         i = j;
@@ -385,18 +393,25 @@
   };
 
   const unpackSection = function (str = '') {
-    const obj = {};
+    const obj = Object.create(null);
     if (!str) {
-      return obj
+      return { ...obj }
     }
     str.split('|').forEach(group => {
       const i = group.indexOf(':');
       const val = group.slice(0, i);
+      const count = val.match(/^[0-9]+/);
+      if (i < 0 || !count || reserved.test(val.slice(count[0].length))) {
+        invalid();
+      }
       unpackKeys(group.slice(i + 1)).forEach(k => {
+        if (Number(count[0]) > k.length) {
+          invalid();
+        }
         obj[k] = decodeVal(k, val);
       });
     });
-    return obj
+    return { ...obj }
   };
 
   // one string → model
@@ -405,6 +420,10 @@
       throw new Error('suffix-thumb: uncompress expects a packed string. Models made before v6 must be learned again.')
     }
     const parts = str.split('~');
+    // Preserve the empty/default input shorthand for an empty model.
+    if (str !== '' && parts.length !== sections.length) {
+      invalid();
+    }
     const model = {};
     sections.forEach((s, i) => {
       model[s] = unpackSection(parts[i]);
@@ -416,6 +435,9 @@
   const blue = str => '\x1b[34m' + str + '\x1b[0m';
 
   const percent = (part, total) => {
+    if (total === 0) {
+      return 'N/A (no pairs)'
+    }
     let num = (part / total) * 100;
     num = Math.round(num * 10) / 10;
     return num + '%'
@@ -430,17 +452,18 @@
       if (have === a[1]) {
         right += 1;
       } else {
-        console.log('❌ ', a, '→ ' + have); //eslint-disable-next-line no-console
+        console.log('❌ ', a, '→ ' + have); // eslint-disable-line no-console
       }
     });
     return percent(right, pairs.length)
   };
 
   const test = function (pairs, model = {}) {
-    pairs = validate(pairs);
+    // Keep every accepted forward pair, matching learn()'s duplicate handling.
+    pairs = validate(pairs, { reverse: false });
     const fwdScore = getNum(pairs, model);
-    const bkwdScore = getNum(pairs.map(swap), reverse(model));
-    console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`); //eslint-disable-next-line no-console
+    const bkwdScore = getNum(validate(pairs).map(swap), reverse(model));
+    console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`); // eslint-disable-line no-console
   };
 
   exports.compress = compress;

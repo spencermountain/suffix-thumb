@@ -99,7 +99,7 @@ let rev = reverse(model)
 let out = convert('walked', rev)
 // 'walk'
 ```
-by default, the model ensures all two-way transformation - if you only require 1-way, you can do:
+By default, the model learns both directions. When multiple left-side words share a right-side word, reversing chooses the first accepted pair. If you only require the forward direction, you can do:
 ```js
 learn(pairs, {reverse: false})
 ```
@@ -146,7 +146,7 @@ This means the characters `~ | : , { }` and digits are reserved - pairs containi
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
 ### Duplicates
-a left-side word can only map to one thing, so repeated left-side words are quietly ignored.
+a left-side word can only map to one thing, so `learn()` keeps the first accepted pair for each left-side word and ignores later duplicates.
 
 Repeated right-side words are fine - `'poner'` and `'ponerse'` can both become `'puesto'`.
 When reversing, the *first* pair wins: `'puesto'` → `'poner'`.
@@ -158,9 +158,11 @@ let pairs = [
   ['left', 'right-two'],
   ['ok', 'right'],
 ]
-pairs = validate(pairs) // remove dupes (on both sides), and unencodable pairs
-pairs = validate(pairs, { reverse: false }) // keep right-side dupes, for a one-way model
+const uniqueBoth = validate(pairs) // remove dupes on both sides, and unencodable pairs
+const uniqueLeft = validate(pairs, { reverse: false }) // keep right-side dupes, as learn() does
 ```
+
+The exported `test(pairs, model)` helper checks every accepted forward pair and the first pair for each reverse target. If no valid pairs remain, it reports `N/A (no pairs)` in both directions.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
@@ -175,11 +177,12 @@ Because the lookup is *longest-suffix-wins*, these choices are independent enoug
 
 The backward direction is then learned the same way, with a discount for any rule that is simply the mirror of a forward rule - those are stored once, in `both`.
 
-* The library is meant optimize for file-size of the model
-* it always returns a perfect result on its training data - both ways
+* The library optimizes for file-size of the model
+* it reproduces every accepted forward training pair; invalid pairs and later left-side duplicates are skipped
+* with reverse learning enabled (the default), each right-side word maps back to the first accepted left-side word that produced it
 * it may be less-clever about words it hasn't seen.
 
-The library drops case-information - and numbers and some characters[1](https://github.com/spencermountain/efrt) will not compress properly.
+Words are case-sensitive, and case is preserved through learning, conversion, and compression. Pairs containing digits or the reserved characters `~ | : , { }` on either side are skipped by `learn()` and `validate()`.
 
 Conjugation datasets in French, Spanish and Italian tend to get ~98% filesize compression.
 

@@ -9,7 +9,7 @@ const version = pkg.version
 console.log('\n 📦  - running rollup..\n')
 
 const name = 'suffix-thumb'
-const banner = '/* spencermountain/suffix-thumb ' + version + ' Apache 2.0 */'
+const banner = '/*! spencermountain/suffix-thumb ' + version + ' ' + pkg.license + ' */'
 
 export default [
   {
