@@ -5,7 +5,7 @@
 
   <img src="https://cloud.githubusercontent.com/assets/399657/23590290/ede73772-01aa-11e7-8915-181ef21027bc.png" />
 
-  <div>find the optimal transormations between sets of words</div>
+  <div>find the optimal transformations between sets of words</div>
   
   <!-- npm version -->
   <a href="https://npmjs.org/package/suffix-thumb">
@@ -77,10 +77,12 @@ you can pass-in options:
 let opts={
   min: 0, // a rule must serve at least this many pairs (otherwise, use an exception)
   reverse: true, // also learn the backward transformation
+  rounds: 1, // re-learn each direction against the other this many times
   verbose: false, // warn about skipped pairs
 }
 let model = learn(pairs, opts)
 ```
+`rounds: 2` lets each direction reuse more of the other's rules. The model gets ~10% smaller and learning takes twice as long, but it does a little worse on words it hasn't seen (about half a percent). More than 2 rounds rarely helps.
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
 
@@ -129,7 +131,7 @@ model = uncompress(str)
 let out = convert('walk', model)
 // 'walked'
 ```
-The models must be uncompressed before they are used, or reversed.
+The models must be uncompressed before they are used, or reversed - `convert()` throws if it is given a packed string.
 
 The packed string is still legible, with some squinting:
 * the four sections (`fwd`, `both`, `rev`, `ex`) are separated by `~`
@@ -162,7 +164,7 @@ const uniqueBoth = validate(pairs) // remove dupes on both sides, and unencodabl
 const uniqueLeft = validate(pairs, { reverse: false }) // keep right-side dupes, as learn() does
 ```
 
-The exported `test(pairs, model)` helper checks every accepted forward pair and the first pair for each reverse target. If no valid pairs remain, it reports `N/A (no pairs)` in both directions.
+The exported `test(pairs, model)` helper checks every accepted forward pair and the first pair for each reverse target. It logs any failures, and returns the scores, like `{ fwd: 100, rev: 99.5 }`. If no valid pairs remain, both scores are `null`, and it reports `N/A (no pairs)`.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>
@@ -175,7 +177,7 @@ Every pair implies a family of possible rules - `'walk'→'walked'` could be `''
 Walking the trie bottom-up, each node either inherits the rule of its nearest ancestor, or places its own rule, which then governs every word beneath it - until a deeper node overrides it, or a word that no rule fits becomes an exception.
 Because the lookup is *longest-suffix-wins*, these choices are independent enough that the byte-cheapest combination can be found exactly, in about a second for 15,000 pairs.
 
-The backward direction is then learned the same way, with a discount for any rule that is simply the mirror of a forward rule - those are stored once, in `both`.
+The backward direction is then learned the same way, where anything the forward direction already stores is free - a rule that is simply the mirror of a forward rule (those are stored once, in `both`), and the forward exceptions.
 
 * The library optimizes for file-size of the model
 * it reproduces every accepted forward training pair; invalid pairs and later left-side duplicates are skipped
@@ -185,6 +187,7 @@ The backward direction is then learned the same way, with a discount for any rul
 Words are case-sensitive, and case is preserved through learning, conversion, and compression. Pairs containing digits or the reserved characters `~ | : , { }` on either side are skipped by `learn()` and `validate()`.
 
 Conjugation datasets in French, Spanish and Italian tend to get ~98% filesize compression.
+`npm run size` and `npm run accuracy` report the model size, and the score on unseen words, for each test dataset.
 
 <!-- spacer -->
 <img height="50px" src="https://user-images.githubusercontent.com/399657/68221862-17ceb980-ffb8-11e9-87d4-7b30b6488f16.png"/>

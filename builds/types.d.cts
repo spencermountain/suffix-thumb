@@ -18,6 +18,8 @@ interface Options {
   min?: number
   /** also learn the backward transformation (default true) */
   reverse?: boolean
+  /** extra rounds make a smaller model, that does a little worse on unseen words (default 1) */
+  rounds?: number
   /** warn about skipped pairs (default false) */
   verbose?: boolean
 }
@@ -30,4 +32,5 @@ export function compress(model: Model): string
 export function uncompress(str: string): Model
 /** drop repeated and unencodable pairs. {reverse:false} keeps right-side repeats */
 export function validate(input: pair[], opts?: { reverse?: boolean }): pair[]
-export function test(input: pair[], model: Model): void
+/** log failing pairs, and return the % that convert correctly in each direction (null when there are no pairs) */
+export function test(input: pair[], model: Model): { fwd: number | null; rev: number | null }

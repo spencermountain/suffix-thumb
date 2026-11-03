@@ -102,6 +102,36 @@ test('one-way model', function (t) {
   t.end()
 })
 
+test('rounds option', function (t) {
+  for (const pairs of [pastParticiple, esPlurals]) {
+    const one = learn(pairs)
+    const two = learn(pairs, { rounds: 2 })
+    t.ok(compress(two).length < compress(one).length, 'an extra round makes a smaller model')
+    const model = uncompress(compress(two))
+    const rev = reverse(model)
+    t.deepEqual(pairs.filter(a => convert(a[0], model) !== a[1]), [], 'forward')
+    t.deepEqual(firstPairs(pairs).filter(a => convert(a[0], rev) !== a[1]), [], 'backward')
+  }
+  const pairs = [['walk', 'walked'], ['talk', 'talked'], ['go', 'went']]
+  t.deepEqual(learn(pairs, { rounds: 2, reverse: false }), learn(pairs, { reverse: false }), 'no rounds for a one-way model')
+  t.end()
+})
+
+test('reverse twice', function (t) {
+  const model = learn([['walk', 'walked'], ['go', 'went']])
+  t.equal(reverse(model).reversed, true, 'reversed once')
+  t.equal(reverse(reverse(model)).reversed, false, 'reversed back')
+  t.equal(convert('go', reverse(reverse(model))), 'went', 'converts forward again')
+  t.end()
+})
+
+test('packed model is refused by convert', function (t) {
+  const str = compress(learn([['walk', 'walked'], ['talk', 'talked']]))
+  t.throws(() => convert('walk', str), /uncompress/, 'string model')
+  t.equal(convert('walk', uncompress(str)), 'walked', 'uncompressed model works')
+  t.end()
+})
+
 test('empty and junk input', function (t) {
   t.deepEqual(learn([]), { fwd: {}, both: {}, rev: {}, ex: {} }, 'empty')
   const model = learn([['walk', 'walked'], null, ['x'], [1, 2], ['talk', 'talked']])

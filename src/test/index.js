@@ -5,12 +5,12 @@ const blue = str => '\x1b[34m' + str + '\x1b[0m'
 
 const percent = (part, total) => {
   if (total === 0) {
-    return 'N/A (no pairs)'
+    return null
   }
   let num = (part / total) * 100
-  num = Math.round(num * 10) / 10
-  return num + '%'
+  return Math.round(num * 10) / 10
 }
+const show = num => (num === null ? 'N/A (no pairs)' : num + '%')
 
 const swap = (a) => [a[1], a[0]]
 
@@ -30,8 +30,10 @@ const getNum = function (pairs, model) {
 const test = function (pairs, model = {}) {
   // Keep every accepted forward pair, matching learn()'s duplicate handling.
   pairs = validate(pairs, { reverse: false })
-  const fwdScore = getNum(pairs, model)
-  const bkwdScore = getNum(validate(pairs).map(swap), reverse(model))
-  console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`) // eslint-disable-line no-console
+  const fwd = getNum(pairs, model)
+  const rev = getNum(validate(pairs).map(swap), reverse(model))
+  console.log(`${blue(show(fwd))}  -  🔄 ${cyan(show(rev))}`) // eslint-disable-line no-console
+  // % of pairs that convert correctly, in each direction (null when there are no pairs)
+  return { fwd, rev }
 }
 export default test

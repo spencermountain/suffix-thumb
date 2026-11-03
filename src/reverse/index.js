@@ -5,7 +5,7 @@ const flipObj = function (obj = {}) {
 // swap the direction of a model
 const reverse = function (model = {}) {
   return {
-    reversed: true,
+    reversed: !model.reversed,
     // these two work both ways
     both: flipObj(model.both),
     ex: flipObj(model.ex),

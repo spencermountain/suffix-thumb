@@ -1,10 +1,10 @@
 import { learn, test, reverse, convert, compress, uncompress } from './src/index.js'
 import summarize from './scripts/summarize.js'
-import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-words.js' //0.3kb
-// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/future-simple.js' //1.6kb
-// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/fr-nous.js' //4.5kb
-// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/perfecto.js' //
-// import pairs from '/Users/spencer/mountain/suffix-thumb/tests/data/present-tense.js' //
+import pairs from './tests/data/fr-words.js' //0.3kb
+// import pairs from './tests/data/future-simple.js' //1.6kb
+// import pairs from './tests/data/fr-nous.js' //4.5kb
+// import pairs from './tests/data/perfecto.js' //
+// import pairs from './tests/data/present-tense.js' //
 
 // let pairs = [
 //   ["ubicar", "ubicado"],

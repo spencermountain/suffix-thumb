@@ -4,8 +4,13 @@ import validate from '../validate/index.js'
 const defaults = {
   min: 0,
   reverse: true,
+  rounds: 1,
   verbose: false,
 }
+
+// what one direction stores, the other may reuse for free - its rules (mirrored), and its exceptions
+const mirrors = other => (key, add) => other.rules[add] === key
+const known = other => new Set(Object.values(other.ex))
 
 const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts)
@@ -26,14 +31,20 @@ const learn = function (input = [], opts = {}) {
   const strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]))
 
   // forward direction
-  const fwd = solve(pairs, opts, undefined, strict)
+  let fwd = solve(pairs, opts, undefined, strict)
   const both = Object.create(null)
   let rev = { rules: {}, ex: {} }
   if (opts.reverse !== false) {
-    // backward direction - a rule that is the mirror of a forward rule is free, and shared
+    // backward direction
     const revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]])
-    const isFree = (key, add) => fwd.rules[add] === key
-    rev = solve(revPairs, opts, isFree)
+    rev = solve(revPairs, opts, mirrors(fwd), undefined, known(fwd))
+    // extra rounds re-learn each direction against the other -
+    // a smaller model, that generalizes a little worse to unseen words
+    for (let round = 1; round < opts.rounds; round += 1) {
+      fwd = solve(pairs, opts, mirrors(rev), strict, known(rev))
+      rev = solve(revPairs, opts, mirrors(fwd), undefined, known(fwd))
+    }
+    // a rule that is the mirror of a forward rule is stored once, in `both`
     Object.keys(rev.rules).forEach(key => {
       const add = rev.rules[key]
       if (fwd.rules[add] === key) {

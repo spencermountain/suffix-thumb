@@ -1,6 +1,12 @@
 ### 6.1.0 [Nov 2026]
 
 - **[change]** - reduce memory usage on larger datasets
+- **[change]** - models are ~4% smaller - backward learning reuses the forward exceptions
+- **[new]** - `rounds` option, for a ~10% smaller model that does slightly worse on unseen words
+- **[new]** - `test()` returns its scores
+- **[change]** - `convert()` throws on a packed string
+- **[change]** - the esm import uses the built `.mjs` file
+- **[fix]** - reversing a model twice sets `reversed: false`
 - **[update]** - dependencies
 
 ### 6.0.0 [Sep 2026]

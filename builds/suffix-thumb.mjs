@@ -94,7 +94,8 @@ const partition = function (suff, list) {
 //   opts.min - a rule must serve at least this many pairs
 //   isFree  - (key, add) → true when this rule costs nothing (it is shared with the other direction)
 //   strict  - set of left-side words that may not become exceptions
-const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set()) {
+//   freeEx  - set of left-side words whose exception costs nothing (the other direction stores it)
+const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set(), freeEx = new Set()) {
   const min = opts.min || 0;
   const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }));
   const memo = new Map();
@@ -128,7 +129,7 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
           return { cost: Infinity }
         }
         wholeEx = true;
-        total += cost(whole.w, whole.w2);
+        total += freeEx.has(whole.w) ? 0 : cost(whole.w, whole.w2);
         exceptions += 1;
       }
       for (const [char, sub] of kids) {
@@ -214,8 +215,13 @@ const validate = function (pairs = [], opts = {}) {
 const defaults = {
   min: 0,
   reverse: true,
+  rounds: 1,
   verbose: false,
 };
+
+// what one direction stores, the other may reuse for free - its rules (mirrored), and its exceptions
+const mirrors = other => (key, add) => other.rules[add] === key;
+const known = other => new Set(Object.values(other.ex));
 
 const learn = function (input = [], opts = {}) {
   opts = Object.assign({}, defaults, opts);
@@ -236,14 +242,20 @@ const learn = function (input = [], opts = {}) {
   const strict = new Set(pairs.filter(a => firstFor[a[1]] !== a[0]).map(a => a[0]));
 
   // forward direction
-  const fwd = solve(pairs, opts, undefined, strict);
+  let fwd = solve(pairs, opts, undefined, strict);
   const both = Object.create(null);
   let rev = { rules: {}, ex: {} };
   if (opts.reverse !== false) {
-    // backward direction - a rule that is the mirror of a forward rule is free, and shared
+    // backward direction
     const revPairs = Object.keys(firstFor).map(w2 => [w2, firstFor[w2]]);
-    const isFree = (key, add) => fwd.rules[add] === key;
-    rev = solve(revPairs, opts, isFree);
+    rev = solve(revPairs, opts, mirrors(fwd), undefined, known(fwd));
+    // extra rounds re-learn each direction against the other -
+    // a smaller model, that generalizes a little worse to unseen words
+    for (let round = 1; round < opts.rounds; round += 1) {
+      fwd = solve(pairs, opts, mirrors(rev), strict, known(rev));
+      rev = solve(revPairs, opts, mirrors(fwd), undefined, known(fwd));
+    }
+    // a rule that is the mirror of a forward rule is stored once, in `both`
     Object.keys(rev.rules).forEach(key => {
       const add = rev.rules[key];
       if (fwd.rules[add] === key) {
@@ -276,18 +288,21 @@ const learn = function (input = [], opts = {}) {
 //   3. the '' rule, if any, as a fallback (a plain append)
 //   4. otherwise, the word is returned unchanged
 const convert = function (str = '', model = {}) {
+  if (typeof model === 'string') {
+    throw new Error('suffix-thumb: convert expects a model - uncompress() a packed string first')
+  }
   const { ex = {}, fwd = {}, both = {} } = model;
   if (Object.hasOwn(ex, str)) {
     return ex[str]
   }
-  for (let len = str.length; len >= 0; len -= 1) {
-    const suff = str.slice(str.length - len);
-    const stem = str.slice(0, str.length - len);
+  // longest suffix first - the stem is only cut once a rule matches
+  for (let i = 0; i <= str.length; i += 1) {
+    const suff = str.slice(i);
     if (Object.hasOwn(fwd, suff)) {
-      return stem + fwd[suff]
+      return str.slice(0, i) + fwd[suff]
     }
     if (Object.hasOwn(both, suff)) {
-      return stem + both[suff]
+      return str.slice(0, i) + both[suff]
     }
   }
   return str
@@ -300,7 +315,7 @@ const flipObj = function (obj = {}) {
 // swap the direction of a model
 const reverse = function (model = {}) {
   return {
-    reversed: true,
+    reversed: !model.reversed,
     // these two work both ways
     both: flipObj(model.both),
     ex: flipObj(model.ex),
@@ -456,12 +471,12 @@ const blue = str => '\x1b[34m' + str + '\x1b[0m';
 
 const percent = (part, total) => {
   if (total === 0) {
-    return 'N/A (no pairs)'
+    return null
   }
   let num = (part / total) * 100;
-  num = Math.round(num * 10) / 10;
-  return num + '%'
+  return Math.round(num * 10) / 10
 };
+const show = num => (num === null ? 'N/A (no pairs)' : num + '%');
 
 const swap = (a) => [a[1], a[0]];
 
@@ -481,9 +496,11 @@ const getNum = function (pairs, model) {
 const test = function (pairs, model = {}) {
   // Keep every accepted forward pair, matching learn()'s duplicate handling.
   pairs = validate(pairs, { reverse: false });
-  const fwdScore = getNum(pairs, model);
-  const bkwdScore = getNum(validate(pairs).map(swap), reverse(model));
-  console.log(`${blue(fwdScore)}  -  🔄 ${cyan(bkwdScore)}`); // eslint-disable-line no-console
+  const fwd = getNum(pairs, model);
+  const rev = getNum(validate(pairs).map(swap), reverse(model));
+  console.log(`${blue(show(fwd))}  -  🔄 ${cyan(show(rev))}`); // eslint-disable-line no-console
+  // % of pairs that convert correctly, in each direction (null when there are no pairs)
+  return { fwd, rev }
 };
 
 export { compress, convert, learn, reverse, test, uncompress, validate };

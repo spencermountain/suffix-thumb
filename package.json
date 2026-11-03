@@ -10,7 +10,7 @@
     ".": {
       "import": {
         "types": "./builds/types.d.ts",
-        "default": "./src/index.js"
+        "default": "./builds/suffix-thumb.mjs"
       },
       "require": {
         "types": "./builds/types.d.cts",
@@ -28,6 +28,7 @@
     "test": "tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "testb": "TESTENV=prod tape \"./tests/**/*.test.js\" | tap-dancer  --color always",
     "size": "node scripts/filesizes.js",
+    "accuracy": "node scripts/accuracy.js",
     "watch": "node --watch ./scratch.js",
     "build": "rollup -c --silent",
     "lint": "eslint ."

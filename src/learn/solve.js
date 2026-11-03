@@ -66,7 +66,8 @@ const partition = function (suff, list) {
 //   opts.min - a rule must serve at least this many pairs
 //   isFree  - (key, add) → true when this rule costs nothing (it is shared with the other direction)
 //   strict  - set of left-side words that may not become exceptions
-const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set()) {
+//   freeEx  - set of left-side words whose exception costs nothing (the other direction stores it)
+const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set(), freeEx = new Set()) {
   const min = opts.min || 0
   const words = pairs.map(([w, w2]) => ({ w, w2, c: commonPrefix(w, w2), strict: strict.has(w) }))
   const memo = new Map()
@@ -100,7 +101,7 @@ const solve = function (pairs, opts = {}, isFree = () => false, strict = new Set
           return { cost: Infinity }
         }
         wholeEx = true
-        total += cost(whole.w, whole.w2)
+        total += freeEx.has(whole.w) ? 0 : cost(whole.w, whole.w2)
         exceptions += 1
       }
       for (const [char, sub] of kids) {

@@ -16,11 +16,11 @@ const data = [
   { pairs: frWords, name: 'frWords', size: 0.1 },
   { pairs: future, name: 'future', size: 0.5 },
   { pairs: gerund, name: 'gerund', size: 1.0 },
-  { pairs: itGerund, name: 'itGerund', size: 1.1 },
+  { pairs: itGerund, name: 'itGerund', size: 1.0 },
   { pairs: pastParticiple, name: 'pastParticiple', size: 1.2 },
   { pairs: perfecto, name: 'perfecto', size: 0.4 },
   { pairs: presentTense, name: 'presentTense', size: 0.1 },
-  { pairs: esPlurals, name: 'esPlurals', size: 3.6 },
+  { pairs: esPlurals, name: 'esPlurals', size: 3.4 },
 ]
 
 test('filesizes:', function (t) {

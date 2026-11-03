@@ -7,7 +7,7 @@ const capture = function (pairs, model) {
   const original = console.log
   console.log = (...args) => lines.push(args)
   try {
-    score(pairs, model)
+    lines.result = score(pairs, model)
   } finally {
     console.log = original
   }
@@ -22,9 +22,11 @@ test('test helper checks repeated forward targets', function (t) {
   t.deepEqual(lines[0][1], pairs[1], 'identifies the missing forward mapping')
   t.ok(lines[1][0].includes('50%'), 'scores both forward pairs')
   t.ok(lines[1][0].includes('100%'), 'scores only the first reverse target')
+  t.deepEqual(lines.result, { fwd: 50, rev: 100 }, 'returns the scores')
   const good = capture(pairs, learn(pairs))
   t.equal(good.length, 1, 'a learned model has no failures')
   t.equal((good[0][0].match(/100%/g) || []).length, 2, 'both directions pass')
+  t.deepEqual(good.result, { fwd: 100, rev: 100 }, 'returns perfect scores')
   t.end()
 })
 
@@ -41,6 +43,7 @@ test('test helper handles empty input', function (t) {
     const lines = capture(pairs, learn(pairs))
     t.equal(lines.length, 1, 'only a summary')
     t.equal((lines[0][0].match(/N\/A \(no pairs\)/g) || []).length, 2, 'both scores explain the empty input')
+    t.deepEqual(lines.result, { fwd: null, rev: null }, 'no scores without pairs')
   }
   t.end()
 })
