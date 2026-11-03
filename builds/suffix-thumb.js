@@ -1,4 +1,4 @@
-/*! spencermountain/suffix-thumb 6.0.0 MIT */
+/*! spencermountain/suffix-thumb 6.1.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :

@@ -1,4 +1,4 @@
-/*! spencermountain/suffix-thumb 6.0.0 MIT */
+/*! spencermountain/suffix-thumb 6.1.0 MIT */
 // the four parts of a model, in the order they are packed
 const sections = ['fwd', 'both', 'rev', 'ex'];
 

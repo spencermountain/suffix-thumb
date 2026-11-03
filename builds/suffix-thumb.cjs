@@ -1,4 +1,4 @@
-/*! spencermountain/suffix-thumb 6.0.0 MIT */
+/*! spencermountain/suffix-thumb 6.1.0 MIT */
 'use strict';
 
 // the four parts of a model, in the order they are packed
