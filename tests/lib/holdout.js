@@ -12,14 +12,14 @@ import presentTense from '../data/present-tense.js'
 
 // expected % of unseen pairs converted correctly, in each direction
 const data = [
-  { pairs: esPlurals, name: 'esPlurals', fwd: 98, rev: 97.4 },
+  { pairs: esPlurals, name: 'esPlurals', fwd: 98, rev: 97.1 },
   { pairs: nous, name: 'nous', fwd: 99.4, rev: 99.2 },
   { pairs: frWords, name: 'frWords', fwd: 92.6, rev: 92.6 },
   { pairs: future, name: 'future', fwd: 98.9, rev: 98.3 },
-  { pairs: gerund, name: 'gerund', fwd: 95.9, rev: 95.9 },
+  { pairs: gerund, name: 'gerund', fwd: 95.9, rev: 95.5 },
   { pairs: itGerund, name: 'itGerund', fwd: 99.6, rev: 98.4 },
   { pairs: pastParticiple, name: 'pastParticiple', fwd: 99.4, rev: 99.4 },
-  { pairs: pastTense, name: 'pastTense', fwd: 90.9, rev: 87.7 },
+  { pairs: pastTense, name: 'pastTense', fwd: 90.9, rev: 87.3 },
   { pairs: perfecto, name: 'perfecto', fwd: 100, rev: 89.5 },
   { pairs: presentTense, name: 'presentTense', fwd: 99.5, rev: 99.5 },
 ]

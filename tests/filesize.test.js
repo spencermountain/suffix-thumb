@@ -19,7 +19,7 @@ const data = [
   { pairs: itGerund, name: 'itGerund', size: 1.0 },
   { pairs: pastParticiple, name: 'pastParticiple', size: 1.2 },
   { pairs: perfecto, name: 'perfecto', size: 0.4 },
-  { pairs: presentTense, name: 'presentTense', size: 0.1 },
+  { pairs: presentTense, name: 'presentTense', size: 0.2 },
   { pairs: esPlurals, name: 'esPlurals', size: 3.4 },
 ]
 

@@ -153,6 +153,12 @@
         if (count < min && !isWhole) {
           continue
         }
+        // the '' suffix matches *every* word, so a rule here rewrites any unknown
+        // word too - only allow it when the whole list obeys it, with nothing
+        // sheltering behind deeper rules or exceptions
+        if (suff === '' && !list.every(p => works(p, { k: 0, add }))) {
+          continue
+        }
         const o = option({ k: suff.length, add }, true);
         // on a tie in bytes, prefer fewer exceptions - a rule packs better, and generalizes
         // (unless the rule only got in under the whole-word exemption)
